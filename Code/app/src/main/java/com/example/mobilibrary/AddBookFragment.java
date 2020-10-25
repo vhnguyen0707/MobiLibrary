@@ -56,9 +56,11 @@ public class AddBookFragment extends AppCompatActivity {
                 public void onClick(View v) {
                     String bookTitle = newTitle.getText().toString();
                     String bookAuthor = newAuthor.getText().toString();
-                        checkInputs(bookTitle, bookAuthor);
+                    String ISBN = newIsbn.getText().toString();
+                    ISBN = ISBN.replaceAll(" ", "");
+                    checkInputs(bookTitle, bookAuthor,ISBN);
                     if (inputsGood) {
-                        int bookIsbn = Integer.parseInt(String.valueOf(newIsbn));
+                        int bookIsbn = Integer.parseInt(ISBN);
                         bookStatus = "available";
                         Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
                         addIntent = new Intent();
@@ -76,7 +78,6 @@ public class AddBookFragment extends AppCompatActivity {
                     cameraIntent = new Intent(AddBookFragment.this,scan.class);
                     startActivity(cameraIntent);
                     inputIntent = getIntent();
-                    newImage.setImageIcon(Icon.createWithContentUri("Image"));
                     newTitle.setText(inputIntent.getStringExtra("Title"));
                     newAuthor.setText(inputIntent.getStringExtra("Author"));
                     newIsbn.setText(inputIntent.getIntExtra("Isbn",0));
@@ -84,14 +85,14 @@ public class AddBookFragment extends AppCompatActivity {
             });
     }
 
-    public void checkInputs(String title, String Author){
+    public void checkInputs(String title, String Author, String ISBN){
             if(title.isEmpty()){
                 newTitle.setError("Please insert book title!");
                 inputsGood = false;
             } else if(Author.isEmpty()){
                 newAuthor.setError("Please insert book author!");
                 inputsGood = false;
-            } else if(newIsbn.getText().toString().isEmpty()){
+            } else if(ISBN.isEmpty()){
                 newIsbn.setError("Please insert book ISBN!");
                 inputsGood = false;
             }

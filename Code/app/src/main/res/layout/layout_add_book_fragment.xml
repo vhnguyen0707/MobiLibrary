@@ -19,7 +19,8 @@
         android:background="#B3A894"
         android:hint="Book title"
         android:shadowColor="#CCFA00"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:inputType="text"/>
 
     <EditText
         android:id="@+id/book_author"
@@ -32,7 +33,8 @@
         android:layout_marginTop="0dp"
         android:background="#B3A894"
         android:hint="Author"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/book_isbn"
@@ -47,12 +49,13 @@
         android:hint="1234 5678"
         android:textSize="20sp"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="50dp" />
+        android:layout_marginRight="50dp"
+        android:inputType="number" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/back_button"
-        android:layout_width="81dp"
-        android:layout_height="68dp"
+        android:layout_width="51dp"
+        android:layout_height="55dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -61,20 +64,26 @@
         android:layout_marginTop="11dp"
         android:background="#675C40"
         android:clickable="true"
+        android:focusable="true"
+        android:scaleType="centerInside"
         app:backgroundTint="#A18E6D"
-        app:srcCompat="@drawable/abc_vector_test"
-        android:focusable="true" />
+        app:fabCustomSize="50dp"
+        app:srcCompat="@drawable/abc_vector_test" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/camera_button"
         android:layout_width="91dp"
         android:layout_height="76dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="343dp"
-        android:layout_marginLeft="343dp"
-        android:layout_marginTop="11dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="43dp"
+        android:layout_marginLeft="43dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_toEndOf="@+id/book_image"
+        android:layout_toRightOf="@+id/book_image"
         android:clickable="true"
         app:backgroundTint="#D8C7AA"
         app:maxImageSize="45dp"
@@ -101,9 +110,13 @@
         android:layout_below="@+id/book_image"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginStart="39dp"
         android:layout_marginLeft="39dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="212dp"
+        android:layout_marginRight="212dp"
         android:text="Book Title"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -115,9 +128,13 @@
         android:layout_below="@+id/book_title"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginStart="39dp"
         android:layout_marginLeft="39dp"
         android:layout_marginTop="0dp"
+        android:layout_marginEnd="212dp"
+        android:layout_marginRight="212dp"
         android:text="Author"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -144,11 +161,17 @@
         android:id="@+id/confirm_button"
         android:layout_width="149dp"
         android:layout_height="61dp"
+        android:layout_below="@+id/book_isbn"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="120dp"
         android:layout_marginLeft="120dp"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="142dp"
+        android:layout_marginRight="142dp"
         android:layout_marginBottom="23dp"
         android:background="#4EBC21"
         android:text="confirm"
