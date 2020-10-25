@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.mobilibrary"
-        minSdkVersion 16
-        targetSdkVersion 30
+        minSdkVersion 26
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -33,4 +33,11 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.0.1'
+
+    //barcode scanner
+    implementation 'com.journeyapps:zxing-android-embedded:4.0.2'
+
+    //volley for GoogleBooks API
+    implementation 'com.android.volley:volley:1.1.0'
+
 }
