@@ -1,16 +1,22 @@
 package com.example.mobilibrary;
 
-public class Book {
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class Book implements Serializable {
     private String title;
     private int ISBN;
     private String author;
+    private String status;
     // location variable?
     // picture variable?
 
-    public Book(String title, int ISBN, String author) {
+    public Book(String title, int ISBN, String author, String status){
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
+        this.status = status;
     }
 
     public String getTitle() {
@@ -35,5 +41,13 @@ public class Book {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -1,6 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#D8C7AA">
 
-</LinearLayout>
+    <EditText
+        android:id="@+id/book_title"
+        android:layout_width="324dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/textView4"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="0dp"
+        android:background="#B3A894"
+        android:hint="Book title"
+        android:shadowColor="#CCFA00"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/book_author"
+        android:layout_width="324dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/textView5"
+        android:layout_alignParentLeft="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="38dp"
+        android:layout_marginTop="0dp"
+        android:background="#B3A894"
+        android:hint="Author"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/book_isbn"
+        android:layout_width="324dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/textView6"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="50dp"
+        android:background="#B3A894"
+        android:hint="1234 5678"
+        android:textSize="20sp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="50dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/back_button"
+        android:layout_width="81dp"
+        android:layout_height="68dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="7dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="11dp"
+        android:background="#675C40"
+        android:clickable="true"
+        app:backgroundTint="#A18E6D"
+        app:srcCompat="@drawable/abc_vector_test"
+        android:focusable="true" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/camera_button"
+        android:layout_width="91dp"
+        android:layout_height="76dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="343dp"
+        android:layout_marginLeft="343dp"
+        android:layout_marginTop="11dp"
+        android:clickable="true"
+        app:backgroundTint="#D8C7AA"
+        app:maxImageSize="45dp"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    <ImageView
+        android:id="@+id/book_image"
+        android:layout_width="182dp"
+        android:layout_height="235dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="114dp"
+        android:layout_marginLeft="114dp"
+        android:layout_marginTop="32dp"
+        android:background="#A18E6D"
+        app:srcCompat="@android:drawable/ic_menu_add" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="160dp"
+        android:layout_height="53dp"
+        android:layout_below="@+id/book_image"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="20dp"
+        android:text="Book Title"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="160dp"
+        android:layout_height="53dp"
+        android:layout_below="@+id/book_title"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="0dp"
+        android:text="Author"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="160dp"
+        android:layout_height="53dp"
+        android:layout_below="@+id/book_author"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="39dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="236dp"
+        android:layout_marginRight="236dp"
+        android:text="ISBN"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="149dp"
+        android:layout_height="61dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="120dp"
+        android:layout_marginLeft="120dp"
+        android:layout_marginBottom="23dp"
+        android:background="#4EBC21"
+        android:text="confirm"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+</RelativeLayout>
