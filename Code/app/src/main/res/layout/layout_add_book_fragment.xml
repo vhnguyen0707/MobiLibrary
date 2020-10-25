@@ -85,6 +85,7 @@
         android:layout_toEndOf="@+id/book_image"
         android:layout_toRightOf="@+id/book_image"
         android:clickable="true"
+        android:onClick="ScanButton"
         app:backgroundTint="#D8C7AA"
         app:maxImageSize="45dp"
         app:srcCompat="@android:drawable/ic_menu_camera" />
