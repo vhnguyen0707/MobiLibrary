@@ -2,9 +2,9 @@ package com.example.mobilibrary.DatabaseController;
 
 public class User {
     private final String username;
-    private final String email;
-    private final String name;
-    private final String phoneNo;
+    private String email;
+    private final String fullname;
+    private String phoneNo;
 
 
     /**
@@ -12,16 +12,24 @@ public class User {
      *
      * @param username:  unique username
      * @param email: user's email address
-     * @param name: user's  name
+     * @param fullname: user's  name
      * @param phoneNo: user's phone number
      */
-    public User(String username, String email, String name, String phoneNo) {
-        if (username == null || email == null || name == null|| phoneNo == null ) {
+    public User(String username, String email, String fullname, String phoneNo) {
+        if (username == null || email == null || fullname == null|| phoneNo == null ) {
             throw new IllegalArgumentException("These fields must not be null.");
         }
         this.username = username;
         this.email = email;
-        this.name = name;
+        this.fullname = fullname;
+        this.phoneNo = phoneNo;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
     }
 
@@ -34,7 +42,7 @@ public class User {
     }
 
     public String getName() {
-        return name;
+        return fullname;
     }
 
     public String getPhoneNo() {
