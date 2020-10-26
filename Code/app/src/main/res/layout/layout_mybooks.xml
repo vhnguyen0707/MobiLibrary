@@ -30,8 +30,8 @@
 
     <ListView
         android:id="@+id/book_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="414dp"
+        android:layout_height="733dp"
         android:background="#D8C7AA"
         android:foregroundGravity="center"
         android:scaleY="10"

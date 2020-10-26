@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -41,9 +42,7 @@ public class AddBookFragment extends AppCompatActivity {
     Button confirmButton;
     Button backButton;
     Button cameraButton;
-    //Intent cameraIntent;
     Intent addIntent;
-    Intent inputIntent;
     boolean inputsGood;
     String bookStatus;
 
@@ -94,18 +93,13 @@ public class AddBookFragment extends AppCompatActivity {
             }
         });
 
-        /*cameraButton.setOnClickListener(new View.OnClickListener() {
+        cameraButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-                cameraIntent = new Intent(AddBookFragment.this,scan.class);
-                startActivity(cameraIntent);
-                inputIntent = getIntent();
-                newTitle.setText(inputIntent.getStringExtra("Title"));
-                newAuthor.setText(inputIntent.getStringExtra("Author"));
-                newIsbn.setText(inputIntent.getIntExtra("Isbn",0));
+                ScanButton(v);
             }
-        });*/
+        });
     }
 
     public void ScanButton(View view) { //When camera button is clicked
@@ -122,7 +116,8 @@ public class AddBookFragment extends AppCompatActivity {
         if (intentResult != null) { //scanner got a result
             if (intentResult.getContents() == null) { //scanner worked, but was not able to get data
                 System.out.println("scanner worked, but not able to get data");
-                //add what to do if this happens (tell user the barcode is not valid?)
+                Toast toast = Toast.makeText(this, "Unable to obtain data from barcode", Toast.LENGTH_SHORT); //used ot display error message
+                toast.show();
             }
             else {
                 //got ISBN
