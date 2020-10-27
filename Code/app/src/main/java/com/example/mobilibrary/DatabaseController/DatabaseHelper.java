@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -95,11 +96,11 @@ public class DatabaseHelper {
 
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.d(TAG, "User Profile could not be added!" + e.toString());
-                                }
-                                });
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.d(TAG, "User Profile could not be added!" + e.toString());
+                                        }
+                                    });
                             //go back to login screen so the user can log in
                             context.startActivity(new Intent(context, LogIn.class));
                         }
@@ -121,6 +122,62 @@ public class DatabaseHelper {
                             //go to log in screen again to prompt a new attempt
                             context.startActivity(new Intent(context, LogIn.class));
                         }
+                    }
+                });
+    }
+
+    /**
+     * Gets profile to be looked at in the profile activity
+     * @param username
+     * @return the profile that the user wants to look at
+     */
+    public User getUserProfile(String username) {
+        final User[] foundUser = new User[1];
+        DocumentReference docRef = db.collection("User").document(username);
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                foundUser[0] = documentSnapshot.toObject(User.class);
+            }
+        });
+        return foundUser[0];
+    }
+
+    /**
+     *
+     * @return
+     */
+    public User getUser() {
+        User currentUser = new User(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhoneNumber());
+        return currentUser;
+    }
+
+    public void updateUser(String newEmail, String newPhone) {
+        DocumentReference docRef = db.collection("User").document(user.getUid());
+        docRef.update("email", newEmail)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Email successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating email", e);
+                    }
+                });
+        docRef.update("phone", newPhone)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Phone number successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating phone number", e);
                     }
                 });
     }

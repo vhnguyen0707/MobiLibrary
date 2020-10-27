@@ -3,6 +3,7 @@ package com.example.mobilibrary;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -15,6 +16,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mobilibrary.DatabaseController.DatabaseHelper;
+import com.example.mobilibrary.DatabaseController.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.primitives.Chars;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,11 +42,10 @@ public class ProfileActivity extends AppCompatActivity {
     private Button confirmButton;
     private Button cancelButton;
     private User profileUser;
+    private User currentUser;
+    private String profileUsername;
     private Context context;
-    // Change to DatabaseHelper once merged with master
-    private FirebaseAuth auth;
-    private FirebaseUser user;
-    // private DatabaseHelper databaseHelper;
+    private DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +62,12 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         // Get user information from database
-        // TODO: Get database from Nguyen's branch
         // profileUser from previous activity AND then by searching database?
-        // Intent intent = getIntent();
-        // profileUsername = intent.get("profile");
-        // databaseHelper = new DatabaseHelper(this);
-        // DatabaseReference ref = database.getReference();
-        // profileUser = ref.child(userID);
-        // Temp Firebase placeholders
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        // placeholder User object, need to actually grab from database differently probably using databaseHelper
-        User currentUser = new User(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhoneNumber()); // get from Main/My Books Activity OR database
-
+        Intent intent = getIntent();
+        profileUsername = (String) intent.getSerializableExtra("profile");
+        databaseHelper = new DatabaseHelper(this);
+        profileUser = databaseHelper.getUserProfile(profileUsername);
+        currentUser = databaseHelper.getUser();
 
         // Set variables
         editButton = findViewById(R.id.edit_button);
@@ -88,7 +83,7 @@ public class ProfileActivity extends AppCompatActivity {
         // Set TextViews
         usernameText.setText(profileUser.getUsername());
         emailText.setText(profileUser.getEmail());
-        phoneText.setText(profileUser.getPhone());
+        phoneText.setText(profileUser.getPhoneNo());
 
         // Set visibility
         if (!profileUser.getUsername().equals(currentUser.getUsername())) {
@@ -113,7 +108,7 @@ public class ProfileActivity extends AppCompatActivity {
                 toggleViews.add(editButton);
                 toggleVisibility(toggleViews);
                 editEmail.setText(profileUser.getEmail());
-                editPhone.setText(profileUser.getPhone());
+                editPhone.setText(profileUser.getPhoneNo());
 
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -130,7 +125,7 @@ public class ProfileActivity extends AppCompatActivity {
                              toast.show();
                         } else if (!TextUtils.isEmpty(editPhone.getText().toString())){ // Phone number input & length already restricted by layout
                             // Update user with new email and/or phone in database
-                            // databaseHelper.updateUser(editEmail.getText().toString().trim(), editPhone.getText().toString().trim());
+                            databaseHelper.updateUser(editEmail.getText().toString().trim(), editPhone.getText().toString().trim());
                             toggleVisibility(toggleViews);
                             Toast toast = Toast.makeText(context, "Profile saved!", Toast.LENGTH_SHORT);
                             toast.show();
@@ -143,6 +138,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Switches visibility of a view from invisible to visible or vice versa.
+     * @param views
+     */
     public void toggleVisibility(List<View> views) {
         for (int i = 0; i < views.size(); i++) {
             if (views.get(i).getVisibility() == View.VISIBLE) {
@@ -154,7 +153,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * Checks if the provided editText email is valid
+     * Checks if the provided editText email is valid.
      * https://stackoverflow.com/questions/12947620/email-address-validation-in-android-on-edittext
      * @param target
      * @return true for valid email pattern, false otherwise
