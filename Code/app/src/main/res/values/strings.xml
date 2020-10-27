@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MobiLibrary</string>
+    <string name="title_activity_book_detail_fragment">BookDetailFragment</string>
+    <string name="title_activity_edit_book_fragment">EditBookFragment</string>
 </resources>

@@ -4,55 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#D8C7AA">
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="338dp"
-        android:layout_height="63dp"
-        android:layout_marginTop="36dp"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_button"
+        android:layout_width="72dp"
+        android:layout_height="73dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:foregroundGravity="center"
+        android:scaleType="centerInside"
+        app:backgroundTint="#4A4026"
+        app:fabCustomSize="70dp"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:spinnerMode="dropdown"
-        />
+        app:layout_constraintHeight_max="wrap"
+        app:layout_constraintWidth_max="wrap"
+        app:maxImageSize="60dp"
+        app:rippleColor="#F6EBEB"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
     <ListView
         android:id="@+id/book_list"
-        android:layout_width="413dp"
-        android:layout_height="554dp"
-        android:layout_marginTop="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="match_parent/3"
-        android:layout_height="60dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Button"
+        android:layout_width="414dp"
+        android:layout_height="733dp"
+        android:background="#D8C7AA"
+        android:foregroundGravity="center"
+        android:scaleY="10"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="136dp"
-        android:layout_height="57dp"
-        android:text="Button"
-        tools:layout_editor_absoluteX="146dp"
-        tools:layout_editor_absoluteY="654dp" />
-
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="112dp"
-        android:layout_height="59dp"
-        android:text="Button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button2"
-        tools:layout_editor_absoluteY="654dp" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+    </ListView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
