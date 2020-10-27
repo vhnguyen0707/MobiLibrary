@@ -6,6 +6,8 @@ import android.widget.ListView;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+
+import com.example.mobillibrary.R;
 import com.robotium.solo.Solo;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -23,7 +25,7 @@ import static org.junit.Assert.assertTrue;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class MyBooksTest {
+public class addBookTest {
     private Solo solo;
     @Rule
     public ActivityTestRule<MyBooks> rule =

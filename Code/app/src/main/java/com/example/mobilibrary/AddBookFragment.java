@@ -25,6 +25,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mobillibrary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -40,8 +42,8 @@ public class AddBookFragment extends AppCompatActivity {
     EditText newIsbn;
     ImageView newImage;
     Button confirmButton;
-    Button backButton;
-    Button cameraButton;
+    FloatingActionButton backButton;
+    FloatingActionButton cameraButton;
     Intent addIntent;
     boolean inputsGood;
     String bookStatus;
@@ -189,10 +191,12 @@ public class AddBookFragment extends AppCompatActivity {
         if(title.isEmpty()){
             newTitle.setError("Please insert book title!");
             inputsGood = false;
-        } else if(Author.isEmpty()){
+        }
+        if(Author.isEmpty()){
             newAuthor.setError("Please insert book author!");
             inputsGood = false;
-        } else if(ISBN.isEmpty()){
+        }
+        if(ISBN.isEmpty()){
             newIsbn.setError("Please insert book ISBN!");
             inputsGood = false;
         }
