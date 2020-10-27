@@ -44,7 +44,8 @@ public class MyBooks extends AppCompatActivity {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 Bundle bookBundle = data.getExtras();
-                Book new_book = (Book) bookBundle.get("new book");
+                assert bookBundle != null;
+                Book new_book = (Book) bookBundle.getSerializable("new book");
                 bookAdapter.add(new_book);
                 bookAdapter.notifyDataSetChanged();
             }

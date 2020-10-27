@@ -27,6 +27,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mobillibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.zxing.Result;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -44,7 +45,7 @@ public class AddBookFragment extends AppCompatActivity {
     Button confirmButton;
     FloatingActionButton backButton;
     FloatingActionButton cameraButton;
-    Intent addIntent;
+    Intent returnIntent;
     boolean inputsGood;
     String bookStatus;
 
@@ -87,10 +88,10 @@ public class AddBookFragment extends AppCompatActivity {
                     int bookIsbn = Integer.parseInt(ISBN);
                     bookStatus = "available";
                     Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
-                    addIntent = new Intent();
-                    addIntent.putExtra("new book", (Serializable) newBook);
-                    setResult(RESULT_OK, addIntent);
-                    finish();
+                    returnIntent = new Intent();
+                    returnIntent.putExtra("new book", newBook);
+                    setResult(RESULT_OK, returnIntent);
+                    finishActivity(0);
                 }
             }
         });
