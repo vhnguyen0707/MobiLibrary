@@ -185,18 +185,18 @@ public class AddBookFragment extends AppCompatActivity {
         mRequestQueue.add(request);
     }
 
-
-
     public void checkInputs(String title, String Author, String ISBN){
-            if(title.isEmpty()){
-                newTitle.setError("Please insert book title!");
-                inputsGood = false;
-            } else if(Author.isEmpty()){
-                newAuthor.setError("Please insert book author!");
-                inputsGood = false;
-            } else if(ISBN.isEmpty()){
-                newIsbn.setError("Please insert book ISBN!");
-                inputsGood = false;
-            }
+        if(title.isEmpty()){
+            newTitle.setError("Please insert book title!");
+            inputsGood = false;
+        } else if(Author.isEmpty()){
+            newAuthor.setError("Please insert book author!");
+            inputsGood = false;
+        } else if(ISBN.isEmpty()){
+            newIsbn.setError("Please insert book ISBN!");
+            inputsGood = false;
+        }
     }
 }
+
+

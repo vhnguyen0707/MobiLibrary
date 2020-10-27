@@ -90,8 +90,8 @@ public class MyBooksTest {
         solo.assertCurrentActivity("Wrong Activity", AddBookFragment.class);
         solo.clickOnButton("confirm");
         solo.waitForText("Please insert book title!", 1, 2000); // wait for error text
-        solo.waitForText("Please insert book author!", 1, 2000); // you will wait untill the screen is entirely displayed.
-        solo.waitForText("Please insert book ISBN!", 1, 2000); // you will wait untill the screen is entirely displayed.
+        solo.waitForText("Please insert book author!", 1, 2000); // wait for error text.
+        solo.waitForText("Please insert book ISBN!", 1, 2000); // wait for error text.
         assertTrue(solo.searchText("Please insert book title!"));
         assertTrue(solo.searchText("Please insert book author!"));
         assertTrue(solo.searchText("Please insert book ISBN!"));
