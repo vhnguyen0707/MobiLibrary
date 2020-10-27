@@ -72,10 +72,13 @@ public class addBookTest {
         solo.assertCurrentActivity("Wrong Activity", AddBookFragment.class);
         solo.enterText((EditText) solo.getView(R.id.book_title), "Harry Potter");
         solo.enterText((EditText) solo.getView(R.id.book_author), "J.K Rowling");
-        solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234 5678");
+        solo.enterText((EditText) solo.getView(R.id.book_isbn), "12345678");
         solo.clickOnButton("confirm");
         MyBooks books = (MyBooks) solo.getCurrentActivity();
         final ListView bookView = books.bookView; // Get the listview
+        solo.waitForText("Harry Potter", 1, 2000);
+        solo.waitForText("J.K Rowling", 1, 2000);
+        solo.waitForText("12345678", 1, 2000);
         Book book = (Book) bookView.getItemAtPosition(0); // Get item from first position
         assertEquals("Harry Potter", book.getTitle());
         assertEquals("J.K Rowling", book.getAuthor());

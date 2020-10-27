@@ -12,6 +12,7 @@ import com.example.mobillibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MyBooks extends AppCompatActivity {
     ListView bookView;
@@ -24,10 +25,11 @@ public class MyBooks extends AppCompatActivity {
         setContentView(R.layout.layout_mybooks);
 
         addButton = findViewById(R.id.add_button);
-        bookView = findViewById(R.id.book_list);
+        bookView = (ListView) findViewById(R.id.book_list);
         bookList = new ArrayList<Book>();
 
         bookAdapter = new customBookAdapter(this, bookList);
+        bookView.setAdapter(bookAdapter);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,9 +45,7 @@ public class MyBooks extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
-                Bundle bookBundle = data.getExtras();
-                assert bookBundle != null;
-                Book new_book = (Book) bookBundle.getSerializable("new book");
+                Book new_book = (Book) Objects.requireNonNull(data.getExtras()).getSerializable("new book");
                 bookAdapter.add(new_book);
                 bookAdapter.notifyDataSetChanged();
             }

@@ -32,15 +32,17 @@ public class customBookAdapter extends ArrayAdapter<Book> {
         if(view == null){
             view = LayoutInflater.from(context).inflate(R.layout.content,parent,false);
         }
+        Book book = books.get(position);
 
         TextView bookTitle = view.findViewById(R.id.my_book_title);
         TextView bookAuthor = view.findViewById(R.id.my_book_author);
-        TextView bookISBN= view.findViewById(R.id.my_book_title);
+        TextView bookISBN= view.findViewById(R.id.my_book_ISBN);
 
-        Book book = books.get(position);
+        String ISBN = String.valueOf(book.getISBN());
+
         bookTitle.setText(book.getTitle());
         bookAuthor.setText(book.getAuthor());
-        bookISBN.setText(book.getISBN());
+        bookISBN.setText(ISBN);
         return view;
     }
 }

@@ -46,8 +46,6 @@ public class AddBookFragment extends AppCompatActivity {
     FloatingActionButton backButton;
     FloatingActionButton cameraButton;
     Intent returnIntent;
-    boolean inputsGood;
-    String bookStatus;
 
     private RequestQueue mRequestQueue;
 
@@ -56,7 +54,6 @@ public class AddBookFragment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_add_book_fragment);
 
-        inputsGood = true;
         newTitle = findViewById(R.id.book_title);
         newAuthor = findViewById(R.id.book_author);
         newIsbn = findViewById(R.id.book_isbn);
@@ -83,15 +80,14 @@ public class AddBookFragment extends AppCompatActivity {
                 String bookAuthor = newAuthor.getText().toString();
                 String ISBN = newIsbn.getText().toString();
                 ISBN = ISBN.replaceAll(" ", "");
-                checkInputs(bookTitle, bookAuthor,ISBN);
-                if (inputsGood) {
+                if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
-                    bookStatus = "available";
+                    String bookStatus = "available";
                     Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
                     returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
-                    finishActivity(0);
+                    finish();
                 }
             }
         });
@@ -188,7 +184,8 @@ public class AddBookFragment extends AppCompatActivity {
         mRequestQueue.add(request);
     }
 
-    public void checkInputs(String title, String Author, String ISBN){
+    public Boolean checkInputs(String title, String Author, String ISBN){
+        boolean inputsGood = true;
         if(title.isEmpty()){
             newTitle.setError("Please insert book title!");
             inputsGood = false;
@@ -201,6 +198,7 @@ public class AddBookFragment extends AppCompatActivity {
             newIsbn.setError("Please insert book ISBN!");
             inputsGood = false;
         }
+        return inputsGood;
     }
 }
 
