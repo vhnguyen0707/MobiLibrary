@@ -16,6 +16,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import static com.example.mobillibrary.R.layout.layout_mybooks;
+
 public class customBookAdapter extends ArrayAdapter<Book> {
     private Context context;
     private ArrayList<Book> books;
@@ -30,7 +32,7 @@ public class customBookAdapter extends ArrayAdapter<Book> {
 
         View view = convertView;
         if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.content,parent,false);
+            view = LayoutInflater.from(context).inflate(R.layout.content, parent,false);
         }
         Book book = books.get(position);
 
