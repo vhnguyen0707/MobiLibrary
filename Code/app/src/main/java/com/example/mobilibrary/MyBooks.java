@@ -38,6 +38,17 @@ public class MyBooks extends AppCompatActivity {
                 startActivityForResult(addIntent, 0);
             }
         });
+        
+        bookView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Book book = bookList.get(i);
+                Intent viewBook = new Intent(MyBooks.this, BookDetailsFragment.class);
+                viewBook.putExtra("view book", book);
+                // viewBook.putExtra("book owner", user.getusername());   // need to get user somehow, add User variable to this class
+                startActivityForResult(viewBook, 1);
+            }
+        });
     }
 
     @Override
@@ -47,6 +58,40 @@ public class MyBooks extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Book new_book = (Book) Objects.requireNonNull(data.getExtras()).getSerializable("new book");
                 bookAdapter.add(new_book);
+                bookAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+        if (requestCode == 1) {
+            if (resultCode == 1) {
+                // book needs to be deleted, intent has book to delete
+                Book delete_book = (Book) data.getSerializableExtra("delete book");
+
+                // find the book to delete and delete it
+                for (int i = 0; 0 < bookAdapter.getCount(); i++) {
+                    Book currentBook = bookAdapter.getItem(i) ;
+                    if (delete_book.compareTo(currentBook) == 0){
+                        bookAdapter.remove(currentBook);
+                    }
+                }
+
+                bookAdapter.notifyDataSetChanged();
+            }
+            else if (resultCode == 2) {
+                // book was edited update data set
+                Book edited_book = (Book) data.getSerializableExtra("edited book");
+
+                // find the book to edit and edit it
+                for (int i = 0; 0 < bookAdapter.getCount(); i++) {
+                    Book currentBook = bookAdapter.getItem(i) ;
+                    if (edited_book.compareTo(currentBook) == 0){
+                        currentBook.setTitle(edited_book.getTitle());
+                        currentBook.setAuthor(edited_book.getAuthor());
+                        currentBook.setISBN(edited_book.getISBN());
+                        // photo can be edited, but that is its own User Story
+                    }
+                }
                 bookAdapter.notifyDataSetChanged();
             }
         }
