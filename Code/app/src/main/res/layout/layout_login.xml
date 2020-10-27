@@ -84,6 +84,4 @@
         android:hint="(optional) up to 20 characters"
         android:inputType="textPersonName" />
 </LinearLayout>
-    </ScrollView>
 
-</LinearLayout>
