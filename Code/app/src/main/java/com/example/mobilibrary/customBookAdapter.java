@@ -16,21 +16,25 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import static com.example.mobillibrary.R.layout.layout_mybooks;
+
 public class customBookAdapter extends ArrayAdapter<Book> {
-    private Context context;
     private ArrayList<Book> books;
+    private Context context;
 
     public customBookAdapter(@NonNull Context context, ArrayList<Book> books) {
         super(context,0,books);
-        this.context = context;
         this.books = books;
+        this.context = context;
     }
 
+    @NonNull
+    @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         View view = convertView;
         if(view == null){
-            view = LayoutInflater.from(context).inflate(R.layout.content,parent,false);
+            view = LayoutInflater.from(context).inflate(R.layout.content, parent,false);
         }
         Book book = books.get(position);
 
