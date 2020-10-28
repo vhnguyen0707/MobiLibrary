@@ -52,8 +52,8 @@ public class Book implements Serializable, Comparable<Book> {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    public User getOwner() {
+    
+        public User getOwner() {
         return owner;
     }
 
