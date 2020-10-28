@@ -66,7 +66,7 @@ public class Book implements Serializable, Comparable<Book> {
      * @return int value, 0 if the books are the same, 1 otherwise
      */
     @Override
-    public int compareTo(Book book) {
+    public int compareTo(Book book){
         if (ISBN == book.getISBN()){
             return 0;
         }
