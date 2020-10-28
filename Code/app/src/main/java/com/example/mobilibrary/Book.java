@@ -1,6 +1,7 @@
 package com.example.mobilibrary;
 
 import android.os.Parcelable;
+import android.widget.ImageView;
 
 import java.io.Serializable;
 
@@ -9,16 +10,14 @@ public class Book implements Serializable, Comparable<Book> {
     private int ISBN;
     private String author;
     private String status;
-    private User user;
     // location variable?
-    // picture variable?
+    private ImageView image;
 
-    public Book(String title, int ISBN, String author, String status, User user){
+    public Book(String title, int ISBN, String author, String status, ImageView image){
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
         this.status = status;
-        this.owner = user;
     }
 
     public String getTitle() {
@@ -53,14 +52,13 @@ public class Book implements Serializable, Comparable<Book> {
         this.status = status;
     }
 
-    public User getOwner() {
-        return owner;
+    public ImageView getImage() {
+        return image;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setImage(ImageView image) {
+        this.image = image;
     }
-
     /**
      * Compares a book the book passed in the parameter by comparing their ISBNs,
      * if they are the same return 0, otherwise return 1
