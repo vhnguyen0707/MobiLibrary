@@ -10,7 +10,7 @@ public class Book implements Serializable, Comparable<Book> {
     private int ISBN;
     private String author;
     private String status;
-
+    private User user;
     // location variable?
 
 
@@ -53,6 +53,14 @@ public class Book implements Serializable, Comparable<Book> {
         this.status = status;
     }
 
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+    
     /**
      * Compares a book the book passed in the parameter by comparing their ISBNs,
      * if they are the same return 0, otherwise return 1
