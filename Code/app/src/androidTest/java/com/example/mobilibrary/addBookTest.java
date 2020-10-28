@@ -76,6 +76,9 @@ public class addBookTest {
         solo.clickOnButton("confirm");
         solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
         MyBooks books = (MyBooks) solo.getCurrentActivity();
+        solo.waitForText("Harry Potter", 1, 2000); // wait for title
+        solo.waitForText("J.K Rowling", 1, 2000); // wait for author
+        solo.waitForText("12345678", 1, 2000); // wait for ISBN
         final ListView bookView = books.bookView; // Get the listview
         Book book = (Book) bookView.getItemAtPosition(0); // Get item from first position
         assertEquals("Harry Potter", book.getTitle());

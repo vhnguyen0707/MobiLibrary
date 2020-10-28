@@ -1,13 +1,19 @@
 package com.example.mobilibrary;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,7 +43,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-public class AddBookFragment extends AppCompatActivity {
+public class AddBookFragment extends AppCompatActivity implements Serializable {
     EditText newTitle;
     EditText newAuthor;
     EditText newIsbn;
@@ -45,7 +51,6 @@ public class AddBookFragment extends AppCompatActivity {
     Button confirmButton;
     FloatingActionButton backButton;
     FloatingActionButton cameraButton;
-    Intent returnIntent;
 
     private RequestQueue mRequestQueue;
 
@@ -84,7 +89,7 @@ public class AddBookFragment extends AppCompatActivity {
                     int bookIsbn = Integer.parseInt(ISBN);
                     String bookStatus = "available";
                     Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
-                    returnIntent = new Intent();
+                    Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
                     finish();
@@ -99,55 +104,63 @@ public class AddBookFragment extends AppCompatActivity {
                 ScanButton(v);
             }
         });
+
+        newImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                int pic_id = 2;
+                startActivityForResult(camera_intent, pic_id);
+            }
+        });
     }
 
     public void ScanButton(View view) { //When camera button is clicked
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.initiateScan();
-        //System.out.println("scan clicked");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
+        super.onActivityResult(requestCode, resultCode, data);
         IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
         if (intentResult != null) { //scanner got a result
             if (intentResult.getContents() == null) { //scanner worked, but was not able to get data
-                System.out.println("scanner worked, but not able to get data");
-                Toast toast = Toast.makeText(this, "Unable to obtain data from barcode", Toast.LENGTH_SHORT); //used ot display error message
-                toast.show();
-            }
-            else {
-                //got ISBN
+                    System.out.println("scanner worked, but not able to get data");
+                    Toast toast = Toast.makeText(this, "Unable to obtain data from barcode",
+                            Toast.LENGTH_SHORT); //used ot display error message
+                    toast.show();
+            } else {//got ISBN
                 //Use the ISBN to search through Google Books API to find the author, and title.
                 String isbn = intentResult.getContents();
                 newIsbn.setText(isbn);
 
-                //Maybe add in a check to see if they are connected to internet? Or do we assume they are already connected
-
+                //Check if connected to internet
+                boolean isConnected = isNetworkAvailable();
+                if(!isConnected) {
+                    System.out.println("Check Internet Connection");
+                    Toast.makeText(getApplicationContext(), "Please check Internet connection", Toast.LENGTH_LONG).show(); //Popup message for user
+                    return;
+                }
                 final String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
                 Uri uri = Uri.parse(url + isbn);
                 Uri.Builder builder = uri.buildUpon();
 
                 parseJson(builder.toString()); //get results from webpage
-
+                }
             }
         }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
     private void parseJson(String key) {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(), null,
-                new Response.Listener<JSONObject>() { //volley stuff
+                new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         String title = "";
                         String author = "";
 
                         try {
-                            System.out.println("RESPPONSSEEE: " + response);
 
                             JSONArray items = response.getJSONArray("items");
                             JSONObject item = items.getJSONObject(0);
@@ -162,17 +175,23 @@ public class AddBookFragment extends AppCompatActivity {
                                 if (authors.length() == 1) {
                                     author = authors.getString(0);
                                 } else { //if there are multiple authors
-                                    author = authors.getString(0) + "|" + authors.getString(1); //haven't tested with multiple authors yet
+                                    author = authors.getString(0) + "," + authors.getString(1);
                                 }
                                 System.out.println("author: " + author);
                                 newAuthor.setText(author);
 
-                            } catch (Exception e) {
-
+                            } catch (Exception e) { //the book info in database does not contain a title or author
+                                if (title == "") {
+                                    newTitle.setText("Title not found");
+                                } else {
+                                    newAuthor.setText("Author not found");
+                                }
                             }
 
-                        } catch (JSONException e) {
+                        } catch (JSONException e) { //error trying to get database info
                             e.printStackTrace();
+                            newTitle.setText("Title not found.");
+                            newAuthor.setText("Author not found.");
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -182,6 +201,13 @@ public class AddBookFragment extends AppCompatActivity {
             }
         });
         mRequestQueue.add(request);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        return info != null && info.isConnected();
+
     }
 
     public Boolean checkInputs(String title, String Author, String ISBN){
