@@ -25,6 +25,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mobillibrary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.zxing.Result;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -40,11 +43,9 @@ public class AddBookFragment extends AppCompatActivity {
     EditText newIsbn;
     ImageView newImage;
     Button confirmButton;
-    Button backButton;
-    Button cameraButton;
-    Intent addIntent;
-    boolean inputsGood;
-    String bookStatus;
+    FloatingActionButton backButton;
+    FloatingActionButton cameraButton;
+    Intent returnIntent;
 
     private RequestQueue mRequestQueue;
 
@@ -53,7 +54,6 @@ public class AddBookFragment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_add_book_fragment);
 
-        inputsGood = true;
         newTitle = findViewById(R.id.book_title);
         newAuthor = findViewById(R.id.book_author);
         newIsbn = findViewById(R.id.book_isbn);
@@ -80,14 +80,13 @@ public class AddBookFragment extends AppCompatActivity {
                 String bookAuthor = newAuthor.getText().toString();
                 String ISBN = newIsbn.getText().toString();
                 ISBN = ISBN.replaceAll(" ", "");
-                checkInputs(bookTitle, bookAuthor,ISBN);
-                if (inputsGood) {
+                if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
-                    bookStatus = "available";
+                    String bookStatus = "available";
                     Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
-                    addIntent = new Intent();
-                    addIntent.putExtra("new book", (Serializable) newBook);
-                    setResult(RESULT_OK, addIntent);
+                    returnIntent = new Intent();
+                    returnIntent.putExtra("new book", newBook);
+                    setResult(RESULT_OK, returnIntent);
                     finish();
                 }
             }
@@ -185,17 +184,21 @@ public class AddBookFragment extends AppCompatActivity {
         mRequestQueue.add(request);
     }
 
-    public void checkInputs(String title, String Author, String ISBN){
+    public Boolean checkInputs(String title, String Author, String ISBN){
+        boolean inputsGood = true;
         if(title.isEmpty()){
             newTitle.setError("Please insert book title!");
             inputsGood = false;
-        } else if(Author.isEmpty()){
+        }
+        if(Author.isEmpty()){
             newAuthor.setError("Please insert book author!");
             inputsGood = false;
-        } else if(ISBN.isEmpty()){
+        }
+        if(ISBN.isEmpty()){
             newIsbn.setError("Please insert book ISBN!");
             inputsGood = false;
         }
+        return inputsGood;
     }
 }
 
