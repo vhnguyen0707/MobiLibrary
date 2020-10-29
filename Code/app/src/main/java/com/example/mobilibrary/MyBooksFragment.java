@@ -2,15 +2,15 @@ package com.example.mobilibrary;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import com.example.mobillibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -20,19 +20,26 @@ import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 
-public class MyBooks extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MyBooksFragment extends Fragment {
     ListView bookView;
     ArrayAdapter<Book> bookAdapter;
     ArrayList<Book> bookList;
     FloatingActionButton addButton;
 
+    public MyBooksFragment() {
+        // Required empty public constructor
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        System.out.println("In MyBooks Fragment");
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.layout_mybooks, container, false);
-
-        addButton = v.findViewById(R.id.add_button);
+        View v =  inflater.inflate(R.layout.fragment_my_books, container, false);
+        addButton = (FloatingActionButton) v.findViewById(R.id.addButton);
         bookView = (ListView) v.findViewById(R.id.book_list);
         bookList = new ArrayList<Book>();
 
@@ -59,38 +66,6 @@ public class MyBooks extends Fragment {
         });
         return v;
     }
-
-
-    /*protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_mybooks);
-
-        addButton = findViewById(R.id.add_button);
-        bookView = (ListView) findViewById(R.id.book_list);
-        bookList = new ArrayList<Book>();
-
-        bookAdapter = new customBookAdapter(this, bookList);
-        bookView.setAdapter(bookAdapter);
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent addIntent = new Intent(MyBooks.this, AddBookFragment.class);
-                startActivityForResult(addIntent, 0);
-            }
-        });
-        
-        bookView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Book book = bookList.get(i);
-                Intent viewBook = new Intent(MyBooks.this, BookDetailsFragment.class);
-                viewBook.putExtra("view book", book);
-                // viewBook.putExtra("book owner", user.getusername());   // need to get user somehow, add User variable to this class
-                startActivityForResult(viewBook, 1);
-            }
-        });
-    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -139,5 +114,3 @@ public class MyBooks extends Fragment {
     }
     // userBookList
 }
-
-

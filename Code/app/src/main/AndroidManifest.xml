@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mobillibrary">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,32 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name="com.example.mobilibrary.EditBookFragment"
-            android:label="@string/title_activity_edit_book_fragment"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName="com.example.mobilibrary.BookDetailsFragment">
-        </activity>
-        <activity
-            android:name="com.example.mobilibrary.BookDetailsFragment"
-            android:label="@string/title_activity_book_detail_fragment"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName="com.example.mobilibrary.MyBooks">
-        </activity>
-        <activity
-            android:name="com.example.mobilibrary.AddBookFragment"
-            android:label="@string/title_activity_add_book_fragment"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="com.example.mobilibrary.MyBooks"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name="com.example.mobilibrary.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.mobilibrary.AddBookFragment"
+            android:label="MobiLibrary"/>
+
     </application>
 
 </manifest>
