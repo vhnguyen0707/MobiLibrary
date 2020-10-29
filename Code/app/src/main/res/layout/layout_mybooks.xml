@@ -1,29 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D8C7AA"
-    android:orientation="vertical">
+    android:background="#D8C7AA">
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="412dp"
+        android:layout_height="87dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <ListView
+        android:id="@+id/book_list"
+        android:layout_width="408dp"
+        android:layout_height="520dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner">
+
+    </ListView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_button"
-        android:layout_width="83dp"
-        android:layout_height="80dp"
-        android:layout_gravity="bottom|end"
+        android:layout_width="80dp"
+        android:layout_height="0dp"
         android:backgroundTint="#3C2A2A"
         android:clickable="true"
         android:scaleType="centerInside"
         android:tint="#FFFFFF"
         app:backgroundTint="#201313"
         app:fabCustomSize="77dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:maxImageSize="70dp"
         app:srcCompat="@android:drawable/ic_input_add" />
 
-    <ListView
-        android:id="@+id/book_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

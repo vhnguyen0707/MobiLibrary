@@ -45,7 +45,7 @@ public class EditBookFragment extends AppCompatActivity {
     @Override
     protected void onCreate (@Nullable Bundle SavedInstances){
         super.onCreate(SavedInstances);
-        setContentView(R.layout.layout_edit_book_fragment);
+        setContentView(R.layout.layout_add_book_fragment);
 
         // photo option is separate user story, will come back to it
         title = findViewById(R.id.edit_title);
