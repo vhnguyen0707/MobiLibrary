@@ -1,5 +1,6 @@
 package com.example.mobilibrary;
 
+import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.widget.ImageView;
 
@@ -13,14 +14,14 @@ public class Book implements Serializable, Comparable<Book> {
 
    // private User owner;
     // location variable?
-    //private ImageView image;
+    private transient Bitmap image;
 
-    public Book(String title, int ISBN, String author, String status){ // ImageView image){User owner){
+    public Book(String title, int ISBN, String author, String status, Bitmap image){//{User owner){
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
         this.status = status;
-        //this.image = image;
+        this.image = image;
         //this.owner = owner;
     }
 
@@ -62,15 +63,15 @@ public class Book implements Serializable, Comparable<Book> {
 
     public void setOwner(User owner) {
         this.owner = owner;
-    }
+    } */
 
-    public ImageView getImage() {
+    public Bitmap getImage() {
         return image;
     }
 
-    public void setImage(ImageView image) {
+    public void setImage(Bitmap image) {
         this.image = image;
-    } */
+    }
 
     /**
      * Compares a book the book passed in the parameter by comparing their ISBNs,
