@@ -10,14 +10,18 @@ public class Book implements Serializable, Comparable<Book> {
     private int ISBN;
     private String author;
     private String status;
-    // location variable?
-    private ImageView image;
 
-    public Book(String title, int ISBN, String author, String status, ImageView image){
+   // private User owner;
+    // location variable?
+    //private ImageView image;
+
+    public Book(String title, int ISBN, String author, String status){ // ImageView image){User owner){
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
         this.status = status;
+        //this.image = image;
+        //this.owner = owner;
     }
 
     public String getTitle() {
@@ -52,13 +56,22 @@ public class Book implements Serializable, Comparable<Book> {
         this.status = status;
     }
 
+   /* public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
     public ImageView getImage() {
         return image;
     }
 
     public void setImage(ImageView image) {
         this.image = image;
-    }
+    } */
+
     /**
      * Compares a book the book passed in the parameter by comparing their ISBNs,
      * if they are the same return 0, otherwise return 1

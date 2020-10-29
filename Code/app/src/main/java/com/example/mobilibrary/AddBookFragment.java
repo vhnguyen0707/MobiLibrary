@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -88,7 +89,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
                     String bookStatus = "available";
-                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus, newImage);
+                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
