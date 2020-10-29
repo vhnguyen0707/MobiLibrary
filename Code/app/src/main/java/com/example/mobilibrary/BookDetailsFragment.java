@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mobillibrary.R;
+
 import java.io.Serializable;
 
 public class BookDetailsFragment extends AppCompatActivity {
@@ -44,7 +46,7 @@ public class BookDetailsFragment extends AppCompatActivity {
 
         title.setText(viewBook.getTitle());
         author.setText(viewBook.getAuthor());
-        owner.setText(viewBook.getOwner().getUsername());
+        //owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
 
         backButton.setOnClickListener(new View.OnClickListener() {
