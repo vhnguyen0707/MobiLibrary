@@ -22,6 +22,10 @@
         </activity>
         <activity android:name="com.example.mobilibrary.AddBookFragment"
             android:label="MobiLibrary"/>
+        <activity android:name="com.example.mobilibrary.BookDetailsFragment"/>
+        <activity android:name="com.example.mobilibrary.EditBookFragment"/>
+
+
 
     </application>
 

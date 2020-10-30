@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -21,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mobillibrary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -35,8 +38,8 @@ public class EditBookFragment extends AppCompatActivity {
     EditText author;
     EditText ISBN;
     // ImageView photo; photo option is seperate user story
-    Button backButton;
-    Button scanButton;
+    FloatingActionButton backButton;
+    FloatingActionButton scanButton;
     Button confirmButton;
     Book book;
 
@@ -51,8 +54,10 @@ public class EditBookFragment extends AppCompatActivity {
         title = findViewById(R.id.edit_title);
         author = findViewById(R.id.edit_author);
         ISBN = findViewById(R.id.edit_isbn);
+        confirmButton = findViewById(R.id.confirm_button);
         backButton = findViewById(R.id.back_to_view_button);
         scanButton = findViewById(R.id.edit_scan_button);
+
 
         mRequestQueue = Volley.newRequestQueue(this);
 
@@ -67,7 +72,7 @@ public class EditBookFragment extends AppCompatActivity {
         book = (Book) getIntent().getSerializableExtra("edit");
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
-        ISBN.setText(book.getISBN());
+        ISBN.setText(Integer.toString(book.getISBN()));
 
         // ignoring edit photo option for now, it is its own user story
 
@@ -98,6 +103,7 @@ public class EditBookFragment extends AppCompatActivity {
         });
 
         scanButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
                 ScanButton(view);

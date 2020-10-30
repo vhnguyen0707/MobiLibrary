@@ -89,6 +89,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
                     String bookStatus = "available";
+                    //BitmapDrawable drawable = (BitmapDrawable) newImage.getDrawable();
+                    //Bitmap bitmap = drawable.getBitmap();
                     Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);

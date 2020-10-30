@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mobillibrary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.w3c.dom.Text;
 
 import java.io.Serializable;
 
@@ -18,18 +21,18 @@ public class BookDetailsFragment extends AppCompatActivity {
     TextView author;
     TextView owner;
     TextView ISBN;
-    Button backButton;
-    Button editButton;
-    Button deleteButton;
+    FloatingActionButton backButton;
+    FloatingActionButton editButton;
+    FloatingActionButton deleteButton;
     // ImageView photo; photo option is seperate user story
 
     @Override
     protected void onCreate (@Nullable Bundle SavedInstances) {
         super.onCreate(SavedInstances);
-        setContentView(R.layout.layout_edit_book_fragment);
+        setContentView(R.layout.layout_book_details_fragment);
 
         // photo option is separate user story, will come back to it
-        title = findViewById(R.id.view_title);
+        title =  findViewById(R.id.view_title);
         author = findViewById(R.id.view_author);
         owner = findViewById(R.id.view_owner);
         ISBN = findViewById(R.id.view_isbn);
@@ -44,10 +47,12 @@ public class BookDetailsFragment extends AppCompatActivity {
 
         final Book viewBook = (Book) getIntent().getSerializableExtra("view book");
 
+        System.out.println("Book name: " +  viewBook.getTitle());
+
         title.setText(viewBook.getTitle());
         author.setText(viewBook.getAuthor());
         //owner.setText(viewBook.getOwner().getUsername());
-        ISBN.setText(viewBook.getISBN());
+        ISBN.setText(Integer.toString(viewBook.getISBN()));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
