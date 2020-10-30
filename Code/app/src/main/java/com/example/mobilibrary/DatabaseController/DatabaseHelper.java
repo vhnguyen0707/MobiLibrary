@@ -14,6 +14,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,8 +29,10 @@ public class DatabaseHelper {
     private static final String TAG = "DatabaseHelper";
     static final String UsersCol = "Users";
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
     private FirebaseUser user;
     private Context context;
+    String userID;
 
     public DatabaseHelper(Context context) {
         db = FirebaseFirestore.getInstance();
@@ -58,7 +62,6 @@ public class DatabaseHelper {
     }
 
     /**
-     *
      * @param username
      * @param password
      * @param name
@@ -68,50 +71,59 @@ public class DatabaseHelper {
     private void registerUser(final String username, final String password, final String name, final String email, final String phoneNo) {
         //HashMap stores the user data in form of key-value pairs to send to Firestore
         //User data
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("Username", username);
-        userData.put("Fullname", name);
-        userData.put("Email", email);
-        userData.put("Phone", phoneNo);
-        userData.put("Credential", password);
-        //Create user data doc
-        DocumentReference userRef = db.collection(UsersCol).document(username);
-        userRef.set(userData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "User Profile is created for " + username);
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(context, "New user added", Toast.LENGTH_SHORT).show();
+                            //get UID from firebase authentication
+                            userID = mAuth.getCurrentUser().getUid();
+                            Map<String, Object> user = new HashMap<>();
+                            user.put("Username", username);
+                            user.put("Fullname", name);
+                            user.put("Email", email);
+                            user.put("Phone", phoneNo);
+                            user.put("Credential", password);
+
+                            DocumentReference userRef = db.collection("Users").document(userID);
+                            userRef.set(user)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "User Profile is created for " + username);
+
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(TAG, "User Profile could not be added!" + e.toString());
+                                }
+                            });
+                            //go back to login screen so the user can log in
+                            context.startActivity(new Intent(context, LogIn.class));
+                        }else{
+                            Log.d(TAG, "Failed with", task.getException());
+                        }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                 @Override
-                 public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "User Profile could not be added!" + e.toString());
-                 }
                 });
-        //go back to login screen so the user can log in
-        context.startActivity(new Intent(context, LogIn.class));
     }
 
 
-    public void validateUser(String username, final String password){
-        db.collection(UsersCol)
-                .document(username)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
+    public void validateUser(String email, final String password){
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()){
-                            DocumentSnapshot doc = task.getResult();
-                            if (password.equals(doc.get("Credential"))){
-                                Toast.makeText(context, "Authentication succeeded.", Toast.LENGTH_SHORT).show();
-                                context.startActivity(new Intent(context, HomePage.class));
-                            } else {
-                                Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                                //go to login screen again to prompt a new attempt
-                                context.startActivity(new Intent(context, LogIn.class));
-                            }
-                        }else{
-                            Log.d(TAG, "Failed with", task.getException());
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(context, "Authentication succeeded.", Toast.LENGTH_SHORT).show();
+                            //log in to homepage
+                            context.startActivity(new Intent(context, HomePage.class));
+                        }else {
+                            Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show();
+                            //go to log in screen again to prompt a new attempt
+                            context.startActivity(new Intent(context, LogIn.class));
                         }
                     }
                 });
