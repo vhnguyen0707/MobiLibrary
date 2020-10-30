@@ -1,4 +1,6 @@
 package com.example.mobilibrary.Activity;
 
-public class LogIn {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class LogIn extends AppCompatActivity {
 }
