@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -90,13 +92,9 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
                     String bookStatus = "available";
-
                     BitmapDrawable drawable = (BitmapDrawable) newImage.getDrawable();
                     Bitmap bitmap = drawable.getBitmap();
-                   
-
                     Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus, bitmap);
-
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
@@ -132,8 +130,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            Bitmap image = (Bitmap) data.getExtras().get("data");
-            newImage.setImageBitmap(image);
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            newImage.setImageBitmap(photo);
         } else {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (intentResult != null) { //scanner got a result
@@ -235,7 +233,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             newAuthor.setError("Please insert book author!");
             inputsGood = false;
         }
-        if(ISBN.isEmpty()){
+        if(ISBN.isEmpty() || ISBN.length() < 8){
             newIsbn.setError("Please insert book ISBN!");
             inputsGood = false;
         }

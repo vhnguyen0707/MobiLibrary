@@ -53,7 +53,6 @@ public class EditBookFragment extends AppCompatActivity {
     FloatingActionButton backButton;
     FloatingActionButton scanButton;
     Button confirmButton;
-    Book book;
 
     private RequestQueue mRequestQueue;
 
@@ -85,14 +84,10 @@ public class EditBookFragment extends AppCompatActivity {
         }
 
         // fill fields
-        book = (Book) getIntent().getSerializableExtra("edit");
+        final Book book = (Book) getIntent().getSerializableExtra("edit");
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
-      
-        ISBN.setText(Integer.toString(book.getISBN()));
-
-        // ignoring edit photo option for now, it is its own user story
-
+        ISBN.setText(String.valueOf(book.getISBN()));
         photo.setImageBitmap(book.getImage());
 
 
@@ -123,7 +118,7 @@ public class EditBookFragment extends AppCompatActivity {
                     book.setISBN(isbn);
                     Intent editIntent = new Intent();
                     editIntent.putExtra("edited", book);
-                    setResult(2, editIntent);
+                    setResult(RESULT_OK, editIntent);
                     finish();
                 }
             }
@@ -169,7 +164,7 @@ public class EditBookFragment extends AppCompatActivity {
             author.setError("Required: Book Author!");
             validation = false;
         }
-        if (validateISBN.isEmpty() == true) {
+        if (validateISBN.isEmpty() == true || validateISBN.length() < 8) {
             ISBN.setError("Required: Book ISBN!");
             validation = false;
         }
