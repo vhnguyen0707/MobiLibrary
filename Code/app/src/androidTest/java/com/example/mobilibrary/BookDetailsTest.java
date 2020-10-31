@@ -6,11 +6,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.mobillibrary.R;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -25,6 +28,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith (AndroidJUnit4.class)
 public class BookDetailsTest {
@@ -41,10 +45,10 @@ public class BookDetailsTest {
     @Before
     public void setUp() throws Exception {
         // establish an instrument
-        solo = new Solo(InstrumentationRegistry.getInstrumentation(). rule.getActivity());
+        solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
 
         // establish a book to work on
-        User owner = new User("username", "email@example.com", "First Last", "123-123-1234");
+        // User owner = new User("username", "email@example.com", "First Last", "123-123-1234");
         solo.clickOnView(solo.getView(R.id.add_button));
         solo.enterText((EditText) solo.getView(R.id.book_title), "Song of the Lioness");
         solo.enterText((EditText) solo.getView(R.id.book_author), "Tamora Pierce");
@@ -59,8 +63,28 @@ public class BookDetailsTest {
     @Test
     public void checkActivityActivation() {
         solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
-        solo.clickInList(1); // THIS IS NOT CORRECT IM TRYING TO FIGURE OUT HOW TO CLICK ON THIS DAMN THING
+        ArrayList<TextView> book = solo.clickInList(1);
+        solo.clickOnText("Song of the Lioness");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
+
+        // check that correct information is displayed
+        BookDetailsFragment bookDetails = (BookDetailsFragment) solo.getCurrentActivity();
+
+        // determine if photo is null
+        Drawable drawable = bookDetails.photo.getDrawable();
+        if (!(drawable instanceof BitmapDrawable)) {
+            drawable = null;
+        } else {
+            if (((BitmapDrawable) drawable).getBitmap() == null) {
+                drawable = null;
+            }
+        }
+
+        assertEquals("Song of the Lioness", bookDetails.title.getText().toString());
+        assertEquals("Tamora Pierce", bookDetails.author.getText().toString());
+        // assertEquals("username", bookDetails.owner);
+        assertEquals("12345678", bookDetails.ISBN.getText().toString());
+        assertNull(drawable);
     }
 
     /**
@@ -71,7 +95,7 @@ public class BookDetailsTest {
     public void backButtonTest() {
         // go from MyBooks to viewing a book
         solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
-        ArrayList<TextView> book = solo.clickInList(1);
+        ArrayList<TextView> thisBook = solo.clickInList(1);
         solo.clickOnText("Song of the Lioness");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
 
@@ -97,6 +121,13 @@ public class BookDetailsTest {
      */
     @Test
     public void editBookTest() {
+        // go from MyBooks to viewing a book
+        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
+        ArrayList<TextView> book = solo.clickInList(1);
+        solo.clickOnText("Song of the Lioness");
+        solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
+
+        // check that clicking on edit button takes you to edit fragment
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
         solo.clickOnView(solo.getView(R.id.edit_button));
         solo.assertCurrentActivity("Wrong Activity", EditBookFragment.class);
