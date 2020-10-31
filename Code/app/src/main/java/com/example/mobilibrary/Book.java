@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book> {
     private static int nextID = 0;
-    
+
     private String title;
     private int ISBN;
     private String author;
@@ -20,7 +20,6 @@ public class Book implements Serializable, Comparable<Book> {
 
 
     public Book(String title, int ISBN, String author, String status, Bitmap image) { // User user){
-
         this.id = nextID;
         this.title = title;
         this.ISBN = ISBN;
@@ -32,7 +31,7 @@ public class Book implements Serializable, Comparable<Book> {
         //this.owner = user;
         nextID++;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -68,18 +67,15 @@ public class Book implements Serializable, Comparable<Book> {
     public void setStatus(String status) {
         this.status = status;
     }
-
     
-
     /*public User getOwner() {
         return owner;
     }
-    
+
     public void setOwner(User user) {
         owner = user;
     }*/
-    
-    
+
     public Bitmap getImage() {
         return image;
     }

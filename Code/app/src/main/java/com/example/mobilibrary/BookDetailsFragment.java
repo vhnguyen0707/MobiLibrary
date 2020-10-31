@@ -62,9 +62,9 @@ public class BookDetailsFragment extends AppCompatActivity {
         
 
         // owner.setText(viewBook.getOwner().getUsername());
-        ISBN.setText(Integer.toString(viewBook.getISBN()));
-        photo.setImageBitmap(viewBook.getImage());
+        ISBN.setText(String.valueOf(viewBook.getISBN()));
 
+        photo.setImageBitmap(viewBook.getImage());
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +93,6 @@ public class BookDetailsFragment extends AppCompatActivity {
                     editedIntent.putExtra("edited book", viewBook);
                     setResult(2, editedIntent);
                 }
-                
                 finish();
             }
         });
@@ -142,7 +141,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                 title.setText(editedBook.getTitle());
                 author.setText(editedBook.getAuthor());
                 // owner.setText(editedBook.getOwner().getUsername());
-                ISBN.setText(editedBook.getISBN());
+                ISBN.setText(String.valueOf(editedBook.getISBN()));
                 photo.setImageBitmap(editedBook.getImage());
             }
         }
