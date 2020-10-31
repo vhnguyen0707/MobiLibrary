@@ -84,12 +84,12 @@ public class MyBooks extends AppCompatActivity {
 
                 // find the book to edit and edit it
                 for (int i = 0; 0 < bookAdapter.getCount(); i++) {
-                    Book currentBook = bookAdapter.getItem(i) ;
+                    Book currentBook = bookList.get(i) ;
                     if (edited_book.compareTo(currentBook) == 0){
                         currentBook.setTitle(edited_book.getTitle());
                         currentBook.setAuthor(edited_book.getAuthor());
                         currentBook.setISBN(edited_book.getISBN());
-                        // photo can be edited, but that is its own User Story
+                        currentBook.setImage(edited_book.getImage());
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
