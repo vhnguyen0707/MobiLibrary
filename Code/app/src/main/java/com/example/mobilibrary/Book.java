@@ -1,5 +1,6 @@
 package com.example.mobilibrary;
 
+import android.graphics.Bitmap;
 import android.os.Parcelable;
 
 import java.io.Serializable;
@@ -9,16 +10,17 @@ public class Book implements Serializable, Comparable<Book> {
     private int ISBN;
     private String author;
     private String status;
-    private User user;
+    // private User owner;
     // location variable?
-    // picture variable?
+    private transient Bitmap image;
 
-    public Book(String title, int ISBN, String author, String status, User user){
+    public Book(String title, int ISBN, String author, String status, Bitmap image) { // User user){
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
         this.status = status;
-        this.owner = user;
+        this.image = image;
+        //this.owner = user;
     }
 
     public String getTitle() {
@@ -53,12 +55,22 @@ public class Book implements Serializable, Comparable<Book> {
         this.status = status;
     }
     
+    /*
         public User getOwner() {
         return owner;
     }
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+    */
+    
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     /**
