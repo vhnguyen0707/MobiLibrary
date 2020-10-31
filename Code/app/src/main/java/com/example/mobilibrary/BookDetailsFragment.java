@@ -58,25 +58,31 @@ public class BookDetailsFragment extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Book editedBook = viewBook;
-                editedBook.setTitle(title.getText().toString());
-                editedBook.setAuthor(author.getText().toString());
+                // only return things from this intention if something was edited
+                if ((title.getText().toString() != viewBook.getTitle()) ||
+                        (author.getText().toString() != viewBook.getAuthor()) ||
+                        (ISBN.getText().toString().replace(" ", "") != 
+                                Integer.toString(viewBook.getISBN()))){
+                    viewBook.setTitle(title.getText().toString());
+                    viewBook.setAuthor(author.getText().toString());
 
-                String stringISBN = ISBN.getText().toString().replaceAll(" ", "");
-                int isbn = Integer.parseInt(stringISBN);
-                editedBook.setISBN(isbn);
+                    String stringISBN = ISBN.getText().toString().replaceAll(" ", "");
+                    int isbn = Integer.parseInt(stringISBN);
+                    viewBook.setISBN(isbn);
 
-                if (!nullPhoto()) {
-                    BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
-                    Bitmap bitmap = drawable.getBitmap();
-                    editedBook.setImage(bitmap);
-                } else {
-                    editedBook.setImage(null);
+                    if (!nullPhoto()) {
+                        BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
+                        Bitmap bitmap = drawable.getBitmap();
+                        viewBook.setImage(bitmap);
+                    } else {
+                        viewBook.setImage(null);
+                    }
+
+                    Intent editedIntent = new Intent();
+                    editedIntent.putExtra("edited book", viewBook);
+                    setResult(2, editedIntent);
                 }
                 
-                Intent editedIntent = new Intent();
-                editedIntent.putExtra("edited book", editedBook);
-                setResult(2, editedIntent);
                 finish();
             }
         });
