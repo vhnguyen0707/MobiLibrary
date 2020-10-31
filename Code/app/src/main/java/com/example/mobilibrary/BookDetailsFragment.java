@@ -59,7 +59,7 @@ public class BookDetailsFragment extends AppCompatActivity {
         
 
         // owner.setText(viewBook.getOwner().getUsername());
-        ISBN.setText(viewBook.getISBN());
+        ISBN.setText(Integer.toString(viewBook.getISBN()));
         photo.setImageBitmap(viewBook.getImage());
 
 

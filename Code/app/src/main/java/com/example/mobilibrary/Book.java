@@ -62,13 +62,13 @@ public class Book implements Serializable, Comparable<Book> {
 
     
 
-    public User getOwner() {
+    /*public User getOwner() {
         return owner;
     }
     
     public void setOwner(User user) {
         owner = user;
-    }
+    }*/
     
     
     public Bitmap getImage() {
@@ -76,9 +76,9 @@ public class Book implements Serializable, Comparable<Book> {
     }
 
 
-    public void setOwner(User owner) {
+    /*public void setOwner(User owner) {
         this.owner = owner;
-    }
+    }*/
 
     public void setImage(Bitmap image) {
         this.image = image;

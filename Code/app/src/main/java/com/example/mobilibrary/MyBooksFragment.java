@@ -51,7 +51,7 @@ public class MyBooksFragment extends Fragment {
 
         tempBookList = new ArrayList<Book>();
 
-        bookAdapter = new customBookAdapter(getActivity(), bookList);
+        bookAdapter = new customBookAdapter(this.getActivity(), bookList);
         bookView.setAdapter(bookAdapter);
 
         statesSpin = (Spinner) v.findViewById(R.id.spinner);
