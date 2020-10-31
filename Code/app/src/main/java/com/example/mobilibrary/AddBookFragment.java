@@ -1,11 +1,19 @@
 package com.example.mobilibrary;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Icon;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +31,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mobilibrary.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.zxing.Result;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -32,17 +43,14 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-public class AddBookFragment extends AppCompatActivity {
+public class AddBookFragment extends AppCompatActivity implements Serializable {
     EditText newTitle;
     EditText newAuthor;
     EditText newIsbn;
     ImageView newImage;
     Button confirmButton;
-    Button backButton;
-    Button cameraButton;
-    Intent addIntent;
-    boolean inputsGood;
-    String bookStatus;
+    FloatingActionButton backButton;
+    FloatingActionButton cameraButton;
 
     private RequestQueue mRequestQueue;
 
@@ -51,7 +59,6 @@ public class AddBookFragment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_add_book_fragment);
 
-        inputsGood = true;
         newTitle = findViewById(R.id.book_title);
         newAuthor = findViewById(R.id.book_author);
         newIsbn = findViewById(R.id.book_isbn);
@@ -78,14 +85,13 @@ public class AddBookFragment extends AppCompatActivity {
                 String bookAuthor = newAuthor.getText().toString();
                 String ISBN = newIsbn.getText().toString();
                 ISBN = ISBN.replaceAll(" ", "");
-                checkInputs(bookTitle, bookAuthor,ISBN);
-                if (inputsGood) {
+                if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
-                    bookStatus = "available";
-                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
-                    addIntent = new Intent();
-                    addIntent.putExtra("new book", (Serializable) newBook);
-                    setResult(RESULT_OK, addIntent);
+                    String bookStatus = "available";
+                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus, newImage);
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("new book", newBook);
+                    setResult(RESULT_OK, returnIntent);
                     finish();
                 }
             }
@@ -98,55 +104,70 @@ public class AddBookFragment extends AppCompatActivity {
                 ScanButton(v);
             }
         });
+
+        newImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                int pic_id = 2;
+                startActivityForResult(camera_intent, pic_id);
+            }
+        });
     }
 
     public void ScanButton(View view) { //When camera button is clicked
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.initiateScan();
-        //System.out.println("scan clicked");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+            Bitmap image = (Bitmap) data.getExtras().get("data");
+            newImage.setImageBitmap(image);
+        } else {
+            IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (intentResult != null) { //scanner got a result
+                if (intentResult.getContents() == null) { //scanner worked, but was not able to get data
+                    System.out.println("scanner worked, but not able to get data");
+                    Toast toast = Toast.makeText(this, "Unable to obtain data from barcode",
+                            Toast.LENGTH_SHORT); //used ot display error message
+                    toast.show();
+                } else {//got ISBN
+                    //Use the ISBN to search through Google Books API to find the author, and title.
+                    String isbn = intentResult.getContents();
+                    newIsbn.setText(isbn);
 
-        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+                    //Check if connected to internet
+                    boolean isConnected = isNetworkAvailable();
+                    if(!isConnected)
+                    {
+                        System.out.println("Check Internet Connection");
+                        Toast.makeText(getApplicationContext(), "Please check Internet connection", Toast.LENGTH_LONG).show(); //Popup message for user
+                        return;
+                    }
 
-        if (intentResult != null) { //scanner got a result
-            if (intentResult.getContents() == null) { //scanner worked, but was not able to get data
-                System.out.println("scanner worked, but not able to get data");
-                Toast toast = Toast.makeText(this, "Unable to obtain data from barcode", Toast.LENGTH_SHORT); //used ot display error message
-                toast.show();
-            }
-            else {
-                //got ISBN
-                //Use the ISBN to search through Google Books API to find the author, and title.
-                String isbn = intentResult.getContents();
-                newIsbn.setText(isbn);
+                    final String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
+                    Uri uri = Uri.parse(url + isbn);
+                    Uri.Builder builder = uri.buildUpon();
 
-                //Maybe add in a check to see if they are connected to internet? Or do we assume they are already connected
-
-                final String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
-                Uri uri = Uri.parse(url + isbn);
-                Uri.Builder builder = uri.buildUpon();
-
-                parseJson(builder.toString()); //get results from webpage
-
+                    parseJson(builder.toString()); //get results from webpage
+                }
             }
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void parseJson(String key) {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(), null,
-                new Response.Listener<JSONObject>() { //volley stuff
+                new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         String title = "";
                         String author = "";
 
                         try {
-                            System.out.println("RESPPONSSEEE: " + response);
 
                             JSONArray items = response.getJSONArray("items");
                             JSONObject item = items.getJSONObject(0);
@@ -161,17 +182,23 @@ public class AddBookFragment extends AppCompatActivity {
                                 if (authors.length() == 1) {
                                     author = authors.getString(0);
                                 } else { //if there are multiple authors
-                                    author = authors.getString(0) + "|" + authors.getString(1); //haven't tested with multiple authors yet
+                                    author = authors.getString(0) + "," + authors.getString(1);
                                 }
                                 System.out.println("author: " + author);
                                 newAuthor.setText(author);
 
-                            } catch (Exception e) {
-
+                            } catch (Exception e) { //the book info in database does not contain a title or author
+                                if (title == "") {
+                                    newTitle.setText("Title not found");
+                                } else {
+                                    newAuthor.setText("Author not found");
+                                }
                             }
 
-                        } catch (JSONException e) {
+                        } catch (JSONException e) { //error trying to get database info
                             e.printStackTrace();
+                            newTitle.setText("Title not found.");
+                            newAuthor.setText("Author not found.");
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -183,18 +210,31 @@ public class AddBookFragment extends AppCompatActivity {
         mRequestQueue.add(request);
     }
 
-    public void checkInputs(String title, String Author, String ISBN){
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        return info != null && info.isConnected();
+
+    }
+
+    public Boolean checkInputs(String title, String Author, String ISBN){
+        boolean inputsGood = true;
         if(title.isEmpty()){
             newTitle.setError("Please insert book title!");
             inputsGood = false;
-        } else if(Author.isEmpty()){
+        }
+        if(Author.isEmpty()){
             newAuthor.setError("Please insert book author!");
             inputsGood = false;
-        } else if(ISBN.isEmpty()){
+        }
+        if(ISBN.isEmpty()){
             newIsbn.setError("Please insert book ISBN!");
             inputsGood = false;
         }
+        return inputsGood;
     }
 }
+
+
 
 

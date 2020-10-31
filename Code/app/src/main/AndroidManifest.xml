@@ -2,10 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mobilibrary">
 
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,20 +11,33 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MyBooks"
-            android:label="@string/title_activity_my_books"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name="com.example.mobilibrary.MyBooks"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity
-            android:name=".AddBookFragment"
+            android:name="com.example.mobilibrary.EditBookFragment"
+            android:label="@string/title_activity_edit_book_fragment"
+            android:parentActivityName="com.example.mobilibrary.BookDetailsFragment"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.example.mobilibrary.BookDetailsFragment"
+            android:label="@string/title_activity_book_detail_fragment"
+            android:parentActivityName="com.example.mobilibrary.MyBooks"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name="com.example.mobilibrary.AddBookFragment"
             android:label="@string/title_activity_add_book_fragment"
             android:theme="@style/AppTheme.NoActionBar" />
+
 
         <activity android:name=".Activity.ProfileActivity"></activity>
     </application>

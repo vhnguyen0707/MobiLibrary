@@ -190,7 +190,7 @@ public class DatabaseHelper {
      * @param username username of the current user
      * @param newEmail email to be updated
      * @param newPhone phone to be updated
-     * @param name name of the current user
+     * @param name     name of the current user
      * @param callback callback to profile
      */
     public void updateUser(final String username, final String newEmail, final String newPhone, final String name, final Callback callback) {
@@ -201,8 +201,14 @@ public class DatabaseHelper {
         batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                User updatedUser = new User(username, newEmail, name, newPhone);
-                callback.onCallback(updatedUser);
+                user.updateEmail(newEmail)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                User updatedUser = new User(username, newEmail, name, newPhone);
+                                callback.onCallback(updatedUser);
+                            }
+                        });
             }
         });
 

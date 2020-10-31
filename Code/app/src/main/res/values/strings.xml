@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">MobiLibrary</string>
     <string name="title_activity_add_book_fragment">addBookFragment</string>
+    <string name="title_activity_book_detail_fragment">BookDetailFragment</string>
+    <string name="title_activity_edit_book_fragment">EditBookFragment</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
