@@ -113,7 +113,7 @@ public class EditBookFragment extends AppCompatActivity {
                     book.setISBN(isbn);
                     Intent editIntent = new Intent();
                     editIntent.putExtra("edited", book);
-                    setResult(2, editIntent);
+                    setResult(RESULT_OK, editIntent);
                     finish();
                 }
             }
