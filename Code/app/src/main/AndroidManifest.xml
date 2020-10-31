@@ -29,7 +29,7 @@
             android:label="@string/title_activity_add_book_fragment"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".Activity.ProfileActivity"></activity>
     </application>
 
 </manifest>

@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import com.example.mobilibrary.Activity.ProfileActivity;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -45,6 +46,9 @@ public class ProfileViewTest {
         Activity activity = rule.getActivity();
     }
 
+    /**
+     * Checks that only the appropriate elements are visible on the activity
+     */
     @Test
     public void checkVisibility() {
         solo.assertCurrentActivity("Wrong activity!", ProfileActivity.class);
