@@ -73,12 +73,12 @@ public class BookDetailsFragment extends AppCompatActivity {
                 if ((title.getText().toString() != viewBook.getTitle()) ||
                         (author.getText().toString() != viewBook.getAuthor()) ||
                         (ISBN.getText().toString().replace(" ", "") != 
-                                Integer.toString(viewBook.getISBN()))){
+                                Long.toString(viewBook.getISBN()))){
                     viewBook.setTitle(title.getText().toString());
                     viewBook.setAuthor(author.getText().toString());
 
                     String stringISBN = ISBN.getText().toString().replaceAll(" ", "");
-                    int isbn = Integer.parseInt(stringISBN);
+                    Long isbn = Long.parseLong(stringISBN);
                     viewBook.setISBN(isbn);
 
                     if (!nullPhoto()) {

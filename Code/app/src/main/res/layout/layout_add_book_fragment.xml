@@ -49,8 +49,9 @@
         android:layout_marginBottom="25dp"
         android:background="#B3A894"
         android:hint="12345678"
-        android:inputType="number"
-        android:maxLength="8"
+        android:digits="0123456789."
+        android:inputType = "number"
+        android:maxLength="13"
         android:textSize="20sp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
