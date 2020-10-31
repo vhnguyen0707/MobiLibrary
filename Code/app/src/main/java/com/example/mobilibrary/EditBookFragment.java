@@ -51,7 +51,6 @@ public class EditBookFragment extends AppCompatActivity {
     FloatingActionButton backButton;
     FloatingActionButton scanButton;
     Button confirmButton;
-    Book book;
 
     private RequestQueue mRequestQueue;
 
@@ -81,7 +80,7 @@ public class EditBookFragment extends AppCompatActivity {
         }
 
         // fill fields
-        book = (Book) getIntent().getSerializableExtra("edit");
+        final Book book = (Book) getIntent().getSerializableExtra("edit");
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
         ISBN.setText(book.getISBN());
