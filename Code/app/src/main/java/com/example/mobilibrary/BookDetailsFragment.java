@@ -3,12 +3,12 @@ package com.example.mobilibrary;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.mobillibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import java.io.Serializable;
 
 public class BookDetailsFragment extends AppCompatActivity {
     TextView title;
@@ -18,7 +18,7 @@ public class BookDetailsFragment extends AppCompatActivity {
     FloatingActionButton backButton;
     FloatingActionButton editButton;
     FloatingActionButton deleteButton;
-    // ImageView photo; photo option is seperate user story
+    ImageView photo;
 
     @Override
     protected void onCreate (@Nullable Bundle SavedInstances) {
@@ -33,6 +33,7 @@ public class BookDetailsFragment extends AppCompatActivity {
         backButton = findViewById(R.id.back_to_books_button);
         editButton = findViewById(R.id.edit_button);
         deleteButton = findViewById(R.id.delete_button);
+        photo = findViewById(R.id.imageView);
 
         // get book from intent
         if (getIntent() == null) {
@@ -43,8 +44,9 @@ public class BookDetailsFragment extends AppCompatActivity {
 
         title.setText(viewBook.getTitle());
         author.setText(viewBook.getAuthor());
-        //owner.setText(viewBook.getOwner().getUsername());
+        // owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(String.valueOf(viewBook.getISBN()));
+        photo.setImageBitmap(viewBook.getImage());
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
