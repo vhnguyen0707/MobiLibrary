@@ -83,7 +83,7 @@ public class MyBooks extends AppCompatActivity {
                 Book edited_book = (Book) data.getSerializableExtra("edited book");
 
                 // find the book to edit and edit it
-                for (int i = 0; 0 < bookList.size(); i++) {
+                for (int i = 0; i < bookList.size(); i++) {
                     Book currentBook = bookList.get(i) ;
                     if (edited_book.compareTo(currentBook) == 0){
                         currentBook.setTitle(edited_book.getTitle());
