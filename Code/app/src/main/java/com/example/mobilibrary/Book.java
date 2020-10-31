@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book> {
+    private static int nextID = 0;
+    
     private String title;
     private int ISBN;
     private String author;
@@ -14,14 +16,21 @@ public class Book implements Serializable, Comparable<Book> {
     // private User owner;
     // location variable?
     private transient Bitmap image;
+    private int id;
 
     public Book(String title, int ISBN, String author, String status, Bitmap image) { // User user){
+        this.id = nextID;
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
         this.status = status;
         this.image = image;
         //this.owner = user;
+        nextID++;
+    }
+    
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -83,7 +92,7 @@ public class Book implements Serializable, Comparable<Book> {
      */
     @Override
     public int compareTo(Book book){
-        if (ISBN == book.getISBN()){
+        if (this.id == book.getId()){
             return 0;
         }
         else {
