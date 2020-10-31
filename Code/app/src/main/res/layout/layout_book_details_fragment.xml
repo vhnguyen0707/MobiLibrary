@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D8C7AA">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="182dp"
+        android:layout_height="235dp"
+        android:layout_above="@+id/view_title_title"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="114dp"
+        android:layout_marginLeft="114dp"
+        android:layout_marginTop="183dp"
+        android:layout_marginEnd="110dp"
+        android:layout_marginRight="110dp"
+        android:layout_marginBottom="166dp"
+        android:background="#A18E6D"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/back_to_books_button"
+        android:layout_width="51dp"
+        android:layout_height="55dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="7dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="11dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="#675C40"
+        android:scaleType="centerInside"
+        app:backgroundTint="#A18E6D"
+        app:fabCustomSize="50dp"
+        app:srcCompat="@drawable/abc_vector_test" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_button"
+        android:layout_width="91dp"
+        android:layout_height="76dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="43dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="19dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        app:backgroundTint="#D8C7AA"
+        app:maxImageSize="45dp"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/delete_button"
+        android:layout_width="91dp"
+        android:layout_height="76dp"
+        android:layout_below="@+id/edit_button"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="29dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:clickable="true"
+        app:backgroundTint="#D8C7AA"
+        app:maxImageSize="45dp"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
+
+    <TextView
+        android:id="@+id/view_title_title"
+        android:layout_width="63dp"
+        android:layout_height="35dp"
+        android:layout_above="@+id/view_author_title"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="425dp"
+        android:layout_marginBottom="50dp"
+        android:text="Title"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/view_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_author_title"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="126dp"
+        android:layout_marginBottom="8dp"
+        android:text="Title"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/view_author_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_owner_title"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="70dp"
+        android:layout_marginBottom="54dp"
+        android:text="Author"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/view_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_owner"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="126dp"
+        android:layout_marginTop="322dp"
+        android:layout_marginBottom="54dp"
+        android:text="Author"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/view_owner_title"
+        android:layout_width="93dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_isbn_title"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="65dp"
+        android:layout_marginBottom="53dp"
+        android:text="Owner"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/view_owner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view_isbn"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="127dp"
+        android:layout_marginBottom="53dp"
+        android:text="Owner"
+        android:textSize="25sp" />
+
+    <TextView
+        android:id="@+id/view_isbn_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="68dp"
+        android:layout_marginBottom="125dp"
+        android:text="ISBN"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/view_isbn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="152dp"
+        android:layout_marginBottom="81dp"
+        android:text="ISBN"
+        android:textSize="25sp" />
+</RelativeLayout>
