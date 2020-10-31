@@ -231,7 +231,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             newAuthor.setError("Please insert book author!");
             inputsGood = false;
         }
-        if(ISBN.isEmpty()){
+        if(ISBN.isEmpty() || ISBN.length() < 8){
             newIsbn.setError("Please insert book ISBN!");
             inputsGood = false;
         }
