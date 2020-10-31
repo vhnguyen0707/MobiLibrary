@@ -105,7 +105,7 @@ public class EditBookFragment extends AppCompatActivity {
 
                 // if input is valid, edit book and return it to parent activity
                 if (validateInputs(title.getText().toString(), author.getText().toString(), stringISBN)) {
-                    int isbn = Integer.parseInt(stringISBN);
+                    Long isbn = Long.parseLong(stringISBN);
                     if (!nullPhoto()) {
                         BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
                         Bitmap bitmap = drawable.getBitmap();

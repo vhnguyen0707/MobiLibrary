@@ -10,7 +10,7 @@ public class Book implements Serializable, Comparable<Book> {
     private static int nextID = 0;
 
     private String title;
-    private int ISBN;
+    private long ISBN;
     private String author;
     private String status;
     // private User owner;
@@ -19,7 +19,7 @@ public class Book implements Serializable, Comparable<Book> {
     private int id;
 
 
-    public Book(String title, int ISBN, String author, String status, Bitmap image) { // User user){
+    public Book(String title, long ISBN, String author, String status, Bitmap image) { // User user){
         this.id = nextID;
         this.title = title;
         this.ISBN = ISBN;
@@ -44,11 +44,11 @@ public class Book implements Serializable, Comparable<Book> {
         this.title = title;
     }
 
-    public int getISBN() {
+    public long getISBN() {
         return ISBN;
     }
 
-    public void setISBN(int ISBN) {
+    public void setISBN(long ISBN) {
         this.ISBN = ISBN;
     }
 

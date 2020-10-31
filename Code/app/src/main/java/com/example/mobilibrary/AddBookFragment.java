@@ -90,7 +90,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 String ISBN = newIsbn.getText().toString();
                 ISBN = ISBN.replaceAll(" ", "");
                 if (checkInputs(bookTitle, bookAuthor, ISBN)) {
-                    int bookIsbn = Integer.parseInt(ISBN);
+                    Long bookIsbn = Long.parseLong(ISBN);
                     String bookStatus = "available";
                     BitmapDrawable drawable = (BitmapDrawable) newImage.getDrawable();
                     Bitmap bitmap = drawable.getBitmap();
@@ -233,7 +233,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             newAuthor.setError("Please insert book author!");
             inputsGood = false;
         }
-        if(ISBN.isEmpty() || ISBN.length() < 8){
+        if(ISBN.isEmpty() || ISBN.length() < 13){
             newIsbn.setError("Please insert book ISBN!");
             inputsGood = false;
         }
