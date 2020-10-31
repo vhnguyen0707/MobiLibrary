@@ -1,16 +1,26 @@
 package com.example.mobilibrary;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.mobilibrary.R;
 import com.robotium.solo.Solo;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /** Test class for MainActivity. All the UI tests are written here. Robotium test framework is
@@ -101,6 +112,57 @@ public class addBookTest {
         assertTrue(solo.searchText("Please insert book title!"));
         assertTrue(solo.searchText("Please insert book author!"));
         assertTrue(solo.searchText("Please insert book ISBN!"));
+    }
+
+    /**
+     * Tests Jparse function
+     */
+    @Test
+    public void fetchBookData(){
+        //Asserts that when given an isbn, it fetches the correct corresponding title and author
+        //RequestQueue mRequestQueue = Volley.newRequestQueue(AddBookFragment);
+        String base = "https://www.googleapis.com/books/v1/volumes?q=isbn:9780545010221";
+        String isbn = "9781911223139";
+        Uri uri = Uri.parse(base + isbn);
+        Uri.Builder builder = uri.buildUpon();
+        String key = builder.toString();
+
+        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String title = "";
+                        String author = "";
+                        try {
+
+                            JSONArray items = response.getJSONArray("items");
+                            JSONObject item = items.getJSONObject(0);
+                            JSONObject volumeInfo = item.getJSONObject("volumeInfo");
+
+                            try {
+                                title = volumeInfo.getString("title");
+                                assertTrue(title == "Best Murder in Show");
+
+                                JSONArray authors = volumeInfo.getJSONArray("authors");
+                                assertTrue(author == "Debbie Young");
+
+                            } catch (Exception e) {
+
+                            }
+
+                        } catch (JSONException e) { //error trying to get database info
+                            e.printStackTrace();
+
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        //mRequestQueue.add(request);
+
     }
 
     @After

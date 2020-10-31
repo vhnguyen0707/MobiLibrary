@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book> {
+    private static int nextID = 0;
+
     private String title;
     private int ISBN;
     private String author;
@@ -14,14 +16,24 @@ public class Book implements Serializable, Comparable<Book> {
     // private User owner;
     // location variable?
     private transient Bitmap image;
+    private int id;
+
 
     public Book(String title, int ISBN, String author, String status, Bitmap image) { // User user){
+        this.id = nextID;
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
         this.status = status;
+
         this.image = image;
+
         //this.owner = user;
+        nextID++;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -55,35 +67,38 @@ public class Book implements Serializable, Comparable<Book> {
     public void setStatus(String status) {
         this.status = status;
     }
-
     
-    /*
-        public User getOwner() {
+    /*public User getOwner() {
         return owner;
     }
-    
+
     public void setOwner(User user) {
         owner = user;
-    }
-    */
-    
+    }*/
+
     public Bitmap getImage() {
         return image;
     }
+
+
+    /*public void setOwner(User owner) {
+        this.owner = owner;
+    }*/
 
     public void setImage(Bitmap image) {
         this.image = image;
     }
 
+
     /**
-     * Compares a book the book passed in the parameter by comparing their ISBNs,
+     * Compares a book the book passed in the parameter by comparing their IDs,
      * if they are the same return 0, otherwise return 1
      * @param book
      * @return int value, 0 if the books are the same, 1 otherwise
      */
     @Override
     public int compareTo(Book book){
-        if (ISBN == book.getISBN()){
+        if (this.id == book.getId()){
             return 0;
         }
         else {

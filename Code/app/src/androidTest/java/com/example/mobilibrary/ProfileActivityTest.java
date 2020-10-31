@@ -2,11 +2,13 @@ package com.example.mobilibrary;
 
 import android.app.Activity;
 
+import androidx.constraintlayout.solver.PriorityGoalRow;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.example.mobilibrary.Activity.ProfileActivity;
+import com.example.mobilibrary.DatabaseController.User;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -20,7 +22,7 @@ import org.junit.runner.RunWith;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class ProfileEditTest {
+public class ProfileActivityTest {
     private Solo solo;
     @Rule
     public ActivityTestRule<ProfileActivity> rule =
@@ -47,14 +49,25 @@ public class ProfileEditTest {
     }
 
     /**
-     * Checks that only the appropriate elements are visible on the activity
+     * Checks that any profile that is not the user's own hides the edit button and all other related views.
      */
     @Test
-    public void checkVisibility() {
+    public void checkDifferentUserVisibility() {
         solo.assertCurrentActivity("Wrong activity!", ProfileActivity.class);
+        User currentUser = new User("Test1", "test1@gmail.com", "Tester1", "1234567890");
+        User profileUser = new User("Test2", "test2@gmail.com", "Tester2", "2345678901");
 
     }
 
+    /**
+     * Checks that the user's own profile shows appropriate visibility at different times.
+     * e.g. the edit button on start, the edit views & cancel/confirm buttons on click,
+     *      and back to how it looked before on confirm or cancel (if input validated).
+     */
+    @Test
+    public void checkSameUserVisibility() {
+        solo.assertCurrentActivity("Wrong activity!", ProfileActivity.class);
+    }
 
     /**
      * Close activity after each test

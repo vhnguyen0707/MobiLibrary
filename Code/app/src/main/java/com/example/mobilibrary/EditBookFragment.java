@@ -45,13 +45,14 @@ public class EditBookFragment extends AppCompatActivity {
     EditText title;
     EditText author;
     EditText ISBN;
+
     ImageView photo;
     FloatingActionButton editImageButton;
     FloatingActionButton deleteImageButton;
+
     FloatingActionButton backButton;
     FloatingActionButton scanButton;
     Button confirmButton;
-    Book book;
 
     private RequestQueue mRequestQueue;
 
@@ -64,12 +65,14 @@ public class EditBookFragment extends AppCompatActivity {
         title = findViewById(R.id.edit_title);
         author = findViewById(R.id.edit_author);
         ISBN = findViewById(R.id.edit_isbn);
+        confirmButton = findViewById(R.id.confirm_button);
         backButton = findViewById(R.id.back_to_view_button);
         scanButton = findViewById(R.id.edit_scan_button);
         confirmButton = findViewById(R.id.confirm_button);
         photo = findViewById(R.id.image);
         editImageButton = findViewById(R.id.edit_image_button);
         deleteImageButton = findViewById(R.id.delete_image_button);
+
 
         mRequestQueue = Volley.newRequestQueue(this);
 
@@ -81,11 +84,12 @@ public class EditBookFragment extends AppCompatActivity {
         }
 
         // fill fields
-        book = (Book) getIntent().getSerializableExtra("edit");
+        final Book book = (Book) getIntent().getSerializableExtra("edit");
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
-        ISBN.setText(book.getISBN());
+        ISBN.setText(String.valueOf(book.getISBN()));
         photo.setImageBitmap(book.getImage());
+
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +118,7 @@ public class EditBookFragment extends AppCompatActivity {
                     book.setISBN(isbn);
                     Intent editIntent = new Intent();
                     editIntent.putExtra("edited", book);
-                    setResult(2, editIntent);
+                    setResult(RESULT_OK, editIntent);
                     finish();
                 }
             }
@@ -160,7 +164,7 @@ public class EditBookFragment extends AppCompatActivity {
             author.setError("Required: Book Author!");
             validation = false;
         }
-        if (validateISBN.isEmpty() == true) {
+        if (validateISBN.isEmpty() == true || validateISBN.length() != 13) {
             ISBN.setError("Required: Book ISBN!");
             validation = false;
         }

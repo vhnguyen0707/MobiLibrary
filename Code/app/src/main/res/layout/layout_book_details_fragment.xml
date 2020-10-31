@@ -8,22 +8,23 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="182dp"
-        android:layout_height="235dp"
-        android:layout_above="@+id/view_title_title"
+        android:layout_width="wrap_content"
+        android:layout_height="223dp"
+        android:layout_above="@+id/view_title"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="114dp"
-        android:layout_marginLeft="114dp"
-        android:layout_marginTop="183dp"
-        android:layout_marginEnd="110dp"
-        android:layout_marginRight="110dp"
-        android:layout_marginBottom="166dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginLeft="110dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="114dp"
+        android:layout_marginRight="114dp"
+        android:layout_marginBottom="6dp"
         android:background="#A18E6D"
+        android:visibility="visible"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -96,8 +97,9 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/view_author_title"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="126dp"
-        android:layout_marginBottom="8dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="176dp"
+        android:layout_marginBottom="5dp"
         android:text="Title"
         android:textSize="25sp" />
 
@@ -105,10 +107,10 @@
         android:id="@+id/view_author_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/view_owner_title"
+        android:layout_above="@+id/view_author"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="70dp"
-        android:layout_marginBottom="54dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginBottom="0dp"
         android:text="Author"
         android:textSize="25sp"
         android:textStyle="bold" />
@@ -117,11 +119,11 @@
         android:id="@+id/view_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/view_owner"
+        android:layout_above="@+id/view_owner_title"
         android:layout_alignParentStart="true"
         android:layout_marginStart="126dp"
-        android:layout_marginTop="322dp"
-        android:layout_marginBottom="54dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="9dp"
         android:text="Author"
         android:textSize="25sp" />
 
@@ -143,8 +145,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/view_isbn"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="127dp"
-        android:layout_marginBottom="53dp"
+        android:layout_marginStart="123dp"
+        android:layout_marginBottom="48dp"
         android:text="Owner"
         android:textSize="25sp" />
 
@@ -152,10 +154,10 @@
         android:id="@+id/view_isbn_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/view_isbn"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="68dp"
-        android:layout_marginBottom="125dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginBottom="3dp"
         android:text="ISBN"
         android:textSize="25sp"
         android:textStyle="bold" />
@@ -170,4 +172,5 @@
         android:layout_marginBottom="81dp"
         android:text="ISBN"
         android:textSize="25sp" />
+    
 </RelativeLayout>

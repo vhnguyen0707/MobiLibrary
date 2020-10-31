@@ -1,6 +1,9 @@
 package com.example.mobilibrary;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.mobillibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.w3c.dom.Text;
+
+
 import java.io.Serializable;
 
 public class BookDetailsFragment extends AppCompatActivity {
@@ -22,15 +28,17 @@ public class BookDetailsFragment extends AppCompatActivity {
     FloatingActionButton backButton;
     FloatingActionButton editButton;
     FloatingActionButton deleteButton;
+
     ImageView photo;
+
 
     @Override
     protected void onCreate (@Nullable Bundle SavedInstances) {
         super.onCreate(SavedInstances);
-        setContentView(R.layout.layout_edit_book_fragment);
+        setContentView(R.layout.layout_book_details_fragment);
 
         // photo option is separate user story, will come back to it
-        title = findViewById(R.id.view_title);
+        title =  findViewById(R.id.view_title);
         author = findViewById(R.id.view_author);
         owner = findViewById(R.id.view_owner);
         ISBN = findViewById(R.id.view_isbn);
@@ -46,15 +54,45 @@ public class BookDetailsFragment extends AppCompatActivity {
 
         final Book viewBook = (Book) getIntent().getSerializableExtra("view book");
 
+        System.out.println("Book name: " +  viewBook.getTitle());
+
         title.setText(viewBook.getTitle());
         author.setText(viewBook.getAuthor());
+
+        
+
         // owner.setText(viewBook.getOwner().getUsername());
-        ISBN.setText(viewBook.getISBN());
+        ISBN.setText(String.valueOf(viewBook.getISBN()));
+
         photo.setImageBitmap(viewBook.getImage());
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // only return things from this intention if something was edited
+                if ((title.getText().toString() != viewBook.getTitle()) ||
+                        (author.getText().toString() != viewBook.getAuthor()) ||
+                        (ISBN.getText().toString().replace(" ", "") != 
+                                Integer.toString(viewBook.getISBN()))){
+                    viewBook.setTitle(title.getText().toString());
+                    viewBook.setAuthor(author.getText().toString());
+
+                    String stringISBN = ISBN.getText().toString().replaceAll(" ", "");
+                    int isbn = Integer.parseInt(stringISBN);
+                    viewBook.setISBN(isbn);
+
+                    if (!nullPhoto()) {
+                        BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
+                        Bitmap bitmap = drawable.getBitmap();
+                        viewBook.setImage(bitmap);
+                    } else {
+                        viewBook.setImage(null);
+                    }
+
+                    Intent editedIntent = new Intent();
+                    editedIntent.putExtra("edited book", viewBook);
+                    setResult(2, editedIntent);
+                }
                 finish();
             }
         });
@@ -81,6 +119,17 @@ public class BookDetailsFragment extends AppCompatActivity {
         });
     }
 
+    private boolean nullPhoto () {
+        Drawable drawable = photo.getDrawable();
+        BitmapDrawable bitmapDrawable;
+        if (!(drawable instanceof BitmapDrawable)) {
+            bitmapDrawable = null;
+        } else {
+            bitmapDrawable = (BitmapDrawable) photo.getDrawable();
+        }
+        return drawable == null || bitmapDrawable.getBitmap() == null;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -89,10 +138,11 @@ public class BookDetailsFragment extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // pass edited book back to parent activity
                 Book editedBook = (Book) data.getSerializableExtra("edited");
-                Intent editedIntent = new Intent();
-                editedIntent.putExtra("edited book", editedBook);
-                setResult(2, editedIntent);
-                finish();
+                title.setText(editedBook.getTitle());
+                author.setText(editedBook.getAuthor());
+                // owner.setText(editedBook.getOwner().getUsername());
+                ISBN.setText(String.valueOf(editedBook.getISBN()));
+                photo.setImageBitmap(editedBook.getImage());
             }
         }
     }
