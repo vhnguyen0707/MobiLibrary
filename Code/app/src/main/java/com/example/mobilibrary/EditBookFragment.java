@@ -45,9 +45,11 @@ public class EditBookFragment extends AppCompatActivity {
     EditText title;
     EditText author;
     EditText ISBN;
+
     ImageView photo;
     FloatingActionButton editImageButton;
     FloatingActionButton deleteImageButton;
+
     FloatingActionButton backButton;
     FloatingActionButton scanButton;
     Button confirmButton;
@@ -64,12 +66,14 @@ public class EditBookFragment extends AppCompatActivity {
         title = findViewById(R.id.edit_title);
         author = findViewById(R.id.edit_author);
         ISBN = findViewById(R.id.edit_isbn);
+        confirmButton = findViewById(R.id.confirm_button);
         backButton = findViewById(R.id.back_to_view_button);
         scanButton = findViewById(R.id.edit_scan_button);
         confirmButton = findViewById(R.id.confirm_button);
         photo = findViewById(R.id.image);
         editImageButton = findViewById(R.id.edit_image_button);
         deleteImageButton = findViewById(R.id.delete_image_button);
+
 
         mRequestQueue = Volley.newRequestQueue(this);
 
@@ -84,8 +88,13 @@ public class EditBookFragment extends AppCompatActivity {
         book = (Book) getIntent().getSerializableExtra("edit");
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
-        ISBN.setText(book.getISBN());
+      
+        ISBN.setText(Integer.toString(book.getISBN()));
+
+        // ignoring edit photo option for now, it is its own user story
+
         photo.setImageBitmap(book.getImage());
+
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
