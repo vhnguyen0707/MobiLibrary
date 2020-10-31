@@ -48,11 +48,13 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     EditText newAuthor;
     EditText newIsbn;
     ImageView newImage;
+
     Button confirmButton;
     FloatingActionButton backButton;
     FloatingActionButton cameraButton;
 
     private RequestQueue mRequestQueue;
+
 
     @Override
     protected void onCreate (@Nullable Bundle savedInstanceState){
@@ -88,7 +90,13 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
                     String bookStatus = "available";
-                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus, newImage);
+
+                    BitmapDrawable drawable = (BitmapDrawable) newImage.getDrawable();
+                    Bitmap bitmap = drawable.getBitmap();
+                   
+
+                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus, bitmap);
+
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
