@@ -89,9 +89,13 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 if (checkInputs(bookTitle, bookAuthor, ISBN)) {
                     int bookIsbn = Integer.parseInt(ISBN);
                     String bookStatus = "available";
+
                     //BitmapDrawable drawable = (BitmapDrawable) newImage.getDrawable();
                     //Bitmap bitmap = drawable.getBitmap();
-                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus);
+                   
+
+                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus, newImage);
+
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
@@ -126,33 +130,40 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (intentResult != null) { //scanner got a result
-            if (intentResult.getContents() == null) { //scanner worked, but was not able to get data
+        if (requestCode == 2) {
+            Bitmap image = (Bitmap) data.getExtras().get("data");
+            newImage.setImageBitmap(image);
+        } else {
+            IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (intentResult != null) { //scanner got a result
+                if (intentResult.getContents() == null) { //scanner worked, but was not able to get data
                     System.out.println("scanner worked, but not able to get data");
                     Toast toast = Toast.makeText(this, "Unable to obtain data from barcode",
                             Toast.LENGTH_SHORT); //used ot display error message
                     toast.show();
-            } else {//got ISBN
-                //Use the ISBN to search through Google Books API to find the author, and title.
-                String isbn = intentResult.getContents();
-                newIsbn.setText(isbn);
+                } else {//got ISBN
+                    //Use the ISBN to search through Google Books API to find the author, and title.
+                    String isbn = intentResult.getContents();
+                    newIsbn.setText(isbn);
 
-                //Check if connected to internet
-                boolean isConnected = isNetworkAvailable();
-                if(!isConnected) {
-                    System.out.println("Check Internet Connection");
-                    Toast.makeText(getApplicationContext(), "Please check Internet connection", Toast.LENGTH_LONG).show(); //Popup message for user
-                    return;
-                }
-                final String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
-                Uri uri = Uri.parse(url + isbn);
-                Uri.Builder builder = uri.buildUpon();
+                    //Check if connected to internet
+                    boolean isConnected = isNetworkAvailable();
+                    if(!isConnected)
+                    {
+                        System.out.println("Check Internet Connection");
+                        Toast.makeText(getApplicationContext(), "Please check Internet connection", Toast.LENGTH_LONG).show(); //Popup message for user
+                        return;
+                    }
 
-                parseJson(builder.toString()); //get results from webpage
+                    final String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
+                    Uri uri = Uri.parse(url + isbn);
+                    Uri.Builder builder = uri.buildUpon();
+
+                    parseJson(builder.toString()); //get results from webpage
                 }
             }
         }
+    }
 
     private void parseJson(String key) {
 
@@ -230,5 +241,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         return inputsGood;
     }
 }
+
+
 
 
