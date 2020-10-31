@@ -50,11 +50,13 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     EditText newAuthor;
     EditText newIsbn;
     ImageView newImage;
+
     Button confirmButton;
     FloatingActionButton backButton;
     FloatingActionButton cameraButton;
 
     private RequestQueue mRequestQueue;
+
 
     @Override
     protected void onCreate (@Nullable Bundle savedInstanceState){
