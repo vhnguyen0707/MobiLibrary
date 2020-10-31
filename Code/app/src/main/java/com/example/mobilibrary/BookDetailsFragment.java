@@ -125,7 +125,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                 title.setText(editedBook.getTitle());
                 author.setText(editedBook.getAuthor());
                 // owner.setText(editedBook.getOwner().getUsername());
-                ISBN.setText(editedBook.getISBN());
+                ISBN.setText(String.valueOf(editedBook.getISBN()));
                 photo.setImageBitmap(editedBook.getImage());
             }
         }

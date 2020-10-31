@@ -159,7 +159,7 @@ public class EditBookFragment extends AppCompatActivity {
             author.setError("Required: Book Author!");
             validation = false;
         }
-        if (validateISBN.isEmpty() == true) {
+        if (validateISBN.isEmpty() == true || validateISBN.length() < 8) {
             ISBN.setError("Required: Book ISBN!");
             validation = false;
         }
