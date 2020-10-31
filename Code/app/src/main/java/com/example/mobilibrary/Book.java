@@ -85,7 +85,7 @@ public class Book implements Serializable, Comparable<Book> {
     }
 
     /**
-     * Compares a book the book passed in the parameter by comparing their ISBNs,
+     * Compares a book the book passed in the parameter by comparing their IDs,
      * if they are the same return 0, otherwise return 1
      * @param book
      * @return int value, 0 if the books are the same, 1 otherwise
