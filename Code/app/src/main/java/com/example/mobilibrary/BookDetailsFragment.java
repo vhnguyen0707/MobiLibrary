@@ -75,7 +75,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                 // only return things from this intention if something was edited
                 if ((title.getText().toString() != viewBook.getTitle()) ||
                         (author.getText().toString() != viewBook.getAuthor()) ||
-                        (ISBN .equals(viewBook.getISBN()))){
+                        (ISBN.equals(viewBook.getISBN()))){
                     viewBook.setTitle(title.getText().toString());
                     viewBook.setAuthor(author.getText().toString());
 
