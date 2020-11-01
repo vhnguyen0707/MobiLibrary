@@ -49,8 +49,9 @@
         android:layout_marginBottom="25dp"
         android:background="#B3A894"
         android:hint="12345678"
-        android:inputType="number"
-        android:maxLength="8"
+        android:digits="0123456789."
+        android:inputType = "number"
+        android:maxLength="13"
         android:textSize="20sp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -94,7 +95,7 @@
     <ImageView
         android:id="@+id/book_image"
         android:layout_width="wrap_content"
-        android:layout_height="175dp"
+        android:layout_height="210dp"
         android:layout_above="@+id/textView4"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
@@ -104,7 +105,7 @@
         android:layout_marginLeft="114dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="113dp"
-        android:layout_marginBottom="9dp"
+        android:layout_marginBottom="21dp"
         android:background="#A18E6D"
         app:srcCompat="@android:drawable/ic_menu_add" />
 
