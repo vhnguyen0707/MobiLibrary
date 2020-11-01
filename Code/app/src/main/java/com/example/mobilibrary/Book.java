@@ -15,11 +15,11 @@ public class Book implements Serializable, Comparable<Book> {
     private String status;
     // private User owner;
     // location variable?
-    private transient Bitmap image;
+    private byte [] image;
     private int id;
 
 
-    public Book(String title, int ISBN, String author, String status, Bitmap image) { // User user){
+    public Book(String title, int ISBN, String author, String status, byte [] image) { // User user){
         this.id = nextID;
         this.title = title;
         this.ISBN = ISBN;
@@ -76,7 +76,7 @@ public class Book implements Serializable, Comparable<Book> {
         owner = user;
     }*/
 
-    public Bitmap getImage() {
+    public byte [] getImage() {
         return image;
     }
 
@@ -85,7 +85,7 @@ public class Book implements Serializable, Comparable<Book> {
         this.owner = owner;
     }*/
 
-    public void setImage(Bitmap image) {
+    public void setImage(byte [] image) {
         this.image = image;
     }
 
