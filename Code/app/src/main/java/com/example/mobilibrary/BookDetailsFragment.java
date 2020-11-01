@@ -6,7 +6,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,18 +22,27 @@ import org.w3c.dom.Text;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class BookDetailsFragment extends AppCompatActivity {
     TextView title;
     TextView author;
     TextView owner;
     TextView ISBN;
+    TextView authorTitle;
+    TextView ownerTitle;
+    TextView isbnTitle;
     FloatingActionButton backButton;
     FloatingActionButton editButton;
     FloatingActionButton deleteButton;
-
+    String req_users [] = {"Natalia", "Chloe", "Kimberly", "Jill", "Nguyen", "Sooraj"}; // sort of a placeholder this one, need to replace with actual requesting users once we implement it
+    Button detailsBtn;
+    Button requestsBtn;
+    TextView[] requestAssets;
     ImageView photo;
-
+    ListView reqList;
+    ArrayAdapter<String> reqAdapter;
+    ArrayList<String> reqDataList;
 
     @Override
     protected void onCreate (@Nullable Bundle SavedInstances) {
@@ -46,7 +58,20 @@ public class BookDetailsFragment extends AppCompatActivity {
         editButton = findViewById(R.id.edit_button);
         deleteButton = findViewById(R.id.delete_button);
         photo = findViewById(R.id.imageView);
-
+        detailsBtn = findViewById(R.id.detailsBtn);
+        requestsBtn = findViewById(R.id.reqBtn);
+        reqList = findViewById(R.id.reqListView);
+        authorTitle = findViewById(R.id.view_author_title);
+        ownerTitle = findViewById(R.id.view_owner_title);
+        isbnTitle = findViewById(R.id.view_isbn_title);
+        requestAssets = new TextView[]{title, author, authorTitle, owner, ownerTitle,ISBN, isbnTitle, };
+        reqDataList =new ArrayList<>();
+        for (String user: req_users){
+            reqDataList.add(user + "has requested your book");
+        }
+        reqAdapter =  new ArrayAdapter<String>(this,R.layout.req_custom_list, R.id.textView, reqDataList);
+        reqList.setAdapter(reqAdapter);
+        reqList.setVisibility(View.GONE);
         // get book from intent
         if (getIntent() == null) {
             finish();
@@ -59,7 +84,7 @@ public class BookDetailsFragment extends AppCompatActivity {
         title.setText(viewBook.getTitle());
         author.setText(viewBook.getAuthor());
 
-        
+
 
         // owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(String.valueOf(viewBook.getISBN()));
@@ -72,7 +97,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                 // only return things from this intention if something was edited
                 if ((title.getText().toString() != viewBook.getTitle()) ||
                         (author.getText().toString() != viewBook.getAuthor()) ||
-                        (ISBN.getText().toString().replace(" ", "") != 
+                        (ISBN.getText().toString().replace(" ", "") !=
                                 Long.toString(viewBook.getISBN()))){
                     viewBook.setTitle(title.getText().toString());
                     viewBook.setAuthor(author.getText().toString());
@@ -115,6 +140,29 @@ public class BookDetailsFragment extends AppCompatActivity {
                 Intent editIntent = new Intent(BookDetailsFragment.this, EditBookFragment.class);
                 editIntent.putExtra("edit", editBook);
                 startActivityForResult(editIntent, 2);
+            }
+        });
+
+        requestsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                for (TextView asset : requestAssets) {
+                    asset.setVisibility(View.GONE);
+                }
+                reqList.setVisibility(View.VISIBLE);
+
+
+            }
+        });
+        detailsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (TextView asset : requestAssets) {
+                    asset.setVisibility(View.VISIBLE);
+                }
+                reqList.setVisibility(View.GONE);
             }
         });
     }
