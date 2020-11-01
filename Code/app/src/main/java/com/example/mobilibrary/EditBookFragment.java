@@ -90,9 +90,14 @@ public class EditBookFragment extends AppCompatActivity {
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
         ISBN.setText(String.valueOf(book.getISBN()));
-        Bitmap bitmap = BitmapFactory.decodeByteArray(book.getImage(), 0, book.getImage().length);
+        Bitmap bitmap;
+        if (book.getImage() != null) {
+            bitmap = BitmapFactory.decodeByteArray(book.getImage(), 0,
+                    book.getImage().length);
+        } else {
+            bitmap = null;
+        }
         photo.setImageBitmap(bitmap);
-
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

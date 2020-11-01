@@ -91,7 +91,14 @@ public class BookDetailsFragment extends AppCompatActivity {
 
         // owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
-        Bitmap bitmap = BitmapFactory.decodeByteArray(viewBook.getImage(), 0, viewBook.getImage().length);
+        Bitmap bitmap;
+        if (viewBook.getImage() != null) {
+            bitmap = BitmapFactory.decodeByteArray(viewBook.getImage(), 0,
+                    viewBook.getImage().length);
+        } else {
+            bitmap = null;
+        }
+        photo.setImageBitmap(bitmap);
         photo.setImageBitmap(bitmap);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -193,8 +200,13 @@ public class BookDetailsFragment extends AppCompatActivity {
                 author.setText(editedBook.getAuthor());
                 // owner.setText(editedBook.getOwner().getUsername());
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
-                Bitmap bitmap = BitmapFactory.decodeByteArray(editedBook.getImage(), 0,
-                                                                editedBook.getImage().length);
+                Bitmap bitmap; // used for null case
+                if (editedBook.getImage() != null) {
+                    bitmap = BitmapFactory.decodeByteArray(editedBook.getImage(), 0,
+                            editedBook.getImage().length);
+                } else {
+                    bitmap = null;
+                }
                 photo.setImageBitmap(bitmap);
             }
         }
