@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
@@ -39,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class EditBookFragment extends AppCompatActivity {
@@ -88,7 +90,8 @@ public class EditBookFragment extends AppCompatActivity {
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
         ISBN.setText(String.valueOf(book.getISBN()));
-        photo.setImageBitmap(book.getImage());
+        Bitmap bitmap = BitmapFactory.decodeByteArray(book.getImage(), 0, book.getImage().length);
+        photo.setImageBitmap(bitmap);
 
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -105,17 +108,18 @@ public class EditBookFragment extends AppCompatActivity {
 
                 // if input is valid, edit book and return it to parent activity
                 if (validateInputs(title.getText().toString(), author.getText().toString(), stringISBN)) {
-                    Long isbn = Long.parseLong(stringISBN);
                     if (!nullPhoto()) {
-                        BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
-                        Bitmap bitmap = drawable.getBitmap();
-                        book.setImage(bitmap);
+                        Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
+                        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                        byte[] editImage = outStream.toByteArray();
+                        book.setImage(editImage);
                     } else {
                         book.setImage(null);
                     }
                     book.setTitle(title.getText().toString());
                     book.setAuthor(author.getText().toString());
-                    book.setISBN(isbn);
+                    book.setISBN(stringISBN);
                     Intent editIntent = new Intent();
                     editIntent.putExtra("edited", book);
                     setResult(RESULT_OK, editIntent);
