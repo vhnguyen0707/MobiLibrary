@@ -19,6 +19,7 @@ public class Book implements Serializable, Comparable<Book> {
     private int id;
 
 
+
     public Book(String title, String ISBN, String author, String status, byte [] image) { // User user){
         this.id = nextID;
         this.title = title;

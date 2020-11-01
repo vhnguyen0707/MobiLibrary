@@ -147,6 +147,20 @@ public class BookDetailsFragment extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Book editBook = viewBook;
+
+                editBook.setTitle(title.getText().toString());
+                editBook.setAuthor(author.getText().toString());
+                editBook.setISBN(ISBN.getText().toString());
+                if (!nullPhoto()) {
+                    Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
+                    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    byte[] bookImage = outStream.toByteArray();
+                    viewBook.setImage(bookImage);
+                } else {
+                    viewBook.setImage(null);
+                }
+
                 Intent editIntent = new Intent(BookDetailsFragment.this, EditBookFragment.class);
                 editIntent.putExtra("edit", editBook);
                 startActivityForResult(editIntent, 2);
