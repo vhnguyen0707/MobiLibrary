@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 
 public class AddBookFragment extends AppCompatActivity implements Serializable {
@@ -73,7 +74,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
 
         mRequestQueue = Volley.newRequestQueue(this);
 
-        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
+        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
+                                            PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,14 +89,15 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             public void onClick(View v) {
                 String bookTitle = newTitle.getText().toString();
                 String bookAuthor = newAuthor.getText().toString();
-                String ISBN = newIsbn.getText().toString();
-                ISBN = ISBN.replaceAll(" ", "");
-                if (checkInputs(bookTitle, bookAuthor, ISBN)) {
-                    Long bookIsbn = Long.parseLong(ISBN);
+                String bookISBN = newIsbn.getText().toString();
+                if (checkInputs(bookTitle, bookAuthor, bookISBN)) {
                     String bookStatus = "available";
-                    BitmapDrawable drawable = (BitmapDrawable) newImage.getDrawable();
-                    Bitmap bitmap = drawable.getBitmap();
-                    Book newBook = new Book(bookTitle, bookIsbn, bookAuthor, bookStatus, bitmap);
+                    //used to convert bitmap into serializable format
+                    Bitmap bitmap = ((BitmapDrawable)newImage.getDrawable()).getBitmap();
+                    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    byte[] bookImage = outStream.toByteArray();
+                    Book newBook = new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
@@ -150,7 +153,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                     if(!isConnected)
                     {
                         System.out.println("Check Internet Connection");
-                        Toast.makeText(getApplicationContext(), "Please check Internet connection", Toast.LENGTH_LONG).show(); //Popup message for user
+                        Toast.makeText(getApplicationContext(), "Please check Internet connection",
+                                        Toast.LENGTH_LONG).show(); //Popup message for user
                         return;
                     }
 
@@ -166,7 +170,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
 
     private void parseJson(String key) {
 
-        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(), null,
+        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(),
+                                                                null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {

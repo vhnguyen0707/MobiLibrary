@@ -2,9 +2,11 @@ package com.example.mobilibrary;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.w3c.dom.Text;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 
 public class BookDetailsFragment extends AppCompatActivity {
@@ -62,9 +65,9 @@ public class BookDetailsFragment extends AppCompatActivity {
         
 
         // owner.setText(viewBook.getOwner().getUsername());
-        ISBN.setText(String.valueOf(viewBook.getISBN()));
-
-        photo.setImageBitmap(viewBook.getImage());
+        ISBN.setText(viewBook.getISBN());
+        Bitmap bitmap = BitmapFactory.decodeByteArray(viewBook.getImage(), 0, viewBook.getImage().length);
+        photo.setImageBitmap(bitmap);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,19 +75,19 @@ public class BookDetailsFragment extends AppCompatActivity {
                 // only return things from this intention if something was edited
                 if ((title.getText().toString() != viewBook.getTitle()) ||
                         (author.getText().toString() != viewBook.getAuthor()) ||
-                        (ISBN.getText().toString().replace(" ", "") != 
-                                Long.toString(viewBook.getISBN()))){
+                        (ISBN .equals(viewBook.getISBN()))){
                     viewBook.setTitle(title.getText().toString());
                     viewBook.setAuthor(author.getText().toString());
 
                     String stringISBN = ISBN.getText().toString().replaceAll(" ", "");
-                    Long isbn = Long.parseLong(stringISBN);
-                    viewBook.setISBN(isbn);
+                    viewBook.setISBN(stringISBN);
 
                     if (!nullPhoto()) {
-                        BitmapDrawable drawable = (BitmapDrawable) photo.getDrawable();
-                        Bitmap bitmap = drawable.getBitmap();
-                        viewBook.setImage(bitmap);
+                        Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
+                        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                        byte[] bookImage = outStream.toByteArray();
+                        viewBook.setImage(bookImage);
                     } else {
                         viewBook.setImage(null);
                     }
@@ -142,7 +145,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                 author.setText(editedBook.getAuthor());
                 // owner.setText(editedBook.getOwner().getUsername());
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
-                photo.setImageBitmap(editedBook.getImage());
+                Bitmap bitmap = BitmapFactory.decodeByteArray(editedBook.getImage(), 0,
+                                                                editedBook.getImage().length);
+                photo.setImageBitmap(bitmap);
             }
         }
     }
