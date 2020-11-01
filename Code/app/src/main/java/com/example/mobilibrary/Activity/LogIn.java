@@ -23,8 +23,8 @@ public class LogIn extends AppCompatActivity {
 
     private Button login;
     private TextView signup;
-    private boolean emailVal = false;
-    private boolean passwordVal = false;
+
+    final DatabaseHelper databaseHelper = new DatabaseHelper(this);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,31 +40,41 @@ public class LogIn extends AppCompatActivity {
                 LogIn.this.startActivity(new Intent(LogIn.this, SignUp.class ));
             }
         });
-        //Checks if user provides inputs
-        String email = inputEmail.getText().toString().trim();
-        if(email.isEmpty()){
-            inputEmail.setError("Field cannot be empty");
-        } else {
-            inputEmail.setError(null);
-            emailVal = true;
-        }
 
-         String password = inputPassword.getText().toString().trim();
-        if(password.isEmpty()){
-            inputPassword.setError("Field cannot be empty");
-        } else {
-            inputPassword.setError(null);
-            passwordVal = true;
-        }
-        if ((emailVal)&&(passwordVal)){
-            ProgressBar progressBar = findViewById(R.id.progress_bar);
-            progressBar.setVisibility(View.VISIBLE);
-            DatabaseHelper databaseHelper = new DatabaseHelper(LogIn.this);
-            databaseHelper.validateUser(email, password);
-        }
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = inputEmail.getText().toString().trim();
+                String password = inputPassword.getText().toString().trim();
+                boolean boolEmail = false;
+                boolean boolPwd = false;
+
+                //Checks if user provides inputs
+                if(email.isEmpty()){
+                    inputEmail.setError("Field cannot be empty");
+                } else {
+                    inputEmail.setError(null);
+                    boolEmail = true;
+                }
+
+                if(password.isEmpty()){
+                    inputPassword.setError("Field cannot be empty");
+                } else {
+                    inputPassword.setError(null);
+                    boolPwd = true;
+                }
+                if ((boolEmail)&&(boolPwd)){
+                    ProgressBar progressBar = findViewById(R.id.progress_bar);
+                    progressBar.setVisibility(View.VISIBLE);
+                    databaseHelper.validateUser(email, password);
+                    inputPassword.setText("");
+                }
+            }
+        });
+
     }
     @Override
     public void onBackPressed(){
-        this.finish();
     }
 }

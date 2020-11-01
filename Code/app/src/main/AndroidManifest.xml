@@ -32,7 +32,8 @@
         </activity>
 
         <activity android:name=".Activity.SignUp"
-            android:configChanges="keyboardHidden|orientation"/>
+            android:configChanges="keyboardHidden|orientation"
+            android:parentActivityName=".Activity.LogIn"/>
 
         <activity
             android:name=".Activity.LogIn"

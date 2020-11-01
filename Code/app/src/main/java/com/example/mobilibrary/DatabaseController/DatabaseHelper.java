@@ -1,5 +1,6 @@
 package com.example.mobilibrary.DatabaseController;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.mobilibrary.Activity.LogIn;
+import com.example.mobilibrary.Activity.SignUp;
 import com.example.mobilibrary.HomePage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.util.Consumer;
 
 
 import java.util.HashMap;
@@ -36,7 +39,10 @@ public class DatabaseHelper {
 
     public DatabaseHelper(Context context) {
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        //user = mAuth.getCurrentUser();
         this.context = context;
+
     }
 
 
@@ -53,14 +59,19 @@ public class DatabaseHelper {
                                 Toast.makeText(context, "Username already exists. Please try again!", Toast.LENGTH_SHORT).show();
                                 return;
                             } else {
+                                Toast.makeText(context, "Ok23432!", Toast.LENGTH_SHORT).show();
                                 registerUser(username, password, fullname, email, phoneNo);
                             }
 
+                        }
+                        else {
+                            Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
+    // User Profile methods111
     /**
      * @param username
      * @param password
@@ -68,10 +79,7 @@ public class DatabaseHelper {
      * @param email
      * @param phoneNo
      */
-    private void registerUser(final String username, final String password, final String name, final String email, final String phoneNo) {
-        //HashMap stores the user data in form of key-value pairs to send to Firestore
-        //User data
-        mAuth.createUserWithEmailAndPassword(email, password)
+    public void registerUser(final String username, final String password, final String name, final String email, final String phoneNo) { mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -79,15 +87,15 @@ public class DatabaseHelper {
                             Toast.makeText(context, "New user added", Toast.LENGTH_SHORT).show();
                             //get UID from firebase authentication
                             userID = mAuth.getCurrentUser().getUid();
-                            Map<String, Object> user = new HashMap<>();
-                            user.put("Username", username);
-                            user.put("Fullname", name);
-                            user.put("Email", email);
-                            user.put("Phone", phoneNo);
-                            user.put("Credential", password);
+                            Map<String, Object> userData = new HashMap<>();
+                            userData.put("UID", userID);
+                            userData.put("Fullname", name);
+                            userData.put("Email", email);
+                            userData.put("Phone", phoneNo);
+                            userData.put("Password", password);
 
-                            DocumentReference userRef = db.collection("Users").document(userID);
-                            userRef.set(user)
+                            DocumentReference userRef = db.collection("Users").document(username);
+                            userRef.set(userData)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -102,16 +110,15 @@ public class DatabaseHelper {
                             });
                             //go back to login screen so the user can log in
                             context.startActivity(new Intent(context, LogIn.class));
-                        }else{
-                            Log.d(TAG, "Failed with", task.getException());
+                        } else {
+                            Toast.makeText((Activity)context, "Failed with " + task.getException().getMessage(),Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+
     }
 
-
-
-    public void validateUser(String email, final String password){
+    public void validateUser(final String email, final String password){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -128,7 +135,15 @@ public class DatabaseHelper {
                     }
                 });
 
+
+
     }
+
+    //Books method
+
+
+
+
 
 
 }
