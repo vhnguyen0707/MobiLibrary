@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.mobillibrary.R;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
