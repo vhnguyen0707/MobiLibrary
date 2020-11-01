@@ -40,7 +40,7 @@ public class DatabaseHelper {
     public DatabaseHelper(Context context) {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        //user = mAuth.getCurrentUser();
+        user = mAuth.getCurrentUser();
         this.context = context;
 
     }
