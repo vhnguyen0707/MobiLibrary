@@ -59,7 +59,6 @@ public class DatabaseHelper {
                                 Toast.makeText(context, "Username already exists. Please try again!", Toast.LENGTH_SHORT).show();
                                 return;
                             } else {
-                                Toast.makeText(context, "Ok23432!", Toast.LENGTH_SHORT).show();
                                 registerUser(username, password, fullname, email, phoneNo);
                             }
 
@@ -92,7 +91,6 @@ public class DatabaseHelper {
                             userData.put("Fullname", name);
                             userData.put("Email", email);
                             userData.put("Phone", phoneNo);
-                            userData.put("Password", password);
 
                             DocumentReference userRef = db.collection("Users").document(username);
                             userRef.set(userData)
