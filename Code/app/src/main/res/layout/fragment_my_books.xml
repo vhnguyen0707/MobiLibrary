@@ -30,7 +30,7 @@
         android:backgroundTint="#FFFFFF"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/book_list"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

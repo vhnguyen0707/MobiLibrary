@@ -170,3 +170,4 @@ public class EditBookTest {
         solo.finishOpenedActivities();
     }
 }
+

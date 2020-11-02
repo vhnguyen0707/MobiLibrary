@@ -161,3 +161,4 @@ public class BookDetailsTest {
         solo.finishOpenedActivities();
     }
 }
+
