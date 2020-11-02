@@ -48,11 +48,10 @@ public class BookDetailsTest {
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
 
         // establish a book to work on
-        // User owner = new User("username", "email@example.com", "First Last", "123-123-1234");
         solo.clickOnView(solo.getView(R.id.add_button));
         solo.enterText((EditText) solo.getView(R.id.book_title), "Song of the Lioness");
         solo.enterText((EditText) solo.getView(R.id.book_author), "Tamora Pierce");
-        solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234 5678");
+        solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234567890123");
         solo.clickOnButton("confirm");
     }
 
@@ -80,10 +79,11 @@ public class BookDetailsTest {
             }
         }
 
+        // validate displayed information
         assertEquals("Song of the Lioness", bookDetails.title.getText().toString());
         assertEquals("Tamora Pierce", bookDetails.author.getText().toString());
-        // assertEquals("username", bookDetails.owner);
-        assertEquals("12345678", bookDetails.ISBN.getText().toString());
+        // assertEquals("username", bookDetails.owner.getText().toString());
+        assertEquals("1234567890123", bookDetails.ISBN.getText().toString());
         assertNull(drawable);
     }
 
@@ -111,7 +111,7 @@ public class BookDetailsTest {
         Book book = (Book) bookView.getItemAtPosition(0);
         assertEquals("Song of the Lioness", book.getTitle());
         assertEquals("Tamora Pierce", book.getAuthor());
-        assertEquals(12345678, book.getISBN());
+        assertEquals("1234567890123", book.getISBN());
 
     }
 
