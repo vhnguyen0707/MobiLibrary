@@ -6,17 +6,16 @@ public class User {
     private final String name;
     private String phoneNo;
 
-
     /**
      * Full constructor
      *
-     * @param username:  unique username
-     * @param email: user's email address
-     * @param name: user's name
-     * @param phoneNo: user's phone number
+     * @param username: unique username
+     * @param email:    user's email address
+     * @param name:     user's name
+     * @param phoneNo:  user's phone number
      */
     public User(String username, String email, String name, String phoneNo) {
-        if (username == null || email == null || name == null|| phoneNo == null ) {
+        if (username == null || email == null || name == null || phoneNo == null) {
             throw new IllegalArgumentException("These fields must not be null.");
         }
         this.username = username;

@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.example.mobilibrary.Activity.LogIn;
 import com.example.mobilibrary.Activity.ProfileActivity;
 import com.example.mobilibrary.Callback;
+import com.example.mobilibrary.DatabaseController.User;
 import com.example.mobilibrary.MainActivity;
 import com.google.android.gms.common.api.Batch;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,6 +48,7 @@ import static com.google.firebase.firestore.DocumentChange.Type.REMOVED;
 
 public class DatabaseHelper {
     private static final String TAG = "DatabaseHelper";
+    static final String UsersCol = "Users";
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
@@ -61,9 +63,16 @@ public class DatabaseHelper {
 
     /**
      * https://stackoverflow.com/questions/52861391/firestore-checking-if-username-already-exists
-     **/
-    public void regCheck(final String username, final String password, final String fullname, final String email, final String phoneNo) {
-        db.collection("User")
+     * Checks to see if a user signing up is already registered in our Firebase User Auth database.
+     *
+     * @param username new user username
+     * @param password new user password
+     * @param name     new user full name
+     * @param email    new user email
+     * @param phoneNo  new user phone number
+     */
+    public void regCheck(final String username, final String password, final String name, final String email, final String phoneNo) {
+        db.collection(UsersCol)
                 .document(username)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -73,11 +82,12 @@ public class DatabaseHelper {
                             DocumentSnapshot doc = task.getResult();
                             if (doc.exists()) {
                                 Toast.makeText(context, "Username already exists. Please try again!", Toast.LENGTH_SHORT).show();
-                                return;
                             } else {
-                                registerUser(username, password, fullname, email, phoneNo);
+                                registerUser(username, password, name, email, phoneNo);
                             }
 
+                        } else {
+                            Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -86,12 +96,13 @@ public class DatabaseHelper {
     /**
      * https://stackoverflow.com/questions/46795817/how-to-efficiently-add-items-to-collection-with-firebase-firestore
      * https://stackoverflow.com/questions/50087616/firebase-transaction-read-and-update-multiple-documents
-     * <p>
-     * // * @param username
-     * //* @param password
-     * //  * @param name
-     * // * @param email
-     * // * @param phoneNo
+     * Registers a user with Firebase User Authentication, and adds their public information to the Firestore database
+     *
+     * @param username new user's username
+     * @param password new user's password
+     * @param name     new user's full name
+     * @param email    new user's email
+     * @param phoneNo  new user's phone number
      */
     private void registerUser(final String username, final String password, final String name, final String email, final String phoneNo) {
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -105,28 +116,32 @@ public class DatabaseHelper {
                                     .setDisplayName(username)
                                     .build();
                             user.updateProfile(profileUpdate)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "Added username as user display name!");
-                                                DocumentReference userRef = db.collection("Users").document(username);
-                                                userRef.set(newUser)
-                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void aVoid) {
-                                                                Log.d(TAG, "User Profile successfully created for " + username);
-                                                                Toast.makeText(context, ("Account created for " + username), Toast.LENGTH_SHORT).show();
-                                                                //go back to login screen so the user can log in
-                                                                context.startActivity(new Intent(context, MainActivity.class));
-                                                            }
-                                                        }).addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Log.d(TAG, "User Profile could not be added!" + e.toString());
-                                                    }
-                                                });
-                                            }
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "Added username as user display name!");
+                                            DocumentReference userRef = db.collection("Users").document(username);
+                                            userRef.set(newUser)
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Log.d(TAG, "User Profile successfully created for " + username);
+                                                            Toast.makeText(context, ("Account created for " + username), Toast.LENGTH_SHORT).show();
+                                                            //go back to login screen so the user can log in
+                                                            context.startActivity(new Intent(context, LogIn.class));
+                                                        }
+                                                    }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.d(TAG, "User Profile could not be added!" + e.toString());
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.d(TAG, "Username could not be added as user display name!");
                                         }
                                     });
 
@@ -137,7 +152,13 @@ public class DatabaseHelper {
                 });
     }
 
-    public void validateUser(String email, String password) {
+    /**
+     * Logs in a currently existing user
+     *
+     * @param email    user email from Log In
+     * @param password user password from Log In
+     */
+    public void validateUser(final String email, final String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -153,6 +174,8 @@ public class DatabaseHelper {
                         }
                     }
                 });
+
+
     }
 
     /**
@@ -187,6 +210,7 @@ public class DatabaseHelper {
 
     /**
      * Re-authenticates current user before allowing update of primary email.
+     * TODO: Don't allow entry into this method if credentials are incorrect
      *
      * @param email    current email (before change)
      * @param password current user's password

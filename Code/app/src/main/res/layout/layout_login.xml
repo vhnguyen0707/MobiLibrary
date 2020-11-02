@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BAAEAE"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#D8C7AA"
     android:orientation="vertical">
 
     <TextView
@@ -13,75 +14,90 @@
         android:layout_marginTop="100dp"
         android:fontFamily="sans-serif-light"
         android:text="MobiLibrary"
-        android:textSize="30dp"
-        android:textStyle="bold"></TextView>
-
-
-
-    <TextView
-        android:id="@+id/username_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textSize="18sp"
+        android:gravity="center"
+        android:textSize="50dp"
         android:textStyle="bold"
         ></TextView>
 
 
+
     <EditText
-        android:id="@+id/maker_editText"
+        android:id="@+id/email_editText"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="up to 20 characters"
-        android:inputType="textPersonName" />
+        android:hint="Email "
+        android:inputType="textEmailAddress" />
 
-    <TextView
-        android:id="@+id/description_textView"
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:errorEnabled="true"
+        app:passwordToggleEnabled="true">
+        <EditText
+            android:id="@+id/password_editText"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Log In"
+        app:layout_constraintEnd_toEndOf="@+id/password_editText"
+        app:layout_constraintStart_toStartOf="@id/password_editText"
+        app:layout_constraintTop_toBottomOf="@id/password_editText"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/signup_bar"
+            android:layout_width="31dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            android:text="New to MobiLibrary?" />
+
+        <TextView
+            android:id="@+id/signup_bar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_weight="0.5"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:text="Create Account"
+            android:textColor="#254A6E"
+            android:textColorHighlight="#FFFFFF"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=" Description"
-        android:textSize="18sp"
-        android:textStyle="bold"></TextView>
-
-    <EditText
-        android:id="@+id/description_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="up to 40 characters"
-        android:inputType="textPersonName" />
-
-    <TextView
-        android:id="@+id/price_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" Price"
-        android:textSize="18sp"
-        android:textStyle="bold"></TextView>
-
-    <EditText
-        android:id="@+id/price_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="CAD"
-        android:inputType="numberDecimal" />
-
-    <TextView
-        android:id="@+id/comment_textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" Comment"
-        android:textSize="18sp"
-        android:textStyle="bold"></TextView>
-
-    <EditText
-        android:id="@+id/comment_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="(optional) up to 20 characters"
-        android:inputType="textPersonName" />
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/signup_bar"/>
 </LinearLayout>
 
