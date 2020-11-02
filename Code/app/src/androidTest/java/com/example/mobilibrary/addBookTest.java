@@ -5,15 +5,14 @@ import android.net.Uri;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import android.app.Fragment;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.mobillibrary.R;
 import com.robotium.solo.Solo;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -28,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /** Test class for MainActivity. All the UI tests are written here. Robotium test framework is
@@ -36,11 +34,11 @@ import static org.junit.Assert.assertTrue;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class addBookTest {
+public class addBookTest{
     private Solo solo;
     @Rule
-    public ActivityTestRule<MyBooks> rule =
-            new ActivityTestRule<>(MyBooks.class, true, true);
+    public ActivityTestRule<MainActivity> rule =
+            new ActivityTestRule<>(MainActivity.class, true, true);
 
     /**
      * Runs before all tests and creates solo instance.
@@ -63,14 +61,14 @@ public class addBookTest {
     }
 
     /**
-     *Opens MyBookS activity and then tries to open addBookFragment
+     *Opens MyBooksFragment and then tries to open addBookFragment
      */
     @Test
     public void checkActivities() {
 // Asserts that the current activity is MyBooks and if it will switch to addBookFragment. Otherwise, show “Wrong Activity”
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
-        solo.clickOnView(solo.getView(R.id.add_button));
-        solo.assertCurrentActivity("Wrong Activity", AddBookFragment.class);
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnMenuItem("My Books");
+        assertTrue(solo.getView(R.id.myBooks) != null);
     }
 
     /**
@@ -79,22 +77,23 @@ public class addBookTest {
     @Test
     public void addActivity() {
 // Asserts that the current activity is MyBooks and if it will switch to addBookFragment. Otherwise, show “Wrong Activity”
-        solo.clickOnView(solo.getView(R.id.add_button));
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnMenuItem("My Books");
+        solo.clickOnView(solo.getView(R.id.addButton));
         solo.assertCurrentActivity("Wrong Activity", AddBookFragment.class);
         solo.enterText((EditText) solo.getView(R.id.book_title), "Harry Potter");
         solo.enterText((EditText) solo.getView(R.id.book_author), "J.K Rowling");
-        solo.enterText((EditText) solo.getView(R.id.book_isbn), "12345678");
+        solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234567890123");
         solo.clickOnButton("confirm");
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
-        MyBooks books = (MyBooks) solo.getCurrentActivity();
+        Fragment books = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
         solo.waitForText("Harry Potter", 1, 2000); // wait for title
         solo.waitForText("J.K Rowling", 1, 2000); // wait for author
         solo.waitForText("12345678", 1, 2000); // wait for ISBN
-        final ListView bookView = books.bookView; // Get the listview
+        ListView bookView = (ListView) solo.getView(R.id.book_list); // Get the listview
         Book book = (Book) bookView.getItemAtPosition(0); // Get item from first position
         assertEquals("Harry Potter", book.getTitle());
         assertEquals("J.K Rowling", book.getAuthor());
-        assertEquals(12345678, book.getISBN());
+        assertEquals("1234567890123", book.getISBN());
     }
 
     /**
@@ -102,8 +101,10 @@ public class addBookTest {
      */
     @Test
     public void addActivityEmpty() {
-// Asserts that the current activity is MyBooks and if it will switch to addBookFragment. Otherwise, show “Wrong Activity”
-        solo.clickOnView(solo.getView(R.id.add_button));
+// Asserts that the current activity is MyBooks and if it will switch to addBookFragment. Otherwise, show “Wrong Activity
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnMenuItem("My Books");
+        solo.clickOnView(solo.getView(R.id.addButton));
         solo.assertCurrentActivity("Wrong Activity", AddBookFragment.class);
         solo.clickOnButton("confirm");
         solo.waitForText("Please insert book title!", 1, 2000); // wait for error text
