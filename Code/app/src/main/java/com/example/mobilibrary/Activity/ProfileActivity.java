@@ -13,25 +13,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mobilibrary.Callback;
 import com.example.mobilibrary.DatabaseController.DatabaseHelper;
 import com.example.mobilibrary.DatabaseController.User;
 import com.example.mobilibrary.R;
+import com.example.mobilibrary.reAuthFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.perfmark.Tag;
-
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements reAuthFragment.OnFragmentInteractionListener {
 
     private ImageButton editButton;
     private TextView usernameText;
@@ -55,7 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Set variables
         editButton = findViewById(R.id.edit_button);
-        usernameText = findViewById(R.id.username_text_view);
+        usernameText = findViewById(R.id.user_text_view);
         emailText = findViewById(R.id.email_text_view);
         phoneText = findViewById(R.id.phone_text_view);
         editEmail = findViewById(R.id.edit_email);
@@ -172,14 +166,8 @@ public class ProfileActivity extends AppCompatActivity {
                             toggleVisibility(toggleViews);
                         } else if (!TextUtils.isEmpty(editPhone.getText().toString()) && editPhone.getText().toString().length() > 8) { // Phone number input & length already restricted by layout
                             // Update user with new email and/or phone in database
-                            databaseHelper.updateUser(currentUser.getUsername(), editEmail.getText().toString(), editPhone.getText().toString(), profileUser.getName(), new Callback() {
-                                @Override
-                                public void onCallback(User user) {
-                                    Toast.makeText(context, "Profile saved!", Toast.LENGTH_SHORT).show();
-                                    toggleVisibility(toggleViews);
-                                    getProfileInfo();
-                                }
-                            });
+                            new reAuthFragment().show(getSupportFragmentManager(), "RE-AUTHENTICATION");
+
                         } else {
                             Toast.makeText(context, "Entered an invalid phone number!", Toast.LENGTH_SHORT).show();
                         }
@@ -216,4 +204,16 @@ public class ProfileActivity extends AppCompatActivity {
         return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 
+    @Override
+    public void onOkPressed(String email, String password) {
+        databaseHelper.reAuthUser(email, password);
+        databaseHelper.updateUser(currentUser.getUsername(), editEmail.getText().toString(), editPhone.getText().toString(), profileUser.getName(), new Callback() {
+            @Override
+            public void onCallback(User user) {
+                Toast.makeText(context, "Profile saved!", Toast.LENGTH_SHORT).show();
+                toggleVisibility(toggleViews);
+                getProfileInfo();
+            }
+        });
+    }
 }

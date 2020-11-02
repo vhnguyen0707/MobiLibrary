@@ -16,13 +16,16 @@ import androidx.annotation.Nullable;
 import com.example.mobilibrary.Activity.LogIn;
 import com.example.mobilibrary.Activity.ProfileActivity;
 import com.example.mobilibrary.Callback;
-import com.example.mobilibrary.MyBooks;
+import com.example.mobilibrary.MainActivity;
 import com.google.android.gms.common.api.Batch;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -164,7 +167,6 @@ public class DatabaseHelper {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Log.d(TAG, "Found user profile!");
                         String name = documentSnapshot.getString("name");
                         String email = documentSnapshot.getString("email");
                         String phone = documentSnapshot.getString("phoneNo");
@@ -181,6 +183,28 @@ public class DatabaseHelper {
      */
     public FirebaseUser getUser() {
         return user;
+    }
+
+    /**
+     * Re-authenticates current user before allowing update of primary email.
+     *
+     * @param email    current email (before change)
+     * @param password current user's password
+     */
+    public void reAuthUser(String email, String password) {
+        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+
+        user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User re-authenticated!");
+                        } else {
+                            Log.d(TAG, "User re-authentication failed!");
+                        }
+                    }
+                });
     }
 
     /**
@@ -202,11 +226,17 @@ public class DatabaseHelper {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 user.updateEmail(newEmail)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
+                            public void onSuccess(Void aVoid) {
                                 User updatedUser = new User(username, newEmail, name, newPhone);
                                 callback.onCallback(updatedUser);
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "User new email update failed!");
                             }
                         });
             }
