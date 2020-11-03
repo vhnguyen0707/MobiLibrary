@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                             break;
 
                         case R.id.myBooks:
-                            fragment= new MyBooksFragment();
+                            fragment = new MyBooksFragment();
                             break;
 
                         case R.id.notifications:

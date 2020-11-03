@@ -3,7 +3,7 @@ package com.example.mobilibrary;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-import com.example.mobillibrary.R;
+import androidx.fragment.app.Fragment;
+
+import com.example.mobilibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -113,27 +115,26 @@ public class MyBooksFragment extends Fragment {
 
                 // find the book to delete and delete it
                 for (int i = 0; 0 < bookAdapter.getCount(); i++) {
-                    Book currentBook = bookAdapter.getItem(i) ;
-                    if (delete_book.compareTo(currentBook) == 0){
+                    Book currentBook = bookAdapter.getItem(i);
+                    if (delete_book.compareTo(currentBook) == 0) {
                         tempBookList.remove(currentBook);
                         bookAdapter.remove(currentBook);
                     }
                 }
 
                 bookAdapter.notifyDataSetChanged();
-            }
-            else if (resultCode == 2) {
+            } else if (resultCode == 2) {
                 // book was edited update data set
                 Book edited_book = (Book) data.getSerializableExtra("edited book");
 
                 // find the book to edit and edit it
-                for (int i = 0; 0 < bookAdapter.getCount(); i++) {
-                    Book currentBook = bookAdapter.getItem(i) ;
-                    if (edited_book.compareTo(currentBook) == 0){
+                for (int i = 0; i < bookList.size(); i++) {
+                    Book currentBook = bookList.get(i);
+                    if (edited_book.compareTo(currentBook) == 0) {
                         currentBook.setTitle(edited_book.getTitle());
                         currentBook.setAuthor(edited_book.getAuthor());
                         currentBook.setISBN(edited_book.getISBN());
-                        // photo can be edited, but that is its own User Story
+                        currentBook.setImage(edited_book.getImage());
                     }
                 }
                 bookAdapter.notifyDataSetChanged();

@@ -45,7 +45,7 @@
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+        tools:src="@drawable/pfp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/searchButton"

@@ -39,7 +39,7 @@ public class MyBooks extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.layout_mybooks, container, false);
 
-        addButton = v.findViewById(R.id.add_button);
+        addButton = v.findViewById(R.id.addButton);
         bookView = (ListView) v.findViewById(R.id.book_list);
         bookList = new ArrayList<Book>();
 
@@ -66,59 +66,6 @@ public class MyBooks extends Fragment {
         });
         return v;
     }
-
-
-    /*protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_mybooks);
-
-        addButton = findViewById(R.id.add_button);
-        bookView = (ListView) findViewById(R.id.book_list);
-        bookList = new ArrayList<Book>();
-        tempBookList = new ArrayList<Book>();
-
-        bookAdapter = new customBookAdapter(this, bookList);
-        bookView.setAdapter(bookAdapter);
-
-        statesSpin = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<String> SpinAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, states);
-        SpinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        statesSpin.setAdapter(SpinAdapter);
-
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent addIntent = new Intent(MyBooks.this, AddBookFragment.class);
-                startActivityForResult(addIntent, 0);
-            }
-        });
-
-        bookView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Book book = bookList.get(i);
-                Intent viewBook = new Intent(MyBooks.this, BookDetailsFragment.class);
-                viewBook.putExtra("view book", book);
-                // viewBook.putExtra("book owner", user.getusername());   // need to get user somehow, add User variable to this class
-                startActivityForResult(viewBook, 1);
-            }
-
-
-        });
-
-        statesSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String state = (String) adapterView.getItemAtPosition(i);
-                DisplayBooks(state);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

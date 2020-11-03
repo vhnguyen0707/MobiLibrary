@@ -110,6 +110,7 @@ public class DatabaseHelper {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            user = mAuth.getCurrentUser();
                             // Create User object to send to the Firestore database
                             final User newUser = new User(username, email, name, phoneNo);
                             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()

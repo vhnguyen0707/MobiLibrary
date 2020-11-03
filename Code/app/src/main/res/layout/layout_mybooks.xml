@@ -31,7 +31,7 @@
     </ListView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_button"
+        android:id="@+id/addButton"
         android:layout_width="80dp"
         android:layout_height="0dp"
         android:backgroundTint="#3C2A2A"

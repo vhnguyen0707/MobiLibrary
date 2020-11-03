@@ -5,12 +5,18 @@ import android.app.Activity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
+
+import android.net.Uri;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.mobilibrary.R;
 import com.robotium.solo.Solo;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,14 +45,13 @@ public class EditBookTest {
     @Before
     public void setUp() throws Exception {
         // establish an instrument
-        solo = new Solo(InstrumentationRegistry.getInstrumentation(). rule.getActivity());
+        solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
 
         // establish a book to work on
-        User owner = new User("username", "email@example.com", "First Last", "123-123-1234");
         solo.clickOnView(solo.getView(R.id.add_button));
         solo.enterText((EditText) solo.getView(R.id.book_title), "Song of the Lioness");
         solo.enterText((EditText) solo.getView(R.id.book_author), "Tamora Pierce");
-        solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234 5678");
+        solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234567890123");
         solo.clickOnButton("confirm");
 
         // view book's details
@@ -81,15 +86,20 @@ public class EditBookTest {
         solo.assertCurrentActivity("Wrong Activity", EditBookFragment.class);
         solo.clickOnView(solo.getView(R.id.back_to_view_button));
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
+        solo.waitForText("Song of the Lioness", 1, 2000);
+        solo.waitForText("Tamora Pierce", 1, 2000);
+        solo.waitForText("1234567890123", 1, 2000);
+        solo.clickOnView(solo.getView(R.id.back_to_books_button));
+        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
 
         // confirm that nothing has changed
-        String title = solo.getView(R.id.view_title).toString();
-        String author = solo.getView(R.id.view_author).toString();
-        String isbn = solo.getView(R.id.view_isbn).toString().replaceAll(" ", "");
-        int ISBN = Integer.parseInt(isbn);
-        assertEquals("Song of the Lioness", title);
-        assertEquals("Tamora Pierce", author);
-        assertEquals(12345678, ISBN);
+        MyBooks books = (MyBooks) solo.getCurrentActivity();
+        final ListView bookList = books.bookView;
+        assertEquals(1, bookList.getCount());
+        Book book = (Book) bookList.getItemAtPosition(0);
+        assertEquals("Song of the Lioness", book.getTitle());
+        assertEquals("Tamora Pierce", book.getAuthor());
+        assertEquals("1234567890123", book.getISBN());
     }
 
     /**
@@ -106,18 +116,25 @@ public class EditBookTest {
         solo.assertCurrentActivity("Wrong Activity", EditBookFragment.class);
         solo.clearEditText((EditText) solo.getView(R.id.edit_title));
         solo.enterText((EditText) solo.getView(R.id.edit_title), "Circle of Magic");
+        solo.enterText((EditText) solo.getView(R.id.edit_isbn), "1234567890124");
         solo.clickOnButton("CONFIRM");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
+
+        // confirm fields changed in bookDetails
+        solo.waitForText("Circle of Magic", 1, 2000);
+        solo.waitForText("Tamora Pierce", 1, 2000);
+        solo.waitForText("1234567890124", 1, 2000);
+        solo.clickOnView(solo.getView(R.id.back_to_books_button));
         solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
 
-        // confirm that the field has changed
+        // confirm fields changed in bookList
         MyBooks books = (MyBooks) solo.getCurrentActivity();
         ListView bookList = books.bookView;
         Book book = (Book) bookList.getItemAtPosition(0);
         assertNotEquals("Song of the Lioness", book.getTitle());
         assertEquals("Circle of Magic", book.getTitle());
         assertEquals("Tamora Pierce", book.getAuthor());
-        assertEquals(12345678, book.getISBN());
+        assertEquals("1234567890123", book.getISBN());
     }
 
     /**
@@ -135,13 +152,20 @@ public class EditBookTest {
         solo.clickOnButton("CONFIRM");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
 
-        // confirm that nothing has changed
+        // confirm nothing has changed in bookDetail
+        solo.waitForText("Song of the Lioness", 1, 2000);
+        solo.waitForText("Tamora Pierce", 1, 2000);
+        solo.waitForText("1234567890124", 1, 2000);
+        solo.clickOnView(solo.getView(R.id.back_to_books_button));
+        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
+
+        // confirm that nothing has changed in myBooks
         MyBooks books = (MyBooks) solo.getCurrentActivity();
         ListView bookList = books.bookView;
         Book book = (Book) bookList.getItemAtPosition(0);
         assertEquals("Song of the Lioness", book.getTitle());
         assertEquals("Tamora Pierce", book.getAuthor());
-        assertEquals(12345678, book.getISBN());
+        assertEquals("1234567890123", book.getISBN());
     }
 
     /**
@@ -154,15 +178,19 @@ public class EditBookTest {
         solo.clickOnView(solo.getView(R.id.edit_button));
         solo.assertCurrentActivity("Wrong Activity", EditBookFragment.class);
 
-        // leave without changing anything
+        // leave with empty required fields
         solo.assertCurrentActivity("Wrong Activity", EditBookFragment.class);
         solo.clearEditText((EditText) solo.getView(R.id.edit_title));
+        solo.clearEditText((EditText) solo.getView(R.id.edit_author));
+        solo.clearEditText((EditText) solo.getView(R.id.edit_isbn));
         solo.clickOnButton("CONFIRM");
-        solo.waitForText("Please insert book title!", 1, 2000); // wait for error message
-        assertTrue(solo.searchText("Please insert book title!"));
+        solo.waitForText("Required: Book Title!", 1, 2000); // wait for error message
+        solo.waitForText("Required: Book Author!", 1, 2000); // wait for error message
+        solo.waitForText("Required: Book ISBN!", 1, 2000); // wait for error message
+        assertTrue(solo.searchText("Required: Book Title!"));
+        assertTrue(solo.searchText("Required: Book Author!"));
+        assertTrue(solo.searchText("Required: Book ISBN!"));
     }
-
-    // scanner test?
 
     @After
     public void tearDown(){
