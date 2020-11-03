@@ -28,7 +28,7 @@ public class BookTest {
         assertEquals(mockOwner.getUsername(), guessOwner.getUsername());
         assertEquals(mockOwner.getEmail(), guessOwner.getEmail());
         assertEquals(mockOwner.getName(), guessOwner.getName());
-        assertEquals(mockOwner.getPhoneNo(), guessOwner.getPhoneNo);
+        assertEquals(mockOwner.getPhoneNo(), guessOwner.getPhoneNo());
     }
 
     /**
@@ -43,7 +43,7 @@ public class BookTest {
         assertEquals(mockOwner.getUsername(), mockBook.getOwner().getUsername());
         assertEquals(mockOwner.getEmail(), mockBook.getOwner().getEmail());
         assertEquals(mockOwner.getName(), mockBook.getOwner().getName());
-        assertEquals(mockOwner.getPhoneNo(), mockBook.getOwner().getPhoneNo);
+        assertEquals(mockOwner.getPhoneNo(), mockBook.getOwner().getPhoneNo());
     }
 
     /**
