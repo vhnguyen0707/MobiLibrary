@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import android.app.Fragment;
 import android.net.Uri;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -36,7 +37,7 @@ public class EditBookTest {
 
     @Rule
     public ActivityTestRule<MyBooks> rule =
-            new ActivityTestRule<>(MyBooks.class, true, true);
+            new ActivityTestRule<>(MainActivity.class, true, true);
 
     /**
      * Sets up list with at least one book to test one
@@ -46,6 +47,10 @@ public class EditBookTest {
     public void setUp() throws Exception {
         // establish an instrument
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
+
+        // go to MyBooks and switch to addBookFragment
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnMenuItem("My Books");
 
         // establish a book to work on
         solo.clickOnView(solo.getView(R.id.add_button));
@@ -90,13 +95,12 @@ public class EditBookTest {
         solo.waitForText("Tamora Pierce", 1, 2000);
         solo.waitForText("1234567890123", 1, 2000);
         solo.clickOnView(solo.getView(R.id.back_to_books_button));
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
 
         // confirm that nothing has changed
-        MyBooks books = (MyBooks) solo.getCurrentActivity();
-        final ListView bookList = books.bookView;
-        assertEquals(1, bookList.getCount());
-        Book book = (Book) bookList.getItemAtPosition(0);
+        Fragment books = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        final ListView bookView = (ListView) solo.getView(R.id.book_list);
+        assertEquals(1, bookView.getCount());
+        Book book = (Book) bookView.getItemAtPosition(0);
         assertEquals("Song of the Lioness", book.getTitle());
         assertEquals("Tamora Pierce", book.getAuthor());
         assertEquals("1234567890123", book.getISBN());
@@ -125,12 +129,11 @@ public class EditBookTest {
         solo.waitForText("Tamora Pierce", 1, 2000);
         solo.waitForText("1234567890124", 1, 2000);
         solo.clickOnView(solo.getView(R.id.back_to_books_button));
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
 
         // confirm fields changed in bookList
-        MyBooks books = (MyBooks) solo.getCurrentActivity();
-        ListView bookList = books.bookView;
-        Book book = (Book) bookList.getItemAtPosition(0);
+        Fragment books = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        final ListView bookView = (ListView) solo.getView(R.id.book_list);
+        Book book = (Book) bookView.getItemAtPosition(0);
         assertNotEquals("Song of the Lioness", book.getTitle());
         assertEquals("Circle of Magic", book.getTitle());
         assertEquals("Tamora Pierce", book.getAuthor());
@@ -157,12 +160,11 @@ public class EditBookTest {
         solo.waitForText("Tamora Pierce", 1, 2000);
         solo.waitForText("1234567890124", 1, 2000);
         solo.clickOnView(solo.getView(R.id.back_to_books_button));
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
 
         // confirm that nothing has changed in myBooks
-        MyBooks books = (MyBooks) solo.getCurrentActivity();
-        ListView bookList = books.bookView;
-        Book book = (Book) bookList.getItemAtPosition(0);
+        Fragment books2 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        final ListView bookView = (ListView) solo.getView(R.id.book_list);
+        Book book = (Book) bookView.getItemAtPosition(0);
         assertEquals("Song of the Lioness", book.getTitle());
         assertEquals("Tamora Pierce", book.getAuthor());
         assertEquals("1234567890123", book.getISBN());
@@ -197,4 +199,5 @@ public class EditBookTest {
         solo.finishOpenedActivities();
     }
 }
+
 
