@@ -29,8 +29,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.mobilibrary.R;
+import com.example.mobilibrary.DatabaseController.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -52,6 +54,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     FloatingActionButton cameraButton;
 
     private RequestQueue mRequestQueue;
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -72,6 +75,9 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
                                             PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
 
+        /*
+          If user wants to cancel add process, can press back button to cancel
+         */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +85,12 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             }
         });
 
+        /*
+          confirmButton first check if the three important fields (title,author and ISBN) are filled
+          and are valid. The it will add an available status to book and if there is an image in
+          imageView then will convert it to a byte array (so it can be serialized). It will check who
+          is the current user and set that as the book owner and creates the book object and sends it to myBooks
+         */
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,7 +100,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 if (checkInputs(bookTitle, bookAuthor, bookISBN)) {
                     String bookStatus = "available";
                     byte[] bookImage = convertBitmap();
-                    Book newBook = new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage);
+                    User bookOwner = currentUser();
+                    Book newBook = new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage,bookOwner);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
                     setResult(RESULT_OK, returnIntent);
@@ -97,6 +110,9 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             }
         });
 
+        /*
+          opens the scan button method to start scanning ISBN
+         */
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -105,6 +121,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             }
         });
 
+        /*
+            If imageView is selected, it will open the camera intent and start the device
+            camera.
+         */
         newImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,11 +135,25 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         });
     }
 
+    /**
+     * Scan button will open the device camera scanner and will allow
+     * user to scan
+     * @param view
+     */
     public void ScanButton(View view) { //When camera button is clicked
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.initiateScan();
     }
 
+    /**
+     * If requestCode is 2, we are adding image to the imageView (image of book) and
+     * setting it. Else, we are taking the image from the scanner, first check if the
+     * results are not null (if so, error message will appear), then if device is connected
+     * to the internet will parse the data.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -159,6 +193,12 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         }
     }
 
+    /**
+     * will take a string key and create a new parseJson, which will take the data from the
+     * scanner, find the relevant book information (title, author and isbn) and will set the
+     * corresponding fields, or it will return an error message.
+     * @param key
+     */
     private void parseJson(String key) {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(),
@@ -212,6 +252,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         mRequestQueue.add(request);
     }
 
+    /**
+     * Checks to see if network connection is available (needed for
+     * @return info
+     */
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
@@ -219,6 +263,16 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
 
     }
 
+    /**
+     * Checks to see if the title, author and ISBN text fields are empty.
+     * As well as if the ISBN is the correct length. If not valid, will
+     * sent setError message, if valid will return a true boolean.
+     *
+     * @param title
+     * @param Author
+     * @param ISBN
+     * @return boolean
+     */
     public Boolean checkInputs(String title, String Author, String ISBN){
         boolean inputsGood = true;
         if(title.isEmpty()){
@@ -236,6 +290,14 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         return inputsGood;
     }
 
+    /**
+     * Since Bitmaps are not serializable, to send the image data with the book object
+     * we will compress the bitmap and convert it into a byte array (using a output stream,
+     * which will copy the bitmap data and writes it into a byte array, allowing it to be sent
+     * in different ways (in this case a serializable object) and returns that byte array.
+     *
+     * @return byte array
+     */
     public byte[] convertBitmap(){
         //used to convert bitmap into serializable format
         Bitmap bitmap = ((BitmapDrawable)newImage.getDrawable()).getBitmap();
@@ -243,6 +305,17 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
         byte[] byteImage = outStream.toByteArray();
         return byteImage;
+    }
+
+    public User currentUser(){
+        FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
+        assert userInfo != null;
+        String username = userInfo.getDisplayName();
+        String email = userInfo.getEmail();
+        String fullName = userInfo.getDisplayName();
+        String phoneNumber = userInfo.getPhoneNumber();
+        User currentUser = new User(username,email,fullName,phoneNumber);
+        return currentUser;
     }
 }
 

@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.os.Parcelable;
 import android.widget.ImageView;
 
+import com.example.mobilibrary.DatabaseController.User;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book> {
@@ -13,22 +16,21 @@ public class Book implements Serializable, Comparable<Book> {
     private String ISBN;
     private String author;
     private String status;
-    // private User owner;
+    private User owner;
     // location variable?
     private byte [] image;
     private int id;
 
 
 
-    public Book(String title, String ISBN, String author, String status, byte [] image) { // User user){
+    public Book(String title, String ISBN, String author, String status, byte [] image, User user){
         this.id = nextID;
         this.title = title;
         this.ISBN = ISBN;
         this.author = author;
         this.status = status;
         this.image = image;
-
-        //this.owner = user;
+        this.owner = user;
         nextID++;
     }
 
@@ -68,22 +70,17 @@ public class Book implements Serializable, Comparable<Book> {
         this.status = status;
     }
     
-    /*public User getOwner() {
+    public User getOwner() {
         return owner;
     }
 
-    public void setOwner(User user) {
-        owner = user;
-    }*/
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
 
     public byte [] getImage() {
         return image;
     }
-
-
-    /*public void setOwner(User owner) {
-        this.owner = owner;
-    }*/
 
     public void setImage(byte [] image) {
         this.image = image;

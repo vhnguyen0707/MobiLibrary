@@ -36,7 +36,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.example.mobilibrary.BookDetailsFragment"
             android:label="@string/title_activity_book_detail_fragment"
-            android:parentActivityName="com.example.mobilibrary.MyBooks"/>
+            android:parentActivityName="com.example.mobilibrary.MyBooksFragment"/>
         <activity android:name="com.example.mobilibrary.EditBookFragment"
             android:label="@string/title_activity_edit_book_fragment"
             android:theme="@style/AppTheme.NoActionBar"

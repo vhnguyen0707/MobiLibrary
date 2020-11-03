@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.mobilibrary.R;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -162,3 +161,4 @@ public class BookDetailsTest {
         solo.finishOpenedActivities();
     }
 }
+
