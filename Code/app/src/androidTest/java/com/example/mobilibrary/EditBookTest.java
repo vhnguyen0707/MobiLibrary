@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.mobillibrary.R;
 import com.robotium.solo.Solo;
 
 import org.json.JSONObject;

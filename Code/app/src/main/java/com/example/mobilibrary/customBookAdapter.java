@@ -16,18 +16,28 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import static com.example.mobilibrary.R.layout.layout_mybooks;
-
 public class customBookAdapter extends ArrayAdapter<Book> {
     private ArrayList<Book> books;
     private Context context;
 
+    /**
+     * Used as a adapter for an array of objects
+     * @param context
+     * @param books
+     */
     public customBookAdapter(@NonNull Context context, ArrayList<Book> books) {
         super(context,0,books);
         this.books = books;
         this.context = context;
     }
 
+    /**
+     * Create a book item in the listView with the book information (title, author and isbn)
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
