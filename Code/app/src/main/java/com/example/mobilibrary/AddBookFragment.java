@@ -6,15 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
-import android.media.Image;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -35,7 +31,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mobillibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.zxing.Result;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -92,11 +87,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 String bookISBN = newIsbn.getText().toString();
                 if (checkInputs(bookTitle, bookAuthor, bookISBN)) {
                     String bookStatus = "available";
-                    //used to convert bitmap into serializable format
-                    Bitmap bitmap = ((BitmapDrawable)newImage.getDrawable()).getBitmap();
-                    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                    byte[] bookImage = outStream.toByteArray();
+                    byte[] bookImage = convertBitmap();
                     Book newBook = new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
@@ -243,6 +234,15 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             inputsGood = false;
         }
         return inputsGood;
+    }
+
+    public byte[] convertBitmap(){
+        //used to convert bitmap into serializable format
+        Bitmap bitmap = ((BitmapDrawable)newImage.getDrawable()).getBitmap();
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+        byte[] byteImage = outStream.toByteArray();
+        return byteImage;
     }
 }
 

@@ -68,7 +68,7 @@ public class addBookTest{
 // Asserts that the current activity is MyBooks and if it will switch to addBookFragment. Otherwise, show “Wrong Activity”
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
         solo.clickOnMenuItem("My Books");
-        assertTrue(solo.getView(R.id.myBooks) != null);
+        solo.waitForText("My Books");
     }
 
     /**
