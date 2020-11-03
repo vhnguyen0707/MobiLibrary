@@ -2,48 +2,49 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/my_book_title"
+    android:id="@+id/my_book_item"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#D8C7AA">
 
     <TextView
         android:id="@+id/my_book_ISBN"
-        android:layout_width="374dp"
+        android:layout_width="0dp"
         android:layout_height="65dp"
         android:background="#A18C68"
         android:paddingTop="10sp"
         android:text="ISBN"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.567"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/my_book_title"
+        app:layout_constraintHorizontal_bias="0.432"
+        app:layout_constraintStart_toStartOf="@+id/my_book_title"
         app:layout_constraintTop_toBottomOf="@+id/my_book_author" />
 
     <TextView
-        android:id="@+id/Title"
-        android:layout_width="374dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:id="@+id/my_book_title"
+        android:layout_width="381dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="16dp"
         android:background="#A18C68"
         android:text="Book 1"
         android:textColor="#4A442B"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.567"
+        app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/my_book_author"
-        android:layout_width="374dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#A18C68"
         android:paddingTop="10sp"
         android:text="Author"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.567"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Title" />
+        app:layout_constraintEnd_toEndOf="@+id/my_book_title"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/my_book_title"
+        app:layout_constraintTop_toBottomOf="@+id/my_book_title" />
 </androidx.constraintlayout.widget.ConstraintLayout>

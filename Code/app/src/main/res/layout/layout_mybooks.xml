@@ -7,41 +7,42 @@
     android:layout_height="match_parent"
     android:background="#D8C7AA">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_button"
-        android:layout_width="72dp"
-        android:layout_height="73dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:foregroundGravity="center"
-        android:scaleType="centerInside"
-        app:backgroundTint="#4A4026"
-        app:fabCustomSize="70dp"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="412dp"
+        android:layout_height="87dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="wrap"
-        app:layout_constraintWidth_max="wrap"
-        app:maxImageSize="60dp"
-        app:rippleColor="#F6EBEB"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="0dp" />
 
     <ListView
         android:id="@+id/book_list"
-        android:layout_width="414dp"
-        android:layout_height="733dp"
-        android:background="#D8C7AA"
-        android:foregroundGravity="center"
-        android:scaleY="10"
+        android:layout_width="408dp"
+        android:layout_height="520dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/spinner">
 
     </ListView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addButton"
+        android:layout_width="80dp"
+        android:layout_height="0dp"
+        android:backgroundTint="#3C2A2A"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:tint="#FFFFFF"
+        app:backgroundTint="#201313"
+        app:fabCustomSize="77dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:maxImageSize="70dp"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
