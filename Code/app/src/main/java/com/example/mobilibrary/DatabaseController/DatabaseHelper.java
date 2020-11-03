@@ -201,12 +201,19 @@ public class DatabaseHelper {
     }
 
     /**
-     * Helper function to return current Firebase user
+     * Helper function to return current Firebase user.
      *
      * @return current logged in user
      */
     public FirebaseUser getUser() {
         return user;
+    }
+
+    /**
+     * Signs user out of session.
+     */
+    public void signOut() {
+        mAuth.signOut();
     }
 
     /**

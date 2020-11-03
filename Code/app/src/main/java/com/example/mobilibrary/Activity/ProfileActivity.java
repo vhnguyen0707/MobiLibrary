@@ -35,6 +35,7 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
     private EditText editPhone;
     private Button confirmButton;
     private Button cancelButton;
+    private Button signOutButton;
     private User profileUser;
     private User currentUser;
     private String profileUsername;
@@ -56,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
         editPhone = findViewById(R.id.edit_phone);
         confirmButton = findViewById(R.id.confirm_button);
         cancelButton = findViewById(R.id.cancel_button);
+        signOutButton = findViewById(R.id.sign_out_button);
         context = getApplicationContext();
 
         // Set visibility
@@ -132,6 +134,7 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
             editProfile();
         } else {
             editButton.setVisibility(View.INVISIBLE);
+            signOutButton.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -180,6 +183,17 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
 
             }
         });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                databaseHelper.signOut();
+                Intent intent = new Intent(ProfileActivity.this, LogIn.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
     }
 
     /**
@@ -189,10 +203,10 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
      */
     private void toggleVisibility(List<View> views) {
         for (int i = 0; i < views.size(); i++) {
-            if (views.get(i).getVisibility() == View.VISIBLE) {
-                views.get(i).setVisibility(View.INVISIBLE);
-            } else {
+            if (views.get(i).getVisibility() == View.INVISIBLE) {
                 views.get(i).setVisibility(View.VISIBLE);
+            } else {
+                views.get(i).setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -211,6 +225,7 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
     @Override
     public void onOkPressed() {
         toggleViews.add(editButton);
+        toggleViews.add(signOutButton);
         toggleVisibility(toggleViews);
         editEmail.setText(profileUser.getEmail());
         editPhone.setText(profileUser.getPhoneNo());
