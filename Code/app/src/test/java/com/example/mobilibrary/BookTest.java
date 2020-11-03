@@ -1,5 +1,7 @@
 package com.example.mobilibrary;
 
+import com.example.mobilibrary.DatabaseController.User;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

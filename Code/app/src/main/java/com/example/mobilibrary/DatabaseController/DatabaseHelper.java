@@ -1,6 +1,5 @@
 package com.example.mobilibrary.DatabaseController;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +9,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.mobilibrary.Activity.LogIn;
-import com.example.mobilibrary.Activity.SignUp;
-import com.example.mobilibrary.HomePage;
 import com.example.mobilibrary.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -23,8 +20,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.util.Consumer;
 
 
 import java.util.HashMap;
