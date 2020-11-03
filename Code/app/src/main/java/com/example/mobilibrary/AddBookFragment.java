@@ -71,7 +71,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         cameraButton = findViewById(R.id.camera_button);
 
         mRequestQueue = Volley.newRequestQueue(this);
-        mAuth = FirebaseAuth.getInstance();
 
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
                                             PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
@@ -309,7 +308,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     }
 
     public User currentUser(){
-        FirebaseUser userInfo = mAuth.getCurrentUser();
+        FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
+        assert userInfo != null;
         String username = userInfo.getDisplayName();
         String email = userInfo.getEmail();
         String fullName = userInfo.getDisplayName();
