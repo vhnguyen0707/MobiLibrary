@@ -125,7 +125,7 @@ public class DatabaseHelper {
                         if (task.isSuccessful()) {
                             Toast.makeText(context, "Authentication succeeded.", Toast.LENGTH_SHORT).show();
                             //log in to homepage
-                            context.startActivity(new Intent(context, HomeFragment.class));
+                            context.startActivity(new Intent(context, MainActivity.class));
                         } else {
                             Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show();
                             //go to log in screen again to prompt a new attempt

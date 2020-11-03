@@ -29,14 +29,15 @@
         </activity>
 
         <activity android:name="com.example.mobilibrary.MainActivity"
-            android:label="MainActivity" />
+            android:label="MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name="com.example.mobilibrary.AddBookFragment"
             android:label="@string/title_activity_add_book_fragment"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.example.mobilibrary.BookDetailsFragment"
             android:label="@string/title_activity_book_detail_fragment"
-            android:parentActivityName="com.example.mobilibrary.MyBooks"/>
+            android:parentActivityName="com.example.mobilibrary.MyBooksFragment"/>
         <activity android:name="com.example.mobilibrary.EditBookFragment"
             android:label="@string/title_activity_edit_book_fragment"
             android:theme="@style/AppTheme.NoActionBar"
