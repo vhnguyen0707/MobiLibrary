@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.util.Consumer;
 
 
@@ -40,7 +41,7 @@ public class DatabaseHelper {
     public DatabaseHelper(Context context) {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        //user = mAuth.getCurrentUser();
+        user = mAuth.getCurrentUser();
         this.context = context;
 
     }
@@ -59,7 +60,6 @@ public class DatabaseHelper {
                                 Toast.makeText(context, "Username already exists. Please try again!", Toast.LENGTH_SHORT).show();
                                 return;
                             } else {
-                                Toast.makeText(context, "Ok23432!", Toast.LENGTH_SHORT).show();
                                 registerUser(username, password, fullname, email, phoneNo);
                             }
 
@@ -92,7 +92,6 @@ public class DatabaseHelper {
                             userData.put("Fullname", name);
                             userData.put("Email", email);
                             userData.put("Phone", phoneNo);
-                            userData.put("Password", password);
 
                             DocumentReference userRef = db.collection("Users").document(username);
                             userRef.set(userData)
@@ -118,7 +117,7 @@ public class DatabaseHelper {
 
     }
 
-    public void validateUser(final String email, final String password){
+    public void validateUser(final String email, final String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -127,21 +126,14 @@ public class DatabaseHelper {
                             Toast.makeText(context, "Authentication succeeded.", Toast.LENGTH_SHORT).show();
                             //log in to homepage
                             context.startActivity(new Intent(context, HomePage.class));
-                        }else {
+                        } else {
                             Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show();
                             //go to log in screen again to prompt a new attempt
                             context.startActivity(new Intent(context, LogIn.class));
                         }
                     }
                 });
-
-
-
     }
-
-    //Books method
-
-
 
 
 
