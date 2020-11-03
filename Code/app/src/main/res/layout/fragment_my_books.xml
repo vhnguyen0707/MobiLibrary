@@ -7,7 +7,6 @@
     android:background="@color/colorBackgroundLight"
     tools:context="com.example.mobilibrary.MyBooksFragment">
 
-
     <TextView
         android:id="@+id/myBooks_title"
         android:layout_width="164dp"

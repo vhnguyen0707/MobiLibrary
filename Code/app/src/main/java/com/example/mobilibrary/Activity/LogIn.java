@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.mobilibrary.DatabaseController.DatabaseHelper;
 import com.example.mobilibrary.R;
 
-
 public class LogIn extends AppCompatActivity {
     private EditText inputEmail;
     private EditText inputPassword;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#D8C7AA"
+    android:background="@color/colorPrimaryDark"
     android:orientation="vertical">
 
     <TextView
@@ -13,21 +13,19 @@
         android:layout_gravity="center"
         android:layout_marginTop="100dp"
         android:fontFamily="sans-serif-light"
-        android:text="MobiLibrary"
         android:gravity="center"
+        android:text="MobiLibrary"
         android:textSize="50dp"
-        android:textStyle="bold"
-        ></TextView>
-
+        android:textStyle="bold"></TextView>
 
 
     <EditText
         android:id="@+id/email_editText"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="Email "
         android:inputType="textEmailAddress" />
@@ -37,13 +35,14 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true"
         app:passwordToggleEnabled="true">
+
         <EditText
             android:id="@+id/password_editText"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword" />
@@ -53,14 +52,13 @@
         android:id="@+id/login_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:text="Log In"
         app:layout_constraintEnd_toEndOf="@+id/password_editText"
         app:layout_constraintStart_toStartOf="@id/password_editText"
-        app:layout_constraintTop_toBottomOf="@id/password_editText"
-        />
+        app:layout_constraintTop_toBottomOf="@id/password_editText" />
 
 
     <LinearLayout
@@ -93,11 +91,11 @@
 
     <ProgressBar
         android:id="@+id/progress_bar"
-        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@id/signup_bar"/>
+        app:layout_constraintTop_toBottomOf="@id/signup_bar" />
 </LinearLayout>
 

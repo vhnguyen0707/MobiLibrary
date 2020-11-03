@@ -29,6 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
+
 @RunWith (AndroidJUnit4.class)
 public class BookDetailsTest {
     private Solo solo;
@@ -136,7 +137,7 @@ public class BookDetailsTest {
      * Asserts that by clicking on the delete button the activity will switch back to MyBooks
      * and the book that was deleted will no longer be in the list
      */
-    @Test
+   @Test
     public void deleteBookTest() {
         // go from MyBooks to viewing a book
         solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
