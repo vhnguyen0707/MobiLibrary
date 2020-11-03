@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.example.mobilibrary.Activity.LogIn;
 import com.example.mobilibrary.Activity.SignUp;
 import com.example.mobilibrary.HomePage;
+import com.example.mobilibrary.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -125,7 +126,7 @@ public class DatabaseHelper {
                         if (task.isSuccessful()) {
                             Toast.makeText(context, "Authentication succeeded.", Toast.LENGTH_SHORT).show();
                             //log in to homepage
-                            context.startActivity(new Intent(context, HomePage.class));
+                            context.startActivity(new Intent(context, MainActivity.class));
                         } else {
                             Toast.makeText(context, "Authentication Failed.", Toast.LENGTH_SHORT).show();
                             //go to log in screen again to prompt a new attempt

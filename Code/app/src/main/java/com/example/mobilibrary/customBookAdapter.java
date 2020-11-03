@@ -10,13 +10,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.mobillibrary.R;
+import com.example.mobilibrary.R;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import static com.example.mobillibrary.R.layout.layout_mybooks;
+import static com.example.mobilibrary.R.layout.layout_mybooks;
 
 public class customBookAdapter extends ArrayAdapter<Book> {
     private ArrayList<Book> books;
