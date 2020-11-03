@@ -210,12 +210,12 @@ public class DatabaseHelper {
 
     /**
      * Re-authenticates current user before allowing update of primary email.
-     * TODO: Don't allow entry into this method if credentials are incorrect
      *
      * @param email    current email (before change)
      * @param password current user's password
+     * @param callback callback to re-auth fragment
      */
-    public void reAuthUser(String email, String password) {
+    public void reAuthUser(final String email, String password, final Callback callback) {
         AuthCredential credential = EmailAuthProvider.getCredential(email, password);
 
         user.reauthenticate(credential)
@@ -224,8 +224,14 @@ public class DatabaseHelper {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "User re-authenticated!");
+                            getUserProfile(user.getDisplayName(), new Callback() {
+                                @Override
+                                public void onCallback(User user) {
+                                    callback.onCallback(user);
+                                }
+                            });
                         } else {
-                            Log.d(TAG, "User re-authentication failed!");
+                            Toast.makeText(context, "Incorrect email or password!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -242,31 +248,38 @@ public class DatabaseHelper {
      * @param callback callback to profile
      */
     public void updateUser(final String username, final String newEmail, final String newPhone, final String name, final Callback callback) {
-        DocumentReference docRef = db.collection("Users").document(username);
-        WriteBatch batch = db.batch();
-        batch.update(docRef, "email", newEmail);
-        batch.update(docRef, "phoneNo", newPhone);
-        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                user.updateEmail(newEmail)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                .setDisplayName(username)
+                .build();
+        user.updateProfile(profileUpdate)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        DocumentReference docRef = db.collection("Users").document(username);
+                        WriteBatch batch = db.batch();
+                        batch.update(docRef, "email", newEmail);
+                        batch.update(docRef, "phoneNo", newPhone);
+                        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
-                            public void onSuccess(Void aVoid) {
-                                User updatedUser = new User(username, newEmail, name, newPhone);
-                                callback.onCallback(updatedUser);
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "User new email update failed!");
+                            public void onComplete(@NonNull Task<Void> task) {
+                                user.updateEmail(newEmail)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                User updatedUser = new User(username, newEmail, name, newPhone);
+                                                callback.onCallback(updatedUser);
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.d(TAG, "User new email update failed!");
+                                            }
+                                        });
                             }
                         });
-            }
-        });
-
+                    }
+                });
     }
-
 
 }

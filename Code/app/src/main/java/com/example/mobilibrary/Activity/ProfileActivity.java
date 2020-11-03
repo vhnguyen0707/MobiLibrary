@@ -142,6 +142,8 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // User must correctly re-authenticate before editing their account
+                new reAuthFragment().show(getSupportFragmentManager(), "RE-AUTHENTICATION");
                 toggleViews.add(editButton);
                 toggleVisibility(toggleViews);
                 editEmail.setText(profileUser.getEmail());
@@ -166,8 +168,14 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
                             toggleVisibility(toggleViews);
                         } else if (!TextUtils.isEmpty(editPhone.getText().toString()) && editPhone.getText().toString().length() > 8) { // Phone number input & length already restricted by layout
                             // Update user with new email and/or phone in database
-                            new reAuthFragment().show(getSupportFragmentManager(), "RE-AUTHENTICATION");
-
+                            databaseHelper.updateUser(currentUser.getUsername(), editEmail.getText().toString(), editPhone.getText().toString(), profileUser.getName(), new Callback() {
+                                @Override
+                                public void onCallback(User user) {
+                                    Toast.makeText(context, "Profile saved!", Toast.LENGTH_SHORT).show();
+                                    toggleVisibility(toggleViews);
+                                    getProfileInfo();
+                                }
+                            });
                         } else {
                             Toast.makeText(context, "Entered an invalid phone number!", Toast.LENGTH_SHORT).show();
                         }
@@ -205,15 +213,6 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
     }
 
     @Override
-    public void onOkPressed(String email, String password) {
-        databaseHelper.reAuthUser(email, password);
-        databaseHelper.updateUser(currentUser.getUsername(), editEmail.getText().toString(), editPhone.getText().toString(), profileUser.getName(), new Callback() {
-            @Override
-            public void onCallback(User user) {
-                Toast.makeText(context, "Profile saved!", Toast.LENGTH_SHORT).show();
-                toggleVisibility(toggleViews);
-                getProfileInfo();
-            }
-        });
+    public void onOkPressed() {
     }
 }

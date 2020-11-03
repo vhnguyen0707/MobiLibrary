@@ -12,16 +12,21 @@ import androidx.fragment.app.DialogFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.mobilibrary.DatabaseController.DatabaseHelper;
+import com.example.mobilibrary.DatabaseController.User;
 
 public class reAuthFragment extends DialogFragment {
 
     private EditText email;
     private EditText password;
     private OnFragmentInteractionListener listener;
+    private DatabaseHelper databaseHelper;
 
     public interface OnFragmentInteractionListener {
-        void onOkPressed(String email, String password);
+        void onOkPressed();
     }
 
     @Override
@@ -29,6 +34,7 @@ public class reAuthFragment extends DialogFragment {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             listener = (OnFragmentInteractionListener) context;
+            databaseHelper = new DatabaseHelper(context);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -42,18 +48,39 @@ public class reAuthFragment extends DialogFragment {
         email = view.findViewById(R.id.old_email_text_view);
         password = view.findViewById(R.id.password_text_view);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        return builder.setView(view)
-                .setTitle("Re-authenticate")
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view)
+                .setTitle("Re-authentication")
                 .setPositiveButton("Sign In", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String reAuthEmail = email.getText().toString();
-                        String reAuthPass = password.getText().toString();
-                        listener.onOkPressed(reAuthEmail, reAuthPass);
+                        // To be overridden
                     }
-                }).create();
-
+                });
+        return builder.create();
     }
 
+    // https://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked
+    @Override
+    public void onResume() {
+        super.onResume();
+        final AlertDialog d = (AlertDialog) getDialog();
+        if (d != null) {
+            Button positiveButton = (Button) d.getButton(Dialog.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String reAuthEmail = email.getText().toString();
+                    String reAuthPass = password.getText().toString();
+                    databaseHelper.reAuthUser(reAuthEmail, reAuthPass, new Callback() {
+                        @Override
+                        public void onCallback(User user) {
+                            d.dismiss();
+                            listener.onOkPressed();
+                        }
+                    });
+                }
+            });
+        }
+    }
 }
