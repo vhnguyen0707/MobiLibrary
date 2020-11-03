@@ -178,7 +178,7 @@
     <ImageView
         android:id="@+id/avatarImageView"
         android:layout_width="412dp"
-        android:layout_height="193dp"
+        android:layout_height="190dp"
         android:layout_marginTop="70dp"
         android:src="@drawable/pfp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -144,10 +144,6 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
             public void onClick(View v) {
                 // User must correctly re-authenticate before editing their account
                 new reAuthFragment().show(getSupportFragmentManager(), "RE-AUTHENTICATION");
-                toggleViews.add(editButton);
-                toggleVisibility(toggleViews);
-                editEmail.setText(profileUser.getEmail());
-                editPhone.setText(profileUser.getPhoneNo());
 
                 // User cancels edit
                 cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -214,5 +210,9 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
 
     @Override
     public void onOkPressed() {
+        toggleViews.add(editButton);
+        toggleVisibility(toggleViews);
+        editEmail.setText(profileUser.getEmail());
+        editPhone.setText(profileUser.getPhoneNo());
     }
 }

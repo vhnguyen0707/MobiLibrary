@@ -39,8 +39,6 @@ public class ProfileActivityTest {
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
     }
 
-    User currentUser = new User("Test1", "test1@gmail.com", "Tester1", "1234567890");
-
     /**
      * Gets the Activity
      *
@@ -50,6 +48,8 @@ public class ProfileActivityTest {
     public void start() throws Exception {
         Activity activity = rule.getActivity();
     }
+
+    User currentUser = new User("Test1", "test1@gmail.com", "Tester1", "1234567890");
 
     /**
      * Checks that any profile that is not the user's own hides the edit button and all other related views.
