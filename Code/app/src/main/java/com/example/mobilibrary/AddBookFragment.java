@@ -29,10 +29,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mobilibrary.DatabaseController.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.auth.User;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -101,7 +101,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 if (checkInputs(bookTitle, bookAuthor, bookISBN)) {
                     String bookStatus = "available";
                     byte[] bookImage = convertBitmap();
-                    User bookOwner = mAuth.getCurrentUser();
+                    User bookOwner = currentUser();
                     Book newBook = new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage,bookOwner);
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("new book", newBook);
@@ -306,6 +306,16 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
         byte[] byteImage = outStream.toByteArray();
         return byteImage;
+    }
+
+    public User currentUser(){
+        FirebaseUser userInfo = mAuth.getCurrentUser();
+        String username = userInfo.getDisplayName();
+        String email = userInfo.getEmail();
+        String fullName = userInfo.getDisplayName();
+        String phoneNumber = userInfo.getPhoneNumber();
+        User currentUser = new User(username,email,fullName,phoneNumber);
+        return currentUser;
     }
 }
 
