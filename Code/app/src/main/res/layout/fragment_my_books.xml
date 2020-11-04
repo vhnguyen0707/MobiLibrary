@@ -19,14 +19,14 @@
         app:layout_constraintHorizontal_bias="0.064"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.524" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="384dp"
         android:layout_height="61dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
         android:background="#FFFFFF"
         android:backgroundTint="#FFFFFF"
         android:textAlignment="center"

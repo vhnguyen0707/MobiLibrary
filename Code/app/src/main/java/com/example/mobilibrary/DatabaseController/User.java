@@ -1,6 +1,8 @@
 package com.example.mobilibrary.DatabaseController;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private final String username;
     private String email;
     private final String name;
