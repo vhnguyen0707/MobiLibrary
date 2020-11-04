@@ -34,7 +34,7 @@ public class EditBookTest {
     private Solo solo;
 
         @Rule
-    public ActivityTestRule<MyBooks> rule =
+    public ActivityTestRule<MainActivity> rule =
             new ActivityTestRule<>(MainActivity.class, true, true);
 
     /**
@@ -51,7 +51,7 @@ public class EditBookTest {
         solo.clickOnMenuItem("My Books");
 
         // establish a book to work on
-        solo.clickOnView(solo.getView(R.id.add_button));
+        solo.clickOnView(solo.getView(R.id.addButton));
         solo.enterText((EditText) solo.getView(R.id.book_title), "Song of the Lioness");
         solo.enterText((EditText) solo.getView(R.id.book_author), "Tamora Pierce");
         solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234567890123");
