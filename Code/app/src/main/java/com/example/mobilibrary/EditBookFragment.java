@@ -44,17 +44,17 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class EditBookFragment extends AppCompatActivity {
-    EditText title;
-    EditText author;
-    EditText ISBN;
+    private EditText title;
+    private EditText author;
+    private EditText ISBN;
 
-    ImageView photo;
-    FloatingActionButton editImageButton;
-    FloatingActionButton deleteImageButton;
+    private ImageView photo;
+    private FloatingActionButton editImageButton;
+    private FloatingActionButton deleteImageButton;
 
-    FloatingActionButton backButton;
-    FloatingActionButton scanButton;
-    Button confirmButton;
+    private FloatingActionButton backButton;
+    private FloatingActionButton scanButton;
+    private Button confirmButton;
 
     private RequestQueue mRequestQueue;
 

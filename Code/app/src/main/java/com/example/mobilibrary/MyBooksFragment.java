@@ -28,13 +28,13 @@ import static android.app.Activity.RESULT_OK;
  * A simple {@link Fragment} subclass.
  */
 public class MyBooksFragment extends Fragment {
-    ListView bookView;
-    ArrayAdapter<Book> bookAdapter;
-    ArrayList<Book> bookList;
-    FloatingActionButton addButton;
+    private ListView bookView;
+    private ArrayAdapter<Book> bookAdapter;
+    private ArrayList<Book> bookList;
+    private FloatingActionButton addButton;
 
-    ArrayList<Book> tempBookList;
-    Spinner statesSpin;
+    private ArrayList<Book> tempBookList;
+    private Spinner statesSpin;
     private static final String[] states = new String[]{"Owned", "Requested", "Accepted", "Borrowed"};
 
     public MyBooksFragment() {
@@ -158,7 +158,7 @@ public class MyBooksFragment extends Fragment {
      *
      * @param state
      */
-    void DisplayBooks(String state) {
+    public void DisplayBooks(String state) {
         state = state.toLowerCase();
         switch (state) {
             case "requested":

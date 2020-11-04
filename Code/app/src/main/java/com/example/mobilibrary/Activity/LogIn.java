@@ -74,7 +74,4 @@ public class LogIn extends AppCompatActivity {
         });
 
     }
-    @Override
-    public void onBackPressed(){
-    }
 }

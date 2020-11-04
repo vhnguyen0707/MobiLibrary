@@ -52,14 +52,14 @@ import java.io.Serializable;
 import com.example.mobilibrary.Callback;
 
 public class AddBookFragment extends AppCompatActivity implements Serializable {
-    EditText newTitle;
-    EditText newAuthor;
-    EditText newIsbn;
-    ImageView newImage;
+    private EditText newTitle;
+    private EditText newAuthor;
+    private EditText newIsbn;
+    private ImageView newImage;
 
-    Button confirmButton;
-    FloatingActionButton backButton;
-    FloatingActionButton cameraButton;
+    private Button confirmButton;
+    private FloatingActionButton backButton;
+    private FloatingActionButton cameraButton;
 
     private RequestQueue mRequestQueue;
     private FirebaseFirestore db;

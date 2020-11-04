@@ -11,7 +11,6 @@ import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book> {
     private static int nextID = 0;
-
     private String title;
     private String ISBN;
     private String author;
