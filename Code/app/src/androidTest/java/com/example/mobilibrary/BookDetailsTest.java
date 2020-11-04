@@ -34,7 +34,7 @@ public class BookDetailsTest {
     private Solo solo;
 
         @Rule
-    public ActivityTestRule<MyBooks> rule =
+    public ActivityTestRule<MainActivity> rule =
             new ActivityTestRule<>(MainActivity.class, true, true);
 
     /**
@@ -51,7 +51,7 @@ public class BookDetailsTest {
         solo.clickOnMenuItem("My Books");
 
         // establish a book to work on
-        solo.clickOnView(solo.getView(R.id.add_button));
+        solo.clickOnView(solo.getView(R.id.addButton));
         solo.assertCurrentActivity("Wrong Activity", AddBookFragment.class);
         solo.enterText((EditText) solo.getView(R.id.book_title), "Song of the Lioness");
         solo.enterText((EditText) solo.getView(R.id.book_author), "Tamora Pierce");
