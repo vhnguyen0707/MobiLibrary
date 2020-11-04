@@ -8,7 +8,6 @@ import androidx.test.rule.ActivityTestRule;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,11 +22,9 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import android.app.Fragment;
 
 
 @RunWith (AndroidJUnit4.class)
@@ -170,7 +167,7 @@ public class BookDetailsTest {
         // delete the book
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
         solo.clickOnView(solo.getView(R.id.delete_button));
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
+        solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
 
         // check that the only book formerly in list is deleted from the data list
         Fragment books2 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);

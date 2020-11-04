@@ -97,7 +97,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
           confirmButton first check if the three important fields (title,author and ISBN) are filled
           and are valid. The it will add an available status to book and if there is an image in
           imageView then will convert it to a byte array (so it can be serialized). It will check who
-          is the current user and set that as the book owner and creates the book object and sends it to myBooks
+          is the current user using the onCallBack interface and set that as the book owner and creates
+          the book object and sends it to myBooks
          */
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,6 +325,14 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         return byteImage;
     }
 
+    /**
+     * currentUser uses the current instance of the firebase auth to get the information of the
+     * current user and create a User based on it. Because onComplete is asynchronous (so the info
+     * won't arrive until after the code completes) we need to use onCallBack interface. It will
+     * take the info and allow the information to be used (without null).
+     *
+     * @param cbh
+     */
     public void currentUser(final Callback cbh) {
         final FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
