@@ -56,7 +56,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     EditText newAuthor;
     EditText newIsbn;
     ImageView newImage;
-    User bookOwner;
 
     Button confirmButton;
     FloatingActionButton backButton;
@@ -103,23 +102,24 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent returnIntent = new Intent();
-                String bookTitle = newTitle.getText().toString();
-                String bookAuthor = newAuthor.getText().toString();
-                String bookISBN = newIsbn.getText().toString();
+                final String bookTitle = newTitle.getText().toString();
+                final String bookAuthor = newAuthor.getText().toString();
+                final String bookISBN = newIsbn.getText().toString();
                 if (checkInputs(bookTitle, bookAuthor, bookISBN)) {
                     currentUser(new Callback() {
                         @Override
                         public void onCallback(User user) {
-                            bookOwner = user;
+                            User bookOwner = user;
+                            String bookStatus = "available";
+                            byte[] bookImage = convertBitmap();
+                            Book newBook = new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookOwner);
+                            Intent returnIntent = new Intent();
+                            returnIntent.putExtra("new book", newBook);
+                            setResult(RESULT_OK, returnIntent);
+                            finish();
                         }
                     });
-                    String bookStatus = "available";
-                    byte[] bookImage = convertBitmap();
-                    Book newBook = new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookOwner);
-                    returnIntent.putExtra("new book", newBook);
-                    setResult(RESULT_OK, returnIntent);
-                    finish();
+
                 }
             }
         });
@@ -326,9 +326,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
 
     public void currentUser(final Callback cbh) {
         final FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
-        final String TAG = "User";
         db = FirebaseFirestore.getInstance();
-        db.collection("Users").whereEqualTo("Email", userInfo.getEmail()).get()
+        db.collection("Users").whereEqualTo("email", userInfo.getEmail()).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
