@@ -198,6 +198,7 @@
         android:background="#B3A894"
         android:hint="Enter ISBN"
         android:inputType="number"
+        android:maxLength="13"
         android:shadowColor="#CCFA00"
         android:textSize="20sp" />
 
