@@ -34,9 +34,9 @@ import static org.junit.Assert.assertNull;
 public class BookDetailsTest {
     private Solo solo;
 
-    @Rule
+        @Rule
     public ActivityTestRule<MyBooks> rule =
-            new ActivityTestRule<>(MyBooks.class, true, true);
+            new ActivityTestRule<>(MainActivity.class, true, true);
 
     /**
      * Sets up list with at least one book to test one
@@ -47,8 +47,13 @@ public class BookDetailsTest {
         // establish an instrument
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
 
+        // go to MyBooks and switch to addBookFragment
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        solo.clickOnMenuItem("My Books");
+
         // establish a book to work on
         solo.clickOnView(solo.getView(R.id.add_button));
+        solo.assertCurrentActivity("Wrong Activity", AddBookFragment.class);
         solo.enterText((EditText) solo.getView(R.id.book_title), "Song of the Lioness");
         solo.enterText((EditText) solo.getView(R.id.book_author), "Tamora Pierce");
         solo.enterText((EditText) solo.getView(R.id.book_isbn), "1234567890123");
@@ -61,7 +66,13 @@ public class BookDetailsTest {
      */
     @Test
     public void checkActivityActivation() {
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+
+        // make sure book is in myBooks to click on
+        Fragment books = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        solo.waitForText("Song of the Lioness", 1, 2000);
+        solo.waitForText("Tamora Pierce", 1, 2000);
+        solo.waitForText("123456780123");
         ArrayList<TextView> book = solo.clickInList(1);
         solo.clickOnText("Song of the Lioness");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
@@ -94,24 +105,27 @@ public class BookDetailsTest {
     @Test
     public void backButtonTest() {
         // go from MyBooks to viewing a book
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
-        ArrayList<TextView> thisBook = solo.clickInList(1);
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        Fragment books1 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        solo.waitForText("Song of the Lioness", 1, 2000);
+        solo.waitForText("Tamora Pierce", 1, 2000);
+        solo.waitForText("123456780123");
+        ArrayList<TextView> book1 = solo.clickInList(1);
         solo.clickOnText("Song of the Lioness");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
 
         // leave book details without changing anything
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
         solo.clickOnView(solo.getView(R.id.back_to_books_button));
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
 
         // check that nothing was changed since conception
-        MyBooks books = (MyBooks) solo.getCurrentActivity();
-        final ListView bookView = books.bookView;
+        Fragment books2 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        final ListView bookView = (ListView) solo.getView(R.id.book_list);
         assertEquals(1, bookView.getCount());
-        Book book = (Book) bookView.getItemAtPosition(0);
-        assertEquals("Song of the Lioness", book.getTitle());
-        assertEquals("Tamora Pierce", book.getAuthor());
-        assertEquals("1234567890123", book.getISBN());
+        Book book2 = (Book) bookView.getItemAtPosition(0);
+        assertEquals("Song of the Lioness", book2.getTitle());
+        assertEquals("Tamora Pierce", book2.getAuthor());
+        assertEquals("1234567890123", book2.getISBN());
 
     }
 
@@ -122,8 +136,12 @@ public class BookDetailsTest {
     @Test
     public void editBookTest() {
         // go from MyBooks to viewing a book
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
-        ArrayList<TextView> book = solo.clickInList(1);
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        Fragment books1 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        solo.waitForText("Song of the Lioness", 1, 2000);
+        solo.waitForText("Tamora Pierce", 1, 2000);
+        solo.waitForText("123456780123");
+        ArrayList<TextView> book1 = solo.clickInList(1);
         solo.clickOnText("Song of the Lioness");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
 
@@ -137,11 +155,15 @@ public class BookDetailsTest {
      * Asserts that by clicking on the delete button the activity will switch back to MyBooks
      * and the book that was deleted will no longer be in the list
      */
-   @Test
+    @Test
     public void deleteBookTest() {
         // go from MyBooks to viewing a book
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
-        ArrayList<TextView> book = solo.clickInList(1);
+        solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
+        Fragment books1 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        solo.waitForText("Song of the Lioness", 1, 2000);
+        solo.waitForText("Tamora Pierce", 1, 2000);
+        solo.waitForText("123456780123");
+        ArrayList<TextView> book1 = solo.clickInList(1);
         solo.clickOnText("Song of the Lioness");
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
 
@@ -151,8 +173,8 @@ public class BookDetailsTest {
         solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
 
         // check that the only book formerly in list is deleted from the data list
-        MyBooks books = (MyBooks) solo.getCurrentActivity();
-        final ListView bookView = books.bookView;
+        Fragment books2 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
+        final ListView bookView = (ListView) solo.getView(R.id.book_list);
         assertEquals(0, bookView.getCount());
     }
 
