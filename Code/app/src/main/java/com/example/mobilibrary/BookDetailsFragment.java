@@ -86,10 +86,7 @@ public class BookDetailsFragment extends AppCompatActivity {
 
         title.setText(viewBook.getTitle());
         author.setText(viewBook.getAuthor());
-
-
-
-        // owner.setText(viewBook.getOwner().getUsername());
+        owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
         Bitmap bitmap;
         if (viewBook.getImage() != null) {

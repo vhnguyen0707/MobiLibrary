@@ -28,6 +28,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/rounded_searchbar"
+        android:paddingLeft="10dp"
         android:text="Search Books..."
         android:textColor="@color/colorText"
         android:textSize="20dp"
@@ -43,9 +44,10 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:clickable="true"
+        android:foreground="@drawable/pfp"
+        app:backgroundTint="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/searchButton"
@@ -59,5 +61,21 @@
         android:src="@drawable/ic_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile" />
+
+    <TextView
+        android:id="@+id/other_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        android:clickable="true"
+        android:text="Test123"
+        android:textColor="@color/design_default_color_primary_variant"
+        android:textColorHighlight="@color/colorPrimaryDark"
+        android:textColorLink="@color/colorText"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

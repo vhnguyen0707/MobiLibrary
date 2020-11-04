@@ -5,25 +5,24 @@ import java.io.Serializable;
 public class User implements Serializable {
     private final String username;
     private String email;
-    private final String fullname;
+    private final String name;
     private String phoneNo;
-
 
     /**
      * Full constructor
      *
-     * @param username:  unique username
-     * @param email: user's email address
-     * @param fullname: user's  name
-     * @param phoneNo: user's phone number
+     * @param username: unique username
+     * @param email:    user's email address
+     * @param name:     user's name
+     * @param phoneNo:  user's phone number
      */
-    public User(String username, String email, String fullname, String phoneNo) {
-        if (username == null || email == null || fullname == null|| phoneNo == null ) {
+    public User(String username, String email, String name, String phoneNo) {
+        if (username == null || email == null || name == null || phoneNo == null) {
             throw new IllegalArgumentException("These fields must not be null.");
         }
         this.username = username;
         this.email = email;
-        this.fullname = fullname;
+        this.name = name;
         this.phoneNo = phoneNo;
     }
 
@@ -44,7 +43,7 @@ public class User implements Serializable {
     }
 
     public String getName() {
-        return fullname;
+        return name;
     }
 
     public String getPhoneNo() {
