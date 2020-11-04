@@ -325,19 +325,19 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     }
 
     public void currentUser(final Callback cbh) {
-        FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
         final String TAG = "User";
         db = FirebaseFirestore.getInstance();
-        db.collection("Users").whereEqualTo("uid", userInfo.getUid()).get()
+        db.collection("Users").whereEqualTo("Email", userInfo.getEmail()).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
-                                String username = document.getId();
-                                String email = document.get("Email").toString();
-                                String name = document.get("Fullname").toString();
-                                String Phone = document.get("Phone").toString();
+                                String username = document.get("username").toString();
+                                String email = userInfo.getEmail();
+                                String name = document.get("name").toString();
+                                String Phone = document.get("phoneNo").toString();
                                 User currentUser = new User(username, email, name, Phone);
                                 cbh.onCallback(currentUser);
                             }
