@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_book_item"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="175dp"
     android:background="#D8C7AA">
 
     <TextView
         android:id="@+id/my_book_ISBN"
-        android:layout_width="0dp"
-        android:layout_height="65dp"
+        android:layout_width="370dp"
+        android:layout_height="45dp"
         android:background="#A18C68"
         android:paddingTop="10sp"
         android:text="ISBN"
@@ -22,8 +22,8 @@
 
     <TextView
         android:id="@+id/my_book_title"
-        android:layout_width="339dp"
-        android:layout_height="64dp"
+        android:layout_width="370dp"
+        android:layout_height="53dp"
         android:layout_marginTop="16dp"
         android:background="#A18C68"
         android:text="Book 1"
