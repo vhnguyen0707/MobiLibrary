@@ -28,24 +28,24 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class BookDetailsFragment extends AppCompatActivity {
-    TextView title;
-    TextView author;
-    TextView owner;
-    TextView ISBN;
-    TextView authorTitle;
-    TextView ownerTitle;
-    TextView isbnTitle;
-    FloatingActionButton backButton;
-    FloatingActionButton editButton;
-    FloatingActionButton deleteButton;
-    String req_users [] = {"Natalia", "Chloe", "Kimberly", "Jill", "Nguyen", "Sooraj"}; // sort of a placeholder this one, need to replace with actual requesting users once we implement it
-    Button detailsBtn;
-    Button requestsBtn;
-    TextView[] requestAssets;
-    ImageView photo;
-    ListView reqList;
-    ArrayAdapter<String> reqAdapter;
-    ArrayList<String> reqDataList;
+    private TextView title;
+    private TextView author;
+    private TextView owner;
+    private TextView ISBN;
+    private TextView authorTitle;
+    private TextView ownerTitle;
+    private TextView isbnTitle;
+    private FloatingActionButton backButton;
+    private FloatingActionButton editButton;
+    private FloatingActionButton deleteButton;
+    private String req_users [] = {"Natalia", "Chloe", "Kimberly", "Jill", "Nguyen", "Sooraj"}; // sort of a placeholder this one, need to replace with actual requesting users once we implement it
+    private Button detailsBtn;
+    private Button requestsBtn;
+    private TextView[] requestAssets;
+    private ImageView photo;
+    private ListView reqList;
+    private ArrayAdapter<String> reqAdapter;
+    private ArrayList<String> reqDataList;
 
     @Override
     protected void onCreate (@Nullable Bundle SavedInstances) {
