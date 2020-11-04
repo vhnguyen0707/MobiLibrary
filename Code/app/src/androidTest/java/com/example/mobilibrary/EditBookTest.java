@@ -28,6 +28,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import android.app.Fragment;
 
 @RunWith (AndroidJUnit4.class)
 public class EditBookTest {

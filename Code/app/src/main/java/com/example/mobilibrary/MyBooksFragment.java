@@ -95,6 +95,14 @@ public class MyBooksFragment extends Fragment {
         return v;
     }
 
+    /**
+     * If requestCode is 0, if its 1, we are either deleting a book (result code =1) or editing
+     * an existing book (result code = 2) with data.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -143,6 +151,13 @@ public class MyBooksFragment extends Fragment {
     }
 
     // userBookList
+
+    /**
+     * Used to function spinner, if the book is in a certain status it will group them and will
+     * allow the user to view them as such
+     *
+     * @param state
+     */
     void DisplayBooks(String state) {
         state = state.toLowerCase();
         switch (state) {
