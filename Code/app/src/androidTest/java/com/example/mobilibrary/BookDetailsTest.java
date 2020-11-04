@@ -93,7 +93,7 @@ public class BookDetailsTest {
         // validate displayed information
         assertEquals("Song of the Lioness", bookDetails.title.getText().toString());
         assertEquals("Tamora Pierce", bookDetails.author.getText().toString());
-        // assertEquals("username", bookDetails.owner.getText().toString());
+        assertEquals("username", bookDetails.owner.getText().toString());
         assertEquals("1234567890123", bookDetails.ISBN.getText().toString());
         assertNull(drawable);
     }
