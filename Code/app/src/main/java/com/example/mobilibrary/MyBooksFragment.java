@@ -25,7 +25,10 @@ import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * A simple {@link Fragment} subclass.
+ * My Books fragment that is navigated to using notification bar. Contains a dropdown that organizes the User's books into status:
+ * Owned, Requested, Accepted, and Borrowed. The user is able to see book title, author, isbn, and status.
+ * The user is also able to add and edit their books in this Fragment
+ *
  */
 public class MyBooksFragment extends Fragment {
     private ListView bookView;
