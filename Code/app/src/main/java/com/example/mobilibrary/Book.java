@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book> {
+    private final String firestoreID;
     private static int nextID = 0;
     private String title;
     private String ISBN;
@@ -21,8 +22,18 @@ public class Book implements Serializable, Comparable<Book> {
     private int id;
 
 
-
+    /**Constructor for a new book. Since the new book is not saved to firestore yet,
+     *  the firestore id would be null
+     *
+     * @param title Title of the book
+     * @param ISBN  The book's isbn
+     * @param author The book's author
+     * @param status The book's status
+     * @param image  Byte array of image that user can choose to attach to the book
+     * @param user  The book's owner
+     */
     public Book(String title, String ISBN, String author, String status, byte [] image, User user){
+        this.firestoreID = null;
         this.id = nextID;
         this.title = title;
         this.ISBN = ISBN;
@@ -31,6 +42,21 @@ public class Book implements Serializable, Comparable<Book> {
         this.image = image;
         this.owner = user;
         nextID++;
+    }
+
+    public Book(String firestoreID, String title, String ISBN, String author, String status, byte [] image, User user){
+        this.firestoreID = firestoreID;
+        this.title = title;
+        this.ISBN = ISBN;
+        this.author = author;
+        this.status = status;
+        this.image = image;
+        this.owner = owner;
+    }
+
+
+    public String getFirestoreID() {
+        return firestoreID;
     }
 
     public int getId() {
