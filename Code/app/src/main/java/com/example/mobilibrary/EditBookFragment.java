@@ -31,7 +31,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.mobillibrary.R;
+import com.example.mobilibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -43,27 +43,35 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+/**
+ * This class takes in a book and edits it Title, Author, ISBN and photograph. The first three
+ * can be done manually or via scanning the book's ISBN
+ */
 public class EditBookFragment extends AppCompatActivity {
-    EditText title;
-    EditText author;
-    EditText ISBN;
+    private EditText title;
+    private EditText author;
+    private EditText ISBN;
 
-    ImageView photo;
-    FloatingActionButton editImageButton;
-    FloatingActionButton deleteImageButton;
+    private ImageView photo;
+    private FloatingActionButton editImageButton;
+    private FloatingActionButton deleteImageButton;
 
-    FloatingActionButton backButton;
-    FloatingActionButton scanButton;
-    Button confirmButton;
+    private FloatingActionButton backButton;
+    private FloatingActionButton scanButton;
+    private Button confirmButton;
 
     private RequestQueue mRequestQueue;
 
+    /**
+     * Creates the activity for editing books and the necessary logic to do so
+     * @param SavedInstances The book to be edited
+     */
     @Override
     protected void onCreate (@Nullable Bundle SavedInstances){
         super.onCreate(SavedInstances);
         setContentView(R.layout.layout_edit_book_fragment);
 
-        // photo option is separate user story, will come back to it
+        // set each variable to correct view
         title = findViewById(R.id.edit_title);
         author = findViewById(R.id.edit_author);
         ISBN = findViewById(R.id.edit_isbn);
@@ -75,18 +83,18 @@ public class EditBookFragment extends AppCompatActivity {
         editImageButton = findViewById(R.id.edit_image_button);
         deleteImageButton = findViewById(R.id.delete_image_button);
 
-
+        // set up permissions for scanning intent
         mRequestQueue = Volley.newRequestQueue(this);
-
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
                 PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
 
+        // check that a book was passed to this activity, otherwise end the activity
         if (getIntent() == null) {
             finish();
         }
-
-        // fill fields
         final Book book = (Book) getIntent().getSerializableExtra("edit");
+
+        // fill fields with correct information from the passed book
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
         ISBN.setText(String.valueOf(book.getISBN()));
@@ -99,6 +107,9 @@ public class EditBookFragment extends AppCompatActivity {
         }
         photo.setImageBitmap(bitmap);
 
+        /**
+         * If Back Button is pressed, return to BookDetailsFragment without changing anything about the book
+         */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,6 +117,10 @@ public class EditBookFragment extends AppCompatActivity {
             }
         });
 
+        /**
+         * When Confirm Button is pressed the activity returns to BookDetailsFragment and passes along the
+         * book with the correct changes made to its details
+         */
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,6 +128,8 @@ public class EditBookFragment extends AppCompatActivity {
 
                 // if input is valid, edit book and return it to parent activity
                 if (validateInputs(title.getText().toString(), author.getText().toString(), stringISBN)) {
+
+                    // if a book has a photo pass along the photo's bitmap
                     if (!nullPhoto()) {
                         Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
                         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -120,8 +137,10 @@ public class EditBookFragment extends AppCompatActivity {
                         byte[] editImage = outStream.toByteArray();
                         book.setImage(editImage);
                     } else {
-                        book.setImage(null);
+                        book.setImage(null);    // book has no photo so image bitmap is set to null
                     }
+
+                    // set all required fields to what is in their EditText views
                     book.setTitle(title.getText().toString());
                     book.setAuthor(author.getText().toString());
                     book.setISBN(stringISBN);
@@ -133,6 +152,10 @@ public class EditBookFragment extends AppCompatActivity {
             }
         });
 
+        /**
+         * When the Scan Button is pressed, a new activity intent opens to take a picture of the
+         * book's barcode
+         */
         scanButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
@@ -141,6 +164,9 @@ public class EditBookFragment extends AppCompatActivity {
             }
         });
 
+        /**
+         * When the Delete Image Button is pressed, the book's photograph's bitmap is set to null
+         */
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,6 +174,10 @@ public class EditBookFragment extends AppCompatActivity {
             }
         });
 
+        /**
+         * When the Edit Image Button is pressed a new activity intent opens to take a picture to
+         * attach to the book
+         */
         editImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,11 +188,23 @@ public class EditBookFragment extends AppCompatActivity {
         });
     }
 
+    /**
+     * When the Scan Button is pressed the scan activity is initiated
+     * @param view the Scan Button
+     */
     private void ScanButton(View view) {
         IntentIntegrator intentIntegrator = new IntentIntegrator(this);
         intentIntegrator.initiateScan();
     }
 
+    /**
+     * Validates that the required fields are not left empty or given an invalid value at the time of
+     * confirming changes made to the book
+     * @param validateTitle string that is in the title field
+     * @param validateAuthor sting that is in the author field
+     * @param validateISBN string that is in the ISBN field
+     * @return boolean true if all fields are non empty and given valid values, false otherwise
+     */
     private boolean validateInputs(String validateTitle, String validateAuthor, String validateISBN){
         boolean validation = true;
         if (validateTitle.isEmpty() == true) {
@@ -180,17 +222,29 @@ public class EditBookFragment extends AppCompatActivity {
         return validation;
     }
 
+    /**
+     * Determines if the book's photograph has a null bitmap
+     * @return boolean true if the book's photograph has a null bitmap, false otherwise
+     */
     private boolean nullPhoto () {
-        Drawable drawable = photo.getDrawable();
+        Drawable drawable = photo.getDrawable();    // get image
         BitmapDrawable bitmapDrawable;
         if (!(drawable instanceof BitmapDrawable)) {
-            bitmapDrawable = null;
+            bitmapDrawable = null;  // image has no bitmap
         } else {
-            bitmapDrawable = (BitmapDrawable) photo.getDrawable();
+            bitmapDrawable = (BitmapDrawable) photo.getDrawable();  // get image bitmap
         }
-        return drawable == null || bitmapDrawable.getBitmap() == null;
+        return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
     }
 
+    /**
+     * Logic for returning from the camera for scanning or taking a picture for the book photograph.
+     * If requestCode is 2, the image's bitmap is set as the book photograph's bitmap, otherwise the ISBN is
+     * set as the book's ISBN and the author and title fields are filled based on information from ISBN
+     * @param requestCode 2 if picture was taken for the book photograph, otherwise return from scan activity
+     * @param resultCode
+     * @param data image bitmap if requestCode is 2, isbn information otherwise
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -222,7 +276,7 @@ public class EditBookFragment extends AppCompatActivity {
 
                     final String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
                     Uri uri = Uri.parse(url + isbn);
-                    Uri.Builder builder = uri.buildUpon();
+                    Uri.Builder builder = uri.buildUpon();  // build url with ISBN
 
                     parseJson(builder.toString()); //get results from webpage
                 }
@@ -230,6 +284,10 @@ public class EditBookFragment extends AppCompatActivity {
         }
     }
 
+    /**
+     * Given a webpage built from the ISBN, find the book's information and fill the title and author fields
+     * @param key webpage url built from the ISBN
+     */
     private void parseJson(String key) {
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(), null,
                 new Response.Listener<JSONObject>() { //volley stuff
@@ -286,6 +344,10 @@ public class EditBookFragment extends AppCompatActivity {
         mRequestQueue.add(request);
     }
 
+    /**
+     * Check if connnected to the internet
+     * @return boolean true if connected, false otherwise
+     */
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
