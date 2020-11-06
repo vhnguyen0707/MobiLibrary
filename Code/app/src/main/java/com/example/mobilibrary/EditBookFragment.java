@@ -157,6 +157,7 @@ public class EditBookFragment extends AppCompatActivity {
                             book.setTitle(bookTitle);
                             book.setAuthor(bookAuthor);
                             book.setISBN(stringISBN);
+                            byte[] emptyArray = new byte[0];
 
                             // if a book has a photo pass along the photo's bitmap
                             if (!nullPhoto()) {
@@ -165,8 +166,8 @@ public class EditBookFragment extends AppCompatActivity {
                                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
                                 byte[] editImage = outStream.toByteArray();
                                 book.setImage(editImage);
-                            } else {
-                                book.setImage(null);    // book has no photo so image bitmap is set to null
+                            }else {
+                                book.setImage(emptyArray);    // book has no photo so image bitmap is set to null
                             }
 
                             // edit book in firestore
