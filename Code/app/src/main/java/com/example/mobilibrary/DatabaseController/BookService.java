@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.StorageReference;
@@ -52,7 +53,8 @@ public class BookService {
     }
 
     /**
-     * This method attempts to add a new book to the database
+     * This method attempts to add a new book to the database. Two different toast messages one for success and
+     * one for failure
      * @param context the current construct
      * @param newBook new Book object
      */
@@ -61,15 +63,17 @@ public class BookService {
         // Checks if the book is already added to database
         if (newBook.getFirestoreID()!= null)
             throw new IllegalArgumentException("This book is already added to the database");
-        DocumentReference bookDoc = db.collection("Books").document(newBook.getTitle());
+         Blob my_blob = Blob.fromBytes(newBook.getImage());
          Map<String, Object> data = new HashMap<>();
+         data.put("Title", newBook.getTitle());
          data.put("ISBN", newBook.getISBN());
          data.put("Author", newBook.getAuthor());
          data.put("Status", newBook.getStatus());
          data.put("Owner", newBook.getOwner().getUsername());
-         bookDoc.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+         data.put("Image", my_blob);
+        db.collection("Books").add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
              @Override
-             public void onSuccess(Void aVoid) {
+             public void onSuccess(DocumentReference documentReference) {
                  Toast.makeText(context, "Successfully added book!", Toast.LENGTH_SHORT).show();
              }
          }).addOnFailureListener(new OnFailureListener() {
@@ -82,7 +86,7 @@ public class BookService {
     }
 
     /**
-     * This method attempts adding the image of book user chooses to attach to FirebaseStorage
+     * This method checks if the image successfully uploaded to FirebaseStorage
      * @param title Name of the book
      * @param imageUri The URI of the image to save
      * @param successListener A SuccessListener of type Void. Called if the tasks succeeded
