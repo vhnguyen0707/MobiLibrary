@@ -182,7 +182,7 @@ public class EditBookFragment extends AppCompatActivity {
                                 }, new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT.show());
+                                        Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
@@ -432,4 +432,3 @@ public class EditBookFragment extends AppCompatActivity {
     }
 }
 
-}

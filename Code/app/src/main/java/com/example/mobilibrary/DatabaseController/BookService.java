@@ -151,7 +151,7 @@ public class BookService {
         data.put("ISBN", editBook.getISBN());
         data.put("Author", editBook.getAuthor());
         data.put("Image", my_blob);
-        data.put("Title", editBook.getTitle);
+        data.put("Title", editBook.getTitle());
 
         // edit document
         db.collection("Books").document(editBook.getFirestoreID()).update(data)
