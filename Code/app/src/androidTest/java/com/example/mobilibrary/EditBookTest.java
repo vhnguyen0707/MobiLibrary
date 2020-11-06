@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.mobilibrary.Activity.LogIn;
 import com.robotium.solo.Solo;
 
 import org.json.JSONObject;
@@ -35,8 +36,8 @@ public class EditBookTest {
     private Solo solo;
 
         @Rule
-    public ActivityTestRule<MainActivity> rule =
-            new ActivityTestRule<>(MainActivity.class, true, true);
+    public ActivityTestRule<LogIn> rule =
+            new ActivityTestRule<>(LogIn.class, true, true);
 
     /**
      * Sets up list with at least one book to test one
