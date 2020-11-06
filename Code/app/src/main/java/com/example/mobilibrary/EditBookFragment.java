@@ -102,6 +102,10 @@ public class EditBookFragment extends AppCompatActivity {
         mRequestQueue = Volley.newRequestQueue(this);
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
                 PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
+        
+        // set up firestore instance
+        bookService = BookService.getInstance();
+        context = getApplicationContext();
 
         // check that a book was passed to this activity, otherwise end the activity
         if (getIntent() == null) {
@@ -121,9 +125,6 @@ public class EditBookFragment extends AppCompatActivity {
             bitmap = null;
         }
         photo.setImageBitmap(bitmap);
-
-        bookService = BookService.getInstance();
-        context = getApplicationContext();
 
         /**
          * If Back Button is pressed, return to BookDetailsFragment without changing anything about the book
