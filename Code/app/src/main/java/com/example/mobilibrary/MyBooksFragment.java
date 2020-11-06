@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -55,7 +56,6 @@ public class MyBooksFragment extends Fragment {
     private static final String[] states = new String[]{"Owned", "Requested", "Accepted", "Borrowed"};
     private FirebaseFirestore db;
     private FirebaseUser userInfo;
-
     public MyBooksFragment() {
         // Required empty public constructor
     }
@@ -74,7 +74,6 @@ public class MyBooksFragment extends Fragment {
         bookList = new ArrayList<>();
         bookAdapter = new customBookAdapter(this.getActivity(), bookList);
         bookView.setAdapter(bookAdapter);
-
         currentUser(new Callback() {
             @Override
             public void onCallback(User user) {
@@ -112,7 +111,12 @@ public class MyBooksFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String state = (String) adapterView.getItemAtPosition(i);
-                DisplayBooks(state);
+                currentUser(new Callback() {
+                    @Override
+                    public void onCallback(User user) {
+                        updateBookList(user);
+                    }
+                });
             }
 
             @Override
@@ -214,7 +218,21 @@ public class MyBooksFragment extends Fragment {
                                 Blob imageBlob = (Blob) doc.get("Image");
                                 bookImage = imageBlob.toBytes();
                             }
-                            bookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookUser));
+
+                            String currState = statesSpin.getSelectedItem().toString().toLowerCase();
+                            Log.d("sooraj5",currState);
+
+                            if (currState.equals("owned") == false) {
+                                Log.d("sooraj5","a test");
+                                if (currState.equals(bookStatus) == true){
+                                    bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                                }
+                            }
+                            else {
+                                bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                            }
+
+                            tempBookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookUser));
                         }
                         bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                 }
@@ -228,48 +246,5 @@ public class MyBooksFragment extends Fragment {
      * @param state
      */
 
-    public void DisplayBooks(String state) {
-        state = state.toLowerCase();
-        switch (state) {
-            case "requested":
-                for (Book book : tempBookList) {
-                    if (book.getStatus() != state) {
-                        if (bookList.contains(book) == true) {
-                            bookAdapter.remove(book);
-                        }
-                    }
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
-            case "owned":
-                Log.d("sooraj", "owned is pressed");
-                for (Book book : tempBookList) {
-                    Log.d("sooraj", "booklist doesnt contain a book, add it");
-                    bookAdapter.add(book);
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
-            case "accepted":
-                for (Book book : tempBookList) {
-                    if (book.getStatus() != state) {
-                        if (bookList.contains(book) == true) {
-                            bookAdapter.remove(book);
-                        }
-                    }
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
 
-            case "borrowed":
-                for (Book book : tempBookList) {
-                    if (book.getStatus() != state) {
-                        if (bookList.contains(book) == true) {
-                            bookAdapter.remove(book);
-                        }
-                    }
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
-        }
-    }
 }
