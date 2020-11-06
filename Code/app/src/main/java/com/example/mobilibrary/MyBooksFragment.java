@@ -110,23 +110,6 @@ public class MyBooksFragment extends Fragment {
 
             }
         });
-
-        db.collection("Users").whereEqualTo("Owner", userInfo.getDisplayName())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        bookList.clear();
-                        for(QueryDocumentSnapshot doc: value)
-                        {
-                            String username = doc.get("username").toString();
-                            String email = userInfo.getEmail();
-                            String name = doc.get("name").toString();
-                            String Phone = doc.get("phoneNo").toString();
-                            currentUser = new User(username, email, name, Phone);
-                        }
-                    }
-                });
-
         db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName())
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -139,12 +122,13 @@ public class MyBooksFragment extends Fragment {
                     String bookAuthor = doc.get("Author").toString();
                     String bookISBN = doc.get("ISBN").toString();
                     String bookStatus = doc.get("Status").toString();
+                    User bookUser = (User) doc.get("Owner");
                     byte[] bookImage = null;
                     if((Blob)doc.get("Image") != null) {
                         Blob imageBlob = (Blob) doc.get("Image");
                         bookImage = imageBlob.toBytes();
                     }
-                    bookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,currentUser));
+                    bookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookUser));
                 }
                 bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
             }
