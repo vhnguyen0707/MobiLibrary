@@ -61,7 +61,6 @@ import java.io.ByteArrayOutputStream;
  */
 public class EditBookFragment extends AppCompatActivity {
     private EditText title;
-    private String oldTitle;
     private EditText author;
     private EditText ISBN;
     private ImageView photo;
@@ -123,7 +122,8 @@ public class EditBookFragment extends AppCompatActivity {
         }
         photo.setImageBitmap(bitmap);
 
-        oldTitle = book.getTitle();
+        bookService = BookService.getInstance();
+        context = getApplicationContext();
 
         /**
          * If Back Button is pressed, return to BookDetailsFragment without changing anything about the book
