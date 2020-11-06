@@ -29,6 +29,12 @@ public class BookService {
     private FirebaseFirestore db;
     private StorageReference storageReference;
 
+    /**
+     *  Chdecks if the current instance is null, if so create a new instances, else return
+     *  current instance
+     *
+     * @return
+     */
     public static BookService getInstance(){
         if (BookService.bookDb == null)
             BookService.bookDb = new BookService();
@@ -39,6 +45,14 @@ public class BookService {
     private BookService(){
         db = FirebaseFirestore.getInstance();
     }
+
+    /**
+     * Used to add book information into firestore, two different toast messages one for success and
+     * one for failure
+     *
+     * @param context
+     * @param newBook
+     */
 
     public void addBook(final Context context, Book newBook){
         if (newBook.getFirestoreID()!= null)
@@ -64,6 +78,15 @@ public class BookService {
              }
          });
     }
+
+    /**
+     * Check if image succefully uploads to the firestore
+     *
+     * @param title
+     * @param imageUri
+     * @param successListener
+     * @param failureListener
+     */
 
     public void uploadImage(String title, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
         StorageReference fileRef = storageReference.child(title);
