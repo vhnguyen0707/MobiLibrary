@@ -223,43 +223,40 @@ public class MyBooksFragment extends Fragment {
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                            if(value != null) {
-                                bookList.clear();
-                                for (final QueryDocumentSnapshot doc : value) {
-                                    if (!(doc.getData().isEmpty())) {
-                                        Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
-                                        String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
-                                        String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
-                                        String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
-                                        String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
-                                        byte[] bookImage = null;
-                                        if ((Blob) doc.get("Image") != null) {
-                                            Blob imageBlob = (Blob) doc.get("Image");
-                                            bookImage = imageBlob.toBytes();
+                        if (value != null) {
+                            bookList.clear();
+                            for (final QueryDocumentSnapshot doc : value) {
+                                if (!(doc.getData().isEmpty())) {
+                                    Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
+                                    String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
+                                    String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
+                                    String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
+                                    String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
+                                    byte[] bookImage = null;
+                                    if ((Blob) doc.get("Image") != null) {
+                                        Blob imageBlob = (Blob) doc.get("Image");
+                                        bookImage = imageBlob.toBytes();
+                                    }
+                                    bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                                    String currState = statesSpin.getSelectedItem().toString().toLowerCase();
+                                    Log.d("sooraj5",currState);
+
+                                    if (currState.equals("owned") == false) {
+                                        Log.d("sooraj5","a test");
+                                        if (currState.equals(bookStatus) == true){
+                                            bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
                                         }
+                                    }
+                                    else {
                                         bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
                                     }
-                                }
-                                bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-                            }
 
-                            String currState = statesSpin.getSelectedItem().toString().toLowerCase();
-                            Log.d("sooraj5",currState);
-
-                            if (currState.equals("owned") == false) {
-                                Log.d("sooraj5","a test");
-                                if (currState.equals(bookStatus) == true){
-                                    bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                                    tempBookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookUser));
                                 }
                             }
-                            else {
-                                bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
-                            }
-
-                            tempBookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookUser));
+                            bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                         }
-                        bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
-                }
+                    }
                 });
     }
 
