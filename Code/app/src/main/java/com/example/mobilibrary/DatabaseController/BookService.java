@@ -22,6 +22,11 @@ import com.google.firebase.storage.UploadTask;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class interacts with the database to get books on the cloud
+ * and do all the database related tasks for the books
+
+ */
 public class BookService {
     private static final String TAG = "AddBookFragment";
     //Singleton class implementation
@@ -30,10 +35,8 @@ public class BookService {
     private StorageReference storageReference;
 
     /**
-     *  Chdecks if the current instance is null, if so create a new instances, else return
-     *  current instance
-     *
-     * @return
+     * This methods gets the instance of BookService class. Creates one if it does not exist
+     * @return the instance of BookService class
      */
     public static BookService getInstance(){
         if (BookService.bookDb == null)
@@ -42,32 +45,35 @@ public class BookService {
         return BookService.bookDb;
     }
 
+    /**
+     * Singleton class implementation. This constructor instantiating the only instance of BookService.
+     */
     private BookService(){
         db = FirebaseFirestore.getInstance();
     }
 
     /**
-     * Used to add book information into firestore, two different toast messages one for success and
+     * This method attempts to add a new book to the database. Two different toast messages one for success and
      * one for failure
-     *
-     * @param context
-     * @param newBook
+     * @param context the current construct
+     * @param newBook new Book object
      */
 
     public void addBook(final Context context, Book newBook){
+        // Checks if the book is already added to database
         if (newBook.getFirestoreID()!= null)
             throw new IllegalArgumentException("This book is already added to the database");
-        DocumentReference bookDoc = db.collection("Books").document(newBook.getTitle());
          Blob my_blob = Blob.fromBytes(newBook.getImage());
          Map<String, Object> data = new HashMap<>();
+         data.put("Title", newBook.getTitle());
          data.put("ISBN", newBook.getISBN());
          data.put("Author", newBook.getAuthor());
          data.put("Status", newBook.getStatus());
          data.put("Owner", newBook.getOwner().getUsername());
          data.put("Image", my_blob);
-         bookDoc.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("Books").add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
              @Override
-             public void onSuccess(Void aVoid) {
+             public void onSuccess(DocumentReference documentReference) {
                  Toast.makeText(context, "Successfully added book!", Toast.LENGTH_SHORT).show();
              }
          }).addOnFailureListener(new OnFailureListener() {
@@ -80,12 +86,11 @@ public class BookService {
     }
 
     /**
-     * Check if image succefully uploads to the firestore
-     *
-     * @param title
-     * @param imageUri
-     * @param successListener
-     * @param failureListener
+     * This method checks if the image successfully uploaded to FirebaseStorage
+     * @param title Name of the book
+     * @param imageUri The URI of the image to save
+     * @param successListener A SuccessListener of type Void. Called if the tasks succeeded
+     * @param failureListener A FailureListener. Called when the task failed
      */
 
     public void uploadImage(String title, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {

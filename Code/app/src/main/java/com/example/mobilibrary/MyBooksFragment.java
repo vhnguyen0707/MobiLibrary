@@ -223,7 +223,7 @@ public class MyBooksFragment extends Fragment {
                         for(final QueryDocumentSnapshot doc: value)
                         {
                             Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
-                            String bookTitle = doc.getId();
+                            String bookTitle = doc.get("Title").toString();
                             String bookAuthor = doc.get("Author").toString();
                             String bookISBN = doc.get("ISBN").toString();
                             String bookStatus = doc.get("Status").toString();
