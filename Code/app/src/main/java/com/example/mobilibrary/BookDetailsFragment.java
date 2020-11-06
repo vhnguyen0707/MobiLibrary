@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -35,6 +37,7 @@ import org.w3c.dom.Text;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -61,6 +64,7 @@ public class BookDetailsFragment extends AppCompatActivity {
     private TextView[] requestAssets;
     private ImageView photo;
     private ListView reqList;
+    private Uri editUri;
     private ArrayAdapter<String> reqAdapter;
     private ArrayList<String> reqDataList;
 
@@ -120,14 +124,11 @@ public class BookDetailsFragment extends AppCompatActivity {
         owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
         status.setText(viewBook.getStatus());
-        Bitmap bitmap;
-        if (viewBook.getImage() != null) {
-            bitmap = BitmapFactory.decodeByteArray(viewBook.getImage(), 0,
-                    viewBook.getImage().length);
-        } else {
-            bitmap = null;
+        Bitmap bitmap = null;
+        if(viewBook.getImage() != null){
+            convertImage(viewBook.getImage());
+            photo.setImageBitmap(bitmap);
         }
-        photo.setImageBitmap(bitmap);
 
         /**
          * If Back Button is pressed, return to list of owned books, any changes in the book will be saved
@@ -145,12 +146,8 @@ public class BookDetailsFragment extends AppCompatActivity {
                     viewBook.setISBN(ISBN.getText().toString().replaceAll(" ", ""));
 
                     // if a book has a photo pass along the photo's bitmap
-                    if (!nullPhoto()) {
-                        Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
-                        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                        byte[] bookImage = outStream.toByteArray();
-                        viewBook.setImage(bookImage);
+                    if (getEditUri() != null) {
+                        viewBook.setImage(editUri);
                     } else {
                         viewBook.setImage(null);    // book has no photo so image bitmap is set to null
                     }
@@ -232,15 +229,34 @@ public class BookDetailsFragment extends AppCompatActivity {
      * Determines if the book's photograph has a null bitmap
      * @return boolean true if the book's photograph has a null bitmap, false otherwise
      */
-    private boolean nullPhoto () {
-        Drawable drawable = photo.getDrawable();    // get image
-        BitmapDrawable bitmapDrawable;
-        if (!(drawable instanceof BitmapDrawable)) {
-            bitmapDrawable = null;  // image has no bitmap
-        } else {
-            bitmapDrawable = (BitmapDrawable) photo.getDrawable();  // get image bitmap
+
+    private Bitmap convertImage(Uri image){
+        Bitmap bitmap = null;
+        try {
+            // Setting image on image view using Bitmap
+            bitmap = MediaStore
+                    .Images
+                    .Media
+                    .getBitmap(
+                            getContentResolver(),
+                            image);
         }
-        return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
+
+        catch (IOException e) {
+            // Log the exception
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+    /**
+     * used to check if imageUri is null
+     *
+     * @return Uri
+     */
+
+    public Uri getEditUri() {
+        return editUri;
     }
 
     /**
@@ -264,12 +280,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
                 Bitmap bitmap; // used for null case
                 if (editedBook.getImage() != null) {
-                    bitmap = BitmapFactory.decodeByteArray(editedBook.getImage(), 0,
-                            editedBook.getImage().length);
-                } else {
-                    bitmap = null;
+                    bitmap = convertImage(editedBook.getImage());
+                    photo.setImageBitmap(bitmap);
                 }
-                photo.setImageBitmap(bitmap);
             }
         }
     }

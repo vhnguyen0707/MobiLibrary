@@ -52,6 +52,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 
 
@@ -60,7 +61,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     private EditText newAuthor;
     private EditText newIsbn;
     private ImageView newImage;
-    private Uri imageUri = null;
+    private Uri imageUri;
     private Button confirmButton;
     private FloatingActionButton backButton;
     private FloatingActionButton cameraButton;
@@ -120,11 +121,11 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                         public void onCallback(User user) {
                             User bookOwner = user;
                             String bookStatus = "available";
-                            byte[] bookImage = convertBitmap();
+                            Uri bookImage = getImageUri();
                             Book newBook = new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookOwner);
                             bookService.addBook(context, newBook);
                             if (getImageUri() != null){
-                                bookService.uploadImage(bookTitle, getImageUri(), new OnSuccessListener<Void>() {
+                                bookService.uploadImage(newBook.getFirestoreID(), getImageUri(), new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Picasso.with(context).load(getImageUri()).into(newImage);
@@ -166,6 +167,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             @Override
             public void onClick(View v) {
                 Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                imageUri = getImageUri();
+                camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 int pic_id = 2;
                 startActivityForResult(camera_intent, pic_id);
             }
@@ -197,12 +200,20 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
+            Bundle cameraBundle = data.getExtras();
+            Uri image = (Uri) cameraBundle.get(MediaStore.EXTRA_OUTPUT);
             if(resultCode == Activity.RESULT_OK) {
-                imageUri = data.getData();
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                newImage.setImageBitmap(photo);
-            }
+                try {
+                    // Setting image on image view using Bitmap
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    newImage.setImageBitmap(bitmap);
+                }
 
+                catch (IOException e) {
+                    // Log the exception
+                    e.printStackTrace();
+                }
+            }
         } else {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (intentResult != null) { //scanner got a result
@@ -335,21 +346,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     }
 
     /**
-     * Since Bitmaps are not serializable, to send the image data with the book object
-     * we will compress the bitmap and convert it into a byte array (using a output stream,
-     * which will copy the bitmap data and writes it into a byte array, allowing it to be sent
-     * in different ways (in this case a serializable object) and returns that byte array.
+     * used to check if imageUri is null
      *
-     * @return byte array
+     * @return Uri
      */
-    public byte[] convertBitmap() {
-        //used to convert bitmap into serializable format
-        Bitmap bitmap = ((BitmapDrawable) newImage.getDrawable()).getBitmap();
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-        byte[] byteImage = outStream.toByteArray();
-        return byteImage;
-    }
 
     public Uri getImageUri() {
         return imageUri;

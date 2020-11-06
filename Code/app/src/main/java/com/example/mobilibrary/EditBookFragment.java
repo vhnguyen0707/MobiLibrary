@@ -54,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * This class takes in a book and edits it Title, Author, ISBN and photograph. The first three
@@ -117,14 +118,12 @@ public class EditBookFragment extends AppCompatActivity {
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
         ISBN.setText(String.valueOf(book.getISBN()));
-        Bitmap bitmap;
-        if (book.getImage() != null) {
-            bitmap = BitmapFactory.decodeByteArray(book.getImage(), 0,
-                    book.getImage().length);
-        } else {
-            bitmap = null;
+        
+        Bitmap bitmap = null;
+        if(book.getImage() != null){
+            convertImage(book.getImage());
+            photo.setImageBitmap(bitmap);
         }
-        photo.setImageBitmap(bitmap);
 
         /**
          * If Back Button is pressed, return to BookDetailsFragment without changing anything about the book
@@ -161,14 +160,10 @@ public class EditBookFragment extends AppCompatActivity {
                             byte[] emptyArray = new byte[0];
 
                             // if a book has a photo pass along the photo's bitmap
-                            if (!nullPhoto()) {
-                                Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
-                                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                                byte[] editImage = outStream.toByteArray();
-                                book.setImage(editImage);
-                            }else {
-                                book.setImage(emptyArray);    // book has no photo so image bitmap is set to null
+                            if (getImageUri() != null) {
+                                book.setImage(imageUri);
+                            } else {
+                                book.setImage(null);    // book has no photo so image bitmap is set to null
                             }
 
                             // edit book in firestore
@@ -235,6 +230,29 @@ public class EditBookFragment extends AppCompatActivity {
                 startActivityForResult(camera_intent, pic_id);
             }
         });
+    }
+
+    private Uri getImageUri() {
+        return imageUri;
+    }
+
+    private Bitmap convertImage(Uri image) {
+        Bitmap bitmap = null;
+        try {
+            // Setting image on image view using Bitmap
+            bitmap = MediaStore
+                    .Images
+                    .Media
+                    .getBitmap(
+                            getContentResolver(),
+                            imageUri);
+        }
+
+        catch (IOException e) {
+            // Log the exception
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 
     /**

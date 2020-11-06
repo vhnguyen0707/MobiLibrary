@@ -1,6 +1,7 @@
 package com.example.mobilibrary;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 
@@ -21,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.mobilibrary.DatabaseController.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -50,6 +54,7 @@ public class MyBooksFragment extends Fragment {
     private ArrayAdapter<Book> bookAdapter;
     private ArrayList<Book> bookList;
     private FloatingActionButton addButton;
+    private String bookId;
 
     private Spinner statesSpin;
     private static final String[] states = new String[]{"Owned", "Requested", "Accepted", "Borrowed"};
@@ -83,7 +88,6 @@ public class MyBooksFragment extends Fragment {
             }
         });
 
-
         statesSpin = (Spinner) v.findViewById(R.id.spinner);
         ArrayAdapter<String> SpinAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, states);
         SpinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -114,8 +118,8 @@ public class MyBooksFragment extends Fragment {
                 String state = (String) adapterView.getItemAtPosition(i);
                 currentUser(new Callback() {
                     @Override
-                    public void onCallback(User user) {
-                        updateBookList(user);
+                    public void onCallback(final User user){
+                                updateBookList(user);
                     }
                 });
             }
@@ -214,7 +218,8 @@ public class MyBooksFragment extends Fragment {
      *
      * @param bookUser
      */
-    public void updateBookList(final User bookUser){
+    public void updateBookList(final User bookUser) {
+        final Uri[] bookImage = new Uri[1];
         db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName()).orderBy("Title")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -223,39 +228,42 @@ public class MyBooksFragment extends Fragment {
                             bookList.clear();
                             for (QueryDocumentSnapshot doc : value) {
                                 Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
-                                String bookId = doc.getId();
-                                String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
-                                String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
-                                String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
-                                String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
-                                byte[] bookImage = null;
-                                if ((Blob) doc.get("Image") != null) {
-                                    Blob imageBlob = (Blob) doc.get("Image");
-                                    bookImage = Objects.requireNonNull(imageBlob).toBytes();
-                                }
+                                bookId = doc.getId();
+                                final String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
+                                final String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
+                                final String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
+                                final String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
+                                imageUri(new onImageCallBack() {
+                                    @Override
+                                    public void onImageCallback(Uri uri) {
+                                        bookImage[0] = uri;
+                                        String currState = statesSpin.getSelectedItem().toString().toLowerCase();
 
-                                String currState = statesSpin.getSelectedItem().toString().toLowerCase();
-
-                                if (!currState.equals("owned")) {
-                                    if (currState.equals(bookStatus)) {
-                                        bookList.add(new Book(bookId,bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                                        if (!currState.equals("owned")) {
+                                            if (currState.equals(bookStatus)) {
+                                                bookList.add(new Book(bookId, bookTitle, bookISBN, bookAuthor, bookStatus, bookImage[0], bookUser));
+                                            }
+                                        } else {
+                                            bookList.add(new Book(bookId, bookTitle, bookISBN, bookAuthor, bookStatus, bookImage[0], bookUser));
+                                        }
+                                        bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                                     }
-                                } else {
-                                    bookList.add(new Book(bookId,bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
-                                }
+                                });
                             }
-                            bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                         }
                     }
                 });
     }
 
-    /**
-     * Used to function spinner, if the book is in a certain status it will group them and will
-     * allow the user to view them as such
-     *
-     * @param state
-     */
-
+    public void imageUri(final onImageCallBack icb) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference dateRef = storageRef.child(bookId);
+        Task<Uri> imageUri = dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                icb.onImageCallback(uri);
+            }
+        });
+    }
 
 }

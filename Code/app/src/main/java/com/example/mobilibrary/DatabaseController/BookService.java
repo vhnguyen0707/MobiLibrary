@@ -63,14 +63,13 @@ public class BookService {
         // Checks if the book is already added to database
         if (newBook.getFirestoreID()!= null)
             throw new IllegalArgumentException("This book is already added to the database");
-         Blob my_blob = Blob.fromBytes(newBook.getImage());
          Map<String, Object> data = new HashMap<>();
          data.put("Title", newBook.getTitle());
          data.put("ISBN", newBook.getISBN());
          data.put("Author", newBook.getAuthor());
          data.put("Status", newBook.getStatus());
          data.put("Owner", newBook.getOwner().getUsername());
-         data.put("Image", my_blob);
+         data.put("Image", newBook.getImage());
         db.collection("Books").add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
              @Override
              public void onSuccess(DocumentReference documentReference) {
@@ -88,14 +87,14 @@ public class BookService {
 
     /**
      * This method checks if the image successfully uploaded to FirebaseStorage
-     * @param title Name of the book
+     * @param id id of the book
      * @param imageUri The URI of the image to save
      * @param successListener A SuccessListener of type Void. Called if the tasks succeeded
      * @param failureListener A FailureListener. Called when the task failed
      */
 
-    public void uploadImage(String title, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-        StorageReference fileRef = storageReference.child(title);
+    public void uploadImage(String id, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
+        StorageReference fileRef = storageReference.child(id);
         fileRef.putFile(imageUri)
                 .continueWith(new Continuation<UploadTask.TaskSnapshot, Void>() {
                     @Override
@@ -146,13 +145,13 @@ public class BookService {
             throw new IllegalArgumentException("This book is not in database");
 
         // create hash map of fields that could be changed in editBook
-        Blob my_blob = Blob.fromBytes(editBook.getImage());
+        ;
         Map<String, Object> data = new HashMap<>();
         data.put("ISBN", editBook.getISBN());
         data.put("Author", editBook.getAuthor());
-        data.put("Image", my_blob);
+        data.put("Image", editBook.getImage());
         data.put("Title", editBook.getTitle());
-
+        data.put("Image", editBook.getImage());
         // edit document
         db.collection("Books").document(editBook.getFirestoreID()).update(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
