@@ -59,7 +59,7 @@ public class BookService {
      * @param newBook new Book object
      */
 
-    public void addBook(final Context context, Book newBook){
+    public void addBook(final Context context, final Book newBook){
         // Checks if the book is already added to database
         if (newBook.getFirestoreID()!= null)
             throw new IllegalArgumentException("This book is already added to the database");
@@ -74,6 +74,7 @@ public class BookService {
         db.collection("Books").add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
              @Override
              public void onSuccess(DocumentReference documentReference) {
+                 newBook.setFirestoreID(documentReference.getId());
                  Toast.makeText(context, "Successfully added book!", Toast.LENGTH_SHORT).show();
              }
          }).addOnFailureListener(new OnFailureListener() {
@@ -150,7 +151,7 @@ public class BookService {
         data.put("ISBN", editBook.getISBN());
         data.put("Author", editBook.getAuthor());
         data.put("Image", my_blob);
-        data.put("Title", editBook.getTitle);
+        data.put("Title", editBook.getTitle());
 
         // edit document
         db.collection("Books").document(editBook.getFirestoreID()).update(data)
