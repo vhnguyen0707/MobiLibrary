@@ -8,10 +8,10 @@ import androidx.test.rule.ActivityTestRule;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.robotium.solo.Solo;
 
@@ -23,11 +23,10 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import android.app.Fragment;
+
 
 @RunWith (AndroidJUnit4.class)
 public class BookDetailsTest {
@@ -47,6 +46,13 @@ public class BookDetailsTest {
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
 
         // go to MyBooks and switch to addBookFragment
+<<<<<<< HEAD
+=======
+        // go to MyBooks and switch to addBookFragment
+        solo.enterText((EditText) solo.getView(R.id.email_editText), "nrhassan@ualberta.ca");
+        solo.enterText((EditText) solo.getView(R.id.password_editText), "PassWord15");
+        solo.clickOnView(solo.getView(R.id.login_button));
+>>>>>>> 442283f0165830125f78049cf092baa7f4c6d8de
         solo.assertCurrentActivity("Wrong Activity", MainActivity.class);
         solo.clickOnMenuItem("My Books");
 
@@ -80,7 +86,8 @@ public class BookDetailsTest {
         BookDetailsFragment bookDetails = (BookDetailsFragment) solo.getCurrentActivity();
 
         // determine if photo is null
-        Drawable drawable = bookDetails.photo.getDrawable();
+        ImageView photo = (ImageView) solo.getView(R.id.imageView);
+        Drawable drawable = photo.getDrawable();
         if (!(drawable instanceof BitmapDrawable)) {
             drawable = null;
         } else {
@@ -88,12 +95,19 @@ public class BookDetailsTest {
                 drawable = null;
             }
         }
+        
+        // get displayed information
+        String title = ((TextView) solo.getView(R.id.view_title)).getText().toString();
+        String author = ((TextView) solo.getView(R.id.view_author)).getText().toString();
+        String owner = ((TextView) solo.getView(R.id.view_owner)).getText().toString();
+        String isbn = ((TextView) solo.getView(R.id.view_isbn)).getText().toString();
+        String status = ((TextView) solo.getView(R.id.view_status)).getText().toString();
 
         // validate displayed information
-        assertEquals("Song of the Lioness", bookDetails.title.getText().toString());
-        assertEquals("Tamora Pierce", bookDetails.author.getText().toString());
-        // assertEquals("username", bookDetails.owner.getText().toString());
-        assertEquals("1234567890123", bookDetails.ISBN.getText().toString());
+        assertEquals("Song of the Lioness", ((TextView) solo.getView(R.id.view_title)).getText().toString());
+        assertEquals("Tamora Pierce",  ((TextView) solo.getView(R.id.view_author)).getText().toString());
+        assertEquals("username", ((TextView) solo.getView(R.id.view_owner)).getText().toString());
+        assertEquals("1234567890123", ((TextView) solo.getView(R.id.view_status)).getText().toString());
         assertNull(drawable);
     }
 
@@ -169,7 +183,7 @@ public class BookDetailsTest {
         // delete the book
         solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
         solo.clickOnView(solo.getView(R.id.delete_button));
-        solo.assertCurrentActivity("Wrong Activity", MyBooks.class);
+        solo.assertCurrentActivity("Wrong Activity", BookDetailsFragment.class);
 
         // check that the only book formerly in list is deleted from the data list
         Fragment books2 = solo.getCurrentActivity().getFragmentManager().findFragmentById(R.id.myBooks);
@@ -182,3 +196,4 @@ public class BookDetailsTest {
         solo.finishOpenedActivities();
     }
 }
+

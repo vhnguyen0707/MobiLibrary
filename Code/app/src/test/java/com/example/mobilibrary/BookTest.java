@@ -1,4 +1,5 @@
 package com.example.mobilibrary;
+import com.example.mobilibrary.DatabaseController.User;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +12,7 @@ public class BookTest {
      */
     private Book mockBook() {
         User mockOwner = new User("username", "email@example.com", "First Last", "123-123-1234");
-        Book mockBook = new Book("Song of the Lioness", 123456789,"Tamora Pierce", "available", mockOwner);
+        Book mockBook = new Book("Song of the Lioness", "123456789","Tamora Pierce", "available", null, mockOwner);
         return mockBook;
     }
 
@@ -21,13 +22,13 @@ public class BookTest {
      */
     @Test
     void getUserTest(){
-        //User mockOwner = new User("username", "email@example.com", "First Last", "123-123-1234");
-        Book mockBook = new Book("Song of the Lioness", 123456789,"Tamora Pierce", "available", mockOwner);
-        //User guessOwner = mockBook.getOwner();
-        //assertEquals(mockOwner.getUsername(), guessOwner.getUsername());
+        User mockOwner = new User("username", "email@example.com", "First Last", "123-123-1234");
+        Book mockBook = new Book("Song of the Lioness", "123456789","Tamora Pierce", "available", null, mockOwner);
+        User guessOwner = mockBook.getOwner();
+        assertEquals(mockOwner.getUsername(), guessOwner.getUsername());
         assertEquals(mockOwner.getEmail(), guessOwner.getEmail());
         assertEquals(mockOwner.getName(), guessOwner.getName());
-        assertEquals(mockOwner.getPhoneNo(), guessOwner.getPhoneNo);
+        assertEquals(mockOwner.getPhoneNo(), guessOwner.getPhoneNo());
     }
 
     /**
@@ -42,7 +43,7 @@ public class BookTest {
         assertEquals(mockOwner.getUsername(), mockBook.getOwner().getUsername());
         assertEquals(mockOwner.getEmail(), mockBook.getOwner().getEmail());
         assertEquals(mockOwner.getName(), mockBook.getOwner().getName());
-        assertEquals(mockOwner.getPhoneNo(), mockBook.getOwner().getPhoneNo);
+        assertEquals(mockOwner.getPhoneNo(), mockBook.getOwner().getPhoneNo());
     }
 
     /**

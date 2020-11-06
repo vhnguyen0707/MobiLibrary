@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class bookStatusTest {
     private Book mockBookTest() {
-        Book mockBook = new Book("Harry Potter",12345678,"J.K Rowling","available");
+        Book mockBook = new Book("Harry Potter","1234567890123","J.K Rowling","available",null,null);
         return mockBook;
     }
 
