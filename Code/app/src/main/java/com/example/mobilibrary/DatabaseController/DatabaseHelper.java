@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.example.mobilibrary.Activity.LogIn;
 import com.example.mobilibrary.Activity.ProfileActivity;
+import com.example.mobilibrary.Activity.SignUp;
 import com.example.mobilibrary.Callback;
 import com.example.mobilibrary.DatabaseController.User;
 import com.example.mobilibrary.MainActivity;
@@ -201,13 +202,17 @@ public class DatabaseHelper {
     }
 
     /**
-     * Helper function to return current Firebase user.
-     *
-     * @return current logged in user
+     * Getters
      */
     public FirebaseUser getUser() {
         return user;
     }
+
+    public FirebaseAuth getAuth() {
+        return mAuth;
+    }
+
+    public FirebaseFirestore getDb() { return db; }
 
     /**
      * Signs user out of session.
@@ -286,6 +291,41 @@ public class DatabaseHelper {
                                         });
                             }
                         });
+                    }
+                });
+    }
+
+    /**
+     * Deletes a user from both the Firebase User Auth side and the Firestore side.
+     * @param username username of the user to be deleted
+     */
+    public void deleteUser(String username) {
+        db.collection("Users").document(username)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        user.delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "User deleted!");
+                                        context.startActivity(new Intent(context, SignUp.class));
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error deleting user", e);
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
                     }
                 });
     }

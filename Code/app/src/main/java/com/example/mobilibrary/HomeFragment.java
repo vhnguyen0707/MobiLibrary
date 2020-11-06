@@ -32,6 +32,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // Go to the profile activity for the current logged in user
         FloatingActionButton profileButton = (FloatingActionButton) view.findViewById(R.id.profile);
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,6 +44,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // TODO: Delete after implementing list for all books in database (this is a test for demo)
         TextView otherProfile = (TextView) view.findViewById(R.id.other_profile);
         otherProfile.setOnClickListener(new View.OnClickListener() {
             @Override
