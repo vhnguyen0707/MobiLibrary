@@ -178,7 +178,7 @@ public class MyBooksFragment extends Fragment {
                 Book delete_book = (Book) data.getSerializableExtra("delete book");
 
                 // find the book to delete and delete it
-                for (int i = 0; 0 < bookAdapter.getCount(); i++) {
+                for (int i = 0; i < bookAdapter.getCount(); i++) {
                     Book currentBook = bookAdapter.getItem(i);
                     if (delete_book.compareTo(currentBook) == 0) {
                         tempBookList.remove(currentBook);

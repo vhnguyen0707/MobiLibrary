@@ -1,6 +1,7 @@
 package com.example.mobilibrary;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,17 +33,27 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.mobilibrary.R;
+import com.example.mobilibrary.DatabaseController.BookService;
+import com.example.mobilibrary.DatabaseController.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 
 /**
  * This class takes in a book and edits it Title, Author, ISBN and photograph. The first three
@@ -49,10 +61,11 @@ import java.util.ArrayList;
  */
 public class EditBookFragment extends AppCompatActivity {
     private EditText title;
+    private String oldTitle;
     private EditText author;
     private EditText ISBN;
-
     private ImageView photo;
+    private Uri imageUri;
     private FloatingActionButton editImageButton;
     private FloatingActionButton deleteImageButton;
 
@@ -61,6 +74,9 @@ public class EditBookFragment extends AppCompatActivity {
     private Button confirmButton;
 
     private RequestQueue mRequestQueue;
+    private FirebaseFirestore db;
+    private BookService bookService;
+    private Context context;
 
     /**
      * Creates the activity for editing books and the necessary logic to do so
@@ -107,6 +123,8 @@ public class EditBookFragment extends AppCompatActivity {
         }
         photo.setImageBitmap(bitmap);
 
+        oldTitle = book.getTitle();
+
         /**
          * If Back Button is pressed, return to BookDetailsFragment without changing anything about the book
          */
@@ -124,30 +142,58 @@ public class EditBookFragment extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String stringISBN = ISBN.getText().toString().replaceAll(" ", "");
+                final String bookTitle = title.getText().toString();
+                final String bookAuthor = author.getText().toString();
+                final String stringISBN = ISBN.getText().toString().replaceAll(" ", "");
 
                 // if input is valid, edit book and return it to parent activity
-                if (validateInputs(title.getText().toString(), author.getText().toString(), stringISBN)) {
+                if (validateInputs(bookTitle, bookAuthor, stringISBN)) {
+                    currentUser(new Callback() {
 
-                    // if a book has a photo pass along the photo's bitmap
-                    if (!nullPhoto()) {
-                        Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
-                        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                        byte[] editImage = outStream.toByteArray();
-                        book.setImage(editImage);
-                    } else {
-                        book.setImage(null);    // book has no photo so image bitmap is set to null
-                    }
+                        // change book in firestore as well as in app
+                        @Override
+                        public void onCallback(User user) {
+                            // set all required fields to what is in their EditText views
+                            book.setTitle(bookTitle);
+                            book.setAuthor(bookAuthor);
+                            book.setISBN(stringISBN);
 
-                    // set all required fields to what is in their EditText views
-                    book.setTitle(title.getText().toString());
-                    book.setAuthor(author.getText().toString());
-                    book.setISBN(stringISBN);
-                    Intent editIntent = new Intent();
-                    editIntent.putExtra("edited", book);
-                    setResult(RESULT_OK, editIntent);
-                    finish();
+                            // if a book has a photo pass along the photo's bitmap
+                            if (!nullPhoto()) {
+                                Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
+                                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                                byte[] editImage = outStream.toByteArray();
+                                book.setImage(editImage);
+                            } else {
+                                book.setImage(null);    // book has no photo so image bitmap is set to null
+                            }
+
+                            // edit book in firestore
+                            bookService.editBook(context, book);
+
+                            // upload any changed images in firestore
+                            if (imageUri != null) {
+                                bookService.uploadImage(bookTitle, imageUri, new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Picasso.with(context).load(imageUri).into(photo);
+                                    }
+                                }, new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT.show());
+                                    }
+                                });
+                            }
+
+                            // pass edited book back to bookDetailsFragment
+                            Intent editIntent = new Intent();
+                            editIntent.putExtra("edited", book);    // mark book as edited in app
+                            setResult(RESULT_OK, editIntent);
+                            finish();
+                        }
+                    });
                 }
             }
         });
@@ -171,6 +217,7 @@ public class EditBookFragment extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 photo.setImageBitmap(null);
+                imageUri = null;
             }
         });
 
@@ -249,6 +296,7 @@ public class EditBookFragment extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
+            imageUri = data.getData();
             Bitmap book_photo = (Bitmap) data.getExtras().get("data");
             photo.setImageBitmap(book_photo);
         } else {
@@ -353,4 +401,35 @@ public class EditBookFragment extends AppCompatActivity {
         NetworkInfo info = connectivityManager.getActiveNetworkInfo();
         return info != null && info.isConnected();
     }
+
+    /**
+     * currentUser uses the current instance of the firebase auth to get the information of the
+     * current user and create a User based on it. Because onComplete is asynchronous (so the info
+     * won't arrive until after the code completes) we need to use onCallBack interface. It will
+     * take the info and allow the information to be used (without null).
+     *
+     * @param cbh
+     */
+    public void currentUser(final Callback cbh) {
+        final FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+        db.collection("Users").whereEqualTo("email", userInfo.getEmail()).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                String username = document.get("username").toString();
+                                String email = userInfo.getEmail();
+                                String name = document.get("name").toString();
+                                String Phone = document.get("phoneNo").toString();
+                                User currentUser = new User(username, email, name, Phone);
+                                cbh.onCallback(currentUser);
+                            }
+                        }
+                    }
+                });
+    }
+}
+
 }
