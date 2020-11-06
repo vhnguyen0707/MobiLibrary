@@ -231,13 +231,13 @@ public class MyBooksFragment extends Fragment {
                                 byte[] bookImage = null;
                                 if ((Blob) doc.get("Image") != null) {
                                     Blob imageBlob = (Blob) doc.get("Image");
-                                    bookImage = imageBlob.toBytes();
+                                    bookImage = Objects.requireNonNull(imageBlob).toBytes();
                                 }
 
                                 String currState = statesSpin.getSelectedItem().toString().toLowerCase();
 
-                                if (currState.equals("owned") == false) {
-                                    if (currState.equals(bookStatus) == true) {
+                                if (!currState.equals("owned")) {
+                                    if (currState.equals(bookStatus)) {
                                         bookList.add(new Book(bookId,bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
                                     }
                                 } else {
