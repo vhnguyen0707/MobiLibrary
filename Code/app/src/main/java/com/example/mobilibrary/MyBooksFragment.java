@@ -71,6 +71,9 @@ public class MyBooksFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         userInfo = FirebaseAuth.getInstance().getCurrentUser();
 
+        /* we instantiate a new arraylist in case we have an empty firestore, if not we update this
+        list later in updateBookList */
+
         bookList = new ArrayList<>();
         bookAdapter = new customBookAdapter(this.getActivity(), bookList);
         bookView.setAdapter(bookAdapter);
@@ -153,7 +156,7 @@ public class MyBooksFragment extends Fragment {
                 Book delete_book = (Book) data.getSerializableExtra("delete book");
 
                 // find the book to delete and delete it
-                for (int i = 0; 0 < bookAdapter.getCount(); i++) {
+                for (int i = 0; i < bookAdapter.getCount(); i++) {
                     Book currentBook = bookAdapter.getItem(i);
                     if (delete_book.compareTo(currentBook) == 0) {
                         tempBookList.remove(currentBook);
@@ -181,6 +184,13 @@ public class MyBooksFragment extends Fragment {
         }
     }
 
+    /**
+     * Used to get the current user from the user collection of firestore and returns it on
+     * a Callback because OnCompleteListener is asynchronous
+     *
+     * @param cbh
+     */
+
     public void currentUser(final Callback cbh) {
         db.collection("Users").whereEqualTo("email", userInfo.getEmail()).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -200,23 +210,37 @@ public class MyBooksFragment extends Fragment {
                 });
     }
 
+    /**
+     * Used to fill bookList with firestore items, will get the information from the current User
+     *Call back and use it to instantiate a new book object from the firesotre information and add
+     * it to the bookList (clears it in case we have new items and want to count them) and updates
+     * adapter
+     *
+     * @param bookUser
+     */
     public void updateBookList(final User bookUser){
-        db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName())
+        db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName()).orderBy("Title")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        bookList.clear();
-                        for(final QueryDocumentSnapshot doc: value)
-                        {
-                            Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
-                            String bookTitle = doc.getId();
-                            String bookAuthor = doc.get("Author").toString();
-                            String bookISBN = doc.get("ISBN").toString();
-                            String bookStatus = doc.get("Status").toString();
-                            byte[] bookImage = null;
-                            if((Blob)doc.get("Image") != null) {
-                                Blob imageBlob = (Blob) doc.get("Image");
-                                bookImage = imageBlob.toBytes();
+                            if(value != null) {
+                                bookList.clear();
+                                for (final QueryDocumentSnapshot doc : value) {
+                                    if (!(doc.getData().isEmpty())) {
+                                        Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
+                                        String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
+                                        String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
+                                        String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
+                                        String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
+                                        byte[] bookImage = null;
+                                        if ((Blob) doc.get("Image") != null) {
+                                            Blob imageBlob = (Blob) doc.get("Image");
+                                            bookImage = imageBlob.toBytes();
+                                        }
+                                        bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                                    }
+                                }
+                                bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                             }
 
                             String currState = statesSpin.getSelectedItem().toString().toLowerCase();

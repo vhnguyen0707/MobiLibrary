@@ -30,7 +30,7 @@ public class LogIn extends AppCompatActivity {
 
     /**
      * Defines UI and sets listener
-     * @param savedInstanceState
+     * @param savedInstanceState: saved instance state
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
