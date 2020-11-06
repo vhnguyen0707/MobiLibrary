@@ -54,14 +54,6 @@ public class Book implements Serializable, Comparable<Book> {
         this.owner = user;
     }
 
-    public Book(String toString, String author, String status, Object o, String owner) {
-        this.title = toString;
-        this.author = author;
-        this.status = status;
-        this.image = o;
-        this.owner = owner;
-    }
-
     public int getId() {
         return id;
     }

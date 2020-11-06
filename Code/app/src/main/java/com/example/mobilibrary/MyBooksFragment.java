@@ -14,16 +14,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.example.mobilibrary.DatabaseController.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -38,15 +40,18 @@ import static android.app.Activity.RESULT_OK;
  *
  */
 public class MyBooksFragment extends Fragment {
+    private static final String TAG = "MyBooksFragment";
     private ListView bookView;
     private ArrayAdapter<Book> bookAdapter;
-    private ArrayList<Book> currentBooks = new ArrayList<Book>();
     private ArrayList<Book> bookList;
     private FloatingActionButton addButton;
 
     private ArrayList<Book> tempBookList;
     private Spinner statesSpin;
     private static final String[] states = new String[]{"Owned", "Requested", "Accepted", "Borrowed"};
+    private FirebaseFirestore db;
+    private FirebaseUser userInfo;
+    private User currentUser;
 
     public MyBooksFragment() {
         // Required empty public constructor
@@ -60,20 +65,14 @@ public class MyBooksFragment extends Fragment {
         View v =  inflater.inflate(R.layout.fragment_my_books, container, false);
         addButton = (FloatingActionButton) v.findViewById(R.id.addButton);
         bookView = (ListView) v.findViewById(R.id.book_list);
-        bookList = new ArrayList<Book>();
-        createBookArray(new addBookCallback() {
-            @Override
-            public void onCallback(ArrayList<Book> ownerBooks) {
-                if(ownerBooks != null) {
-                    bookList = ownerBooks;
-                }
-            }
-        });
+        db = FirebaseFirestore.getInstance();
+        userInfo = FirebaseAuth.getInstance().getCurrentUser();
 
-        tempBookList = new ArrayList<Book>();
-
+        bookList = new ArrayList<>();
         bookAdapter = new customBookAdapter(this.getActivity(), bookList);
         bookView.setAdapter(bookAdapter);
+
+        tempBookList = new ArrayList<>();
 
         statesSpin = (Spinner) v.findViewById(R.id.spinner);
         ArrayAdapter<String> SpinAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, states);
@@ -111,6 +110,45 @@ public class MyBooksFragment extends Fragment {
 
             }
         });
+
+        db.collection("Users").whereEqualTo("Owner", userInfo.getDisplayName())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        bookList.clear();
+                        for(QueryDocumentSnapshot doc: value)
+                        {
+                            String username = doc.get("username").toString();
+                            String email = userInfo.getEmail();
+                            String name = doc.get("name").toString();
+                            String Phone = doc.get("phoneNo").toString();
+                            currentUser = new User(username, email, name, Phone);
+                        }
+                    }
+                });
+
+        db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                bookList.clear();
+                for(QueryDocumentSnapshot doc: value)
+                {
+                    Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
+                    String bookTitle = doc.getId();
+                    String bookAuthor = doc.get("Author").toString();
+                    String bookISBN = doc.get("ISBN").toString();
+                    String bookStatus = doc.get("Status").toString();
+                    byte[] bookImage = null;
+                    if((Blob)doc.get("Image") != null) {
+                        Blob imageBlob = (Blob) doc.get("Image");
+                        bookImage = imageBlob.toBytes();
+                    }
+                    bookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,currentUser));
+                }
+                bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+            }
+        });
         return v;
     }
 
@@ -133,7 +171,6 @@ public class MyBooksFragment extends Fragment {
                 bookAdapter.notifyDataSetChanged();
             }
         }
-
 
         if (requestCode == 1) {
             if (resultCode == 1) {
@@ -167,27 +204,6 @@ public class MyBooksFragment extends Fragment {
                 bookAdapter.notifyDataSetChanged();
             }
         }
-    }
-
-    private void createBookArray(final addBookCallback cbh){
-        FirebaseFirestore db;
-        final FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
-        db = FirebaseFirestore.getInstance();
-        String info = userInfo.getDisplayName();
-        final byte[] tempArray = new byte[0];
-        db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName()).get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (DocumentSnapshot document : task.getResult()) {
-                                    Book book = new Book(document.toString(),document.get("Author").toString(),document.get("Status").toString(),tempArray,userInfo);
-                                    currentBooks.add(book);
-                                    cbh.onCallback(currentBooks);
-                                }
-                            }
-                        }
-                    });
     }
 
     // userBookList

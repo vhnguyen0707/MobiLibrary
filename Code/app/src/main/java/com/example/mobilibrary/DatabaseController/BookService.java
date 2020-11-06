@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.StorageReference;
@@ -43,11 +44,13 @@ public class BookService {
         if (newBook.getFirestoreID()!= null)
             throw new IllegalArgumentException("This book is already added to the database");
         DocumentReference bookDoc = db.collection("Books").document(newBook.getTitle());
+         Blob my_blob = Blob.fromBytes(newBook.getImage());
          Map<String, Object> data = new HashMap<>();
          data.put("ISBN", newBook.getISBN());
          data.put("Author", newBook.getAuthor());
          data.put("Status", newBook.getStatus());
          data.put("Owner", newBook.getOwner().getUsername());
+         data.put("Image", my_blob);
          bookDoc.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
              @Override
              public void onSuccess(Void aVoid) {
