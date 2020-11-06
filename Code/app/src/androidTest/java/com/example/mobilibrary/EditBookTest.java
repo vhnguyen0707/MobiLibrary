@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import android.app.Fragment;
 import android.net.Uri;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -35,7 +36,7 @@ import android.app.Fragment;
 public class EditBookTest {
     private Solo solo;
 
-        @Rule
+    @Rule
     public ActivityTestRule<LogIn> rule =
             new ActivityTestRule<>(LogIn.class, true, true);
 
@@ -202,4 +203,5 @@ public class EditBookTest {
         solo.finishOpenedActivities();
     }
 }
+
 
