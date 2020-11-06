@@ -155,7 +155,7 @@ public class MyBooksFragment extends Fragment {
                 // find the book to delete and delete it
                 for (int i = 0; i < bookAdapter.getCount(); i++) {
                     Book currentBook = bookAdapter.getItem(i);
-                    if (delete_book.compareTo(currentBook) == 0) {
+                    if (delete_book.getFirestoreID().equals(currentBook.getFirestoreID())) {
                         bookAdapter.remove(currentBook);
                     }
                 }
@@ -168,7 +168,7 @@ public class MyBooksFragment extends Fragment {
                 // find the book to edit and edit it
                 for (int i = 0; i < bookList.size(); i++) {
                     Book currentBook = bookList.get(i);
-                    if (edited_book.compareTo(currentBook) == 0) {
+                    if (edited_book.getFirestoreID().equals(currentBook.getFirestoreID())) {
                         currentBook.setTitle(edited_book.getTitle());
                         currentBook.setAuthor(edited_book.getAuthor());
                         currentBook.setISBN(edited_book.getISBN());
