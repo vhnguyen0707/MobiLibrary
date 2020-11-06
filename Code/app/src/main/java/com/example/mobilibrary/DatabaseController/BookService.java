@@ -49,7 +49,7 @@ public class BookService {
          data.put("ISBN", newBook.getISBN());
          data.put("Author", newBook.getAuthor());
          data.put("Status", newBook.getStatus());
-         data.put("Owner", newBook.getOwner());
+         data.put("Owner", newBook.getOwner().getUsername());
          data.put("Image", my_blob);
          bookDoc.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
              @Override
