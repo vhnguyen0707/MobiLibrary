@@ -51,13 +51,13 @@ public class BookService {
          bookDoc.set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
              @Override
              public void onSuccess(Void aVoid) {
-                 Toast.makeText((Activity)context, "Successfully added book!", Toast.LENGTH_SHORT).show();
+                 Toast.makeText(context, "Successfully added book!", Toast.LENGTH_SHORT).show();
              }
          }).addOnFailureListener(new OnFailureListener() {
              @Override
              public void onFailure(@NonNull Exception e) {
                  Log.e(TAG,"Failed with: " +e.toString());
-                 Toast.makeText((Activity) context, "Book not added!" , Toast.LENGTH_SHORT).show();
+                 Toast.makeText(context, "Book not added!" , Toast.LENGTH_SHORT).show();
              }
          });
     }

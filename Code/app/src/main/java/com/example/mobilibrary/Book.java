@@ -10,7 +10,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book> {
-    private final String firestoreID;
+    private String firestoreID;
     private static int nextID = 0;
     private String title;
     private String ISBN;
@@ -18,9 +18,8 @@ public class Book implements Serializable, Comparable<Book> {
     private String status;
     private User owner;
     // location variable?
-    private byte [] image;
+    private byte[] image;
     private int id;
-
 
     /**Constructor for a new book. Since the new book is not saved to firestore yet,
      *  the firestore id would be null
@@ -31,6 +30,7 @@ public class Book implements Serializable, Comparable<Book> {
      * @param status The book's status
      * @param image  Byte array of image that user can choose to attach to the book
      * @param user  The book's owner
+     *
      */
     public Book(String title, String ISBN, String author, String status, byte [] image, User user){
         this.firestoreID = null;
@@ -51,12 +51,15 @@ public class Book implements Serializable, Comparable<Book> {
         this.author = author;
         this.status = status;
         this.image = image;
-        this.owner = owner;
+        this.owner = user;
     }
 
-
-    public String getFirestoreID() {
-        return firestoreID;
+    public Book(String toString, String author, String status, Object o, String owner) {
+        this.title = toString;
+        this.author = author;
+        this.status = status;
+        this.image = o;
+        this.owner = owner;
     }
 
     public int getId() {
@@ -111,6 +114,13 @@ public class Book implements Serializable, Comparable<Book> {
         this.image = image;
     }
 
+    public String getFirestoreID() {
+        return firestoreID;
+    }
+
+    public void setFirestoreID(String firestoreID) {
+        this.firestoreID = firestoreID;
+    }
 
     /**
      * Compares a book the book passed in the parameter by comparing their IDs,

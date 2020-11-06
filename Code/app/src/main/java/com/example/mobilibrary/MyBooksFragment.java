@@ -14,10 +14,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.mobilibrary.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -33,6 +40,7 @@ import static android.app.Activity.RESULT_OK;
 public class MyBooksFragment extends Fragment {
     private ListView bookView;
     private ArrayAdapter<Book> bookAdapter;
+    private ArrayList<Book> currentBooks = new ArrayList<Book>();
     private ArrayList<Book> bookList;
     private FloatingActionButton addButton;
 
@@ -53,6 +61,14 @@ public class MyBooksFragment extends Fragment {
         addButton = (FloatingActionButton) v.findViewById(R.id.addButton);
         bookView = (ListView) v.findViewById(R.id.book_list);
         bookList = new ArrayList<Book>();
+        createBookArray(new addBookCallback() {
+            @Override
+            public void onCallback(ArrayList<Book> ownerBooks) {
+                if(ownerBooks != null) {
+                    bookList = ownerBooks;
+                }
+            }
+        });
 
         tempBookList = new ArrayList<Book>();
 
@@ -151,6 +167,27 @@ public class MyBooksFragment extends Fragment {
                 bookAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    private void createBookArray(final addBookCallback cbh){
+        FirebaseFirestore db;
+        final FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+        String info = userInfo.getDisplayName();
+        final byte[] tempArray = new byte[0];
+        db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName()).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    Book book = new Book(document.toString(),document.get("Author").toString(),document.get("Status").toString(),tempArray,userInfo);
+                                    currentBooks.add(book);
+                                    cbh.onCallback(currentBooks);
+                                }
+                            }
+                        }
+                    });
     }
 
     // userBookList
