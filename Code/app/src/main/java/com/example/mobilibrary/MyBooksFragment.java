@@ -222,17 +222,19 @@ public class MyBooksFragment extends Fragment {
                         bookList.clear();
                         for(final QueryDocumentSnapshot doc: value)
                         {
-                            Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
-                            String bookTitle = doc.get("Title").toString();
-                            String bookAuthor = doc.get("Author").toString();
-                            String bookISBN = doc.get("ISBN").toString();
-                            String bookStatus = doc.get("Status").toString();
-                            byte[] bookImage = null;
-                            if((Blob)doc.get("Image") != null) {
-                                Blob imageBlob = (Blob) doc.get("Image");
-                                bookImage = imageBlob.toBytes();
+                            if(!(doc.getData().isEmpty())){
+                                Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
+                                String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
+                                String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
+                                String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
+                                String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
+                                byte[] bookImage = null;
+                                if ((Blob) doc.get("Image") != null) {
+                                    Blob imageBlob = (Blob) doc.get("Image");
+                                    bookImage = imageBlob.toBytes();
+                                }
+                                bookList.add(new Book(bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
                             }
-                            bookList.add(new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookUser));
                         }
                         bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                 }
