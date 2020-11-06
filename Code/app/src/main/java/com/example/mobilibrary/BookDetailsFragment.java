@@ -1,5 +1,6 @@
 package com.example.mobilibrary;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,10 +15,21 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mobilibrary.DatabaseController.BookService;
+import com.example.mobilibrary.DatabaseController.User;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Text;
 
@@ -52,6 +64,10 @@ public class BookDetailsFragment extends AppCompatActivity {
     private ArrayAdapter<String> reqAdapter;
     private ArrayList<String> reqDataList;
 
+    private FirebaseFirestore db;
+    private BookService bookService;
+    private Context context;
+
     /**
      * Creates the activity for viewing books and the requests on them, and the necessary logic to do so
      * @param SavedInstances The book to be viewed
@@ -77,6 +93,10 @@ public class BookDetailsFragment extends AppCompatActivity {
         ownerTitle = findViewById(R.id.view_owner_title);
         isbnTitle = findViewById(R.id.view_isbn_title);
         statusTitle = findViewById(R.id.view_status_title);
+
+        // set firebase variables
+        bookService = BookService.getInstance();
+        context = getApplicationContext();
 
         // hide request list at open of activity
         requestAssets = new TextView[]{title, author, owner, status, ownerTitle,ISBN, isbnTitle, statusTitle };
@@ -151,10 +171,17 @@ public class BookDetailsFragment extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent deleteIntent = new Intent();
-                deleteIntent.putExtra("delete book", viewBook); // mark book to be deleted
-                setResult(1, deleteIntent);
-                finish();
+                // delete book from current user and firestore instance using the callback function
+                currentUser(new Callback() {
+                    @Override
+                    public void onCallback(User user) {
+                        bookService.deleteBook(context, viewBook);  // delete book from firestore
+                        Intent deleteIntent = new Intent();
+                        deleteIntent.putExtra("delete book", viewBook); // mark book to be deleted in app
+                        setResult(1, deleteIntent);
+                        finish();
+                    }
+                });
             }
         });
 
@@ -245,5 +272,34 @@ public class BookDetailsFragment extends AppCompatActivity {
                 photo.setImageBitmap(bitmap);
             }
         }
+    }
+
+    /**
+     * currentUser uses the current instance of the firebase auth to get the information of the
+     * current user and create a User based on it. Because onComplete is asynchronous (so the info
+     * won't arrive until after the code completes) we need to use onCallBack interface. It will
+     * take the info and allow the information to be used (without null).
+     *
+     * @param cbh
+     */
+    public void currentUser(final Callback cbh) {
+        final FirebaseUser userInfo = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+        db.collection("Users").whereEqualTo("email", userInfo.getEmail()).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                String username = document.get("username").toString();
+                                String email = userInfo.getEmail();
+                                String name = document.get("name").toString();
+                                String Phone = document.get("phoneNo").toString();
+                                User currentUser = new User(username, email, name, Phone);
+                                cbh.onCallback(currentUser);
+                            }
+                        }
+                    }
+                });
     }
 }
