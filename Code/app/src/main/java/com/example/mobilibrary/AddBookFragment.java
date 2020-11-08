@@ -167,8 +167,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             @Override
             public void onClick(View v) {
                 Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                imageUri = getImageUri();
-                camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 int pic_id = 2;
                 startActivityForResult(camera_intent, pic_id);
             }
@@ -200,8 +198,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            Bundle cameraBundle = data.getExtras();
-            Uri image = (Uri) cameraBundle.get(MediaStore.EXTRA_OUTPUT);
+            Uri imageUri = data.getData();
             if(resultCode == Activity.RESULT_OK) {
                 try {
                     // Setting image on image view using Bitmap
