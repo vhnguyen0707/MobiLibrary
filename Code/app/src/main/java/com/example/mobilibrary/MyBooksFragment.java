@@ -8,16 +8,30 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.mobilibrary.R;
+import com.example.mobilibrary.DatabaseController.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -31,15 +45,16 @@ import static android.app.Activity.RESULT_OK;
  *
  */
 public class MyBooksFragment extends Fragment {
+    private static final String TAG = "MyBooksFragment";
     private ListView bookView;
     private ArrayAdapter<Book> bookAdapter;
     private ArrayList<Book> bookList;
     private FloatingActionButton addButton;
 
-    private ArrayList<Book> tempBookList;
     private Spinner statesSpin;
     private static final String[] states = new String[]{"Owned", "Requested", "Accepted", "Borrowed"};
-
+    private FirebaseFirestore db;
+    private FirebaseUser userInfo;
     public MyBooksFragment() {
         // Required empty public constructor
     }
@@ -52,12 +67,22 @@ public class MyBooksFragment extends Fragment {
         View v =  inflater.inflate(R.layout.fragment_my_books, container, false);
         addButton = (FloatingActionButton) v.findViewById(R.id.addButton);
         bookView = (ListView) v.findViewById(R.id.book_list);
-        bookList = new ArrayList<Book>();
+        db = FirebaseFirestore.getInstance();
+        userInfo = FirebaseAuth.getInstance().getCurrentUser();
 
-        tempBookList = new ArrayList<Book>();
+        /* we instantiate a new arraylist in case we have an empty firestore, if not we update this
+        list later in updateBookList */
 
+        bookList = new ArrayList<>();
         bookAdapter = new customBookAdapter(this.getActivity(), bookList);
         bookView.setAdapter(bookAdapter);
+        currentUser(new Callback() {
+            @Override
+            public void onCallback(User user) {
+                updateBookList(user);
+            }
+        });
+
 
         statesSpin = (Spinner) v.findViewById(R.id.spinner);
         ArrayAdapter<String> SpinAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, states);
@@ -87,7 +112,12 @@ public class MyBooksFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String state = (String) adapterView.getItemAtPosition(i);
-                DisplayBooks(state);
+                currentUser(new Callback() {
+                    @Override
+                    public void onCallback(User user) {
+                        updateBookList(user);
+                    }
+                });
             }
 
             @Override
@@ -113,11 +143,9 @@ public class MyBooksFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 Book new_book = (Book) Objects.requireNonNull(data.getExtras()).getSerializable("new book");
                 bookAdapter.add(new_book);
-                tempBookList.add(new_book);
                 bookAdapter.notifyDataSetChanged();
             }
         }
-
 
         if (requestCode == 1) {
             if (resultCode == 1) {
@@ -125,10 +153,9 @@ public class MyBooksFragment extends Fragment {
                 Book delete_book = (Book) data.getSerializableExtra("delete book");
 
                 // find the book to delete and delete it
-                for (int i = 0; 0 < bookAdapter.getCount(); i++) {
+                for (int i = 0; i < bookAdapter.getCount(); i++) {
                     Book currentBook = bookAdapter.getItem(i);
-                    if (delete_book.compareTo(currentBook) == 0) {
-                        tempBookList.remove(currentBook);
+                    if (delete_book.getFirestoreID().equals(currentBook.getFirestoreID())) {
                         bookAdapter.remove(currentBook);
                     }
                 }
@@ -141,7 +168,7 @@ public class MyBooksFragment extends Fragment {
                 // find the book to edit and edit it
                 for (int i = 0; i < bookList.size(); i++) {
                     Book currentBook = bookList.get(i);
-                    if (edited_book.compareTo(currentBook) == 0) {
+                    if (edited_book.getFirestoreID().equals(currentBook.getFirestoreID())) {
                         currentBook.setTitle(edited_book.getTitle());
                         currentBook.setAuthor(edited_book.getAuthor());
                         currentBook.setISBN(edited_book.getISBN());
@@ -153,7 +180,75 @@ public class MyBooksFragment extends Fragment {
         }
     }
 
-    // userBookList
+    /**
+     * Used to get the current user from the user collection of firestore and returns it on
+     * a Callback because OnCompleteListener is asynchronous
+     *
+     * @param cbh
+     */
+
+    public void currentUser(final Callback cbh) {
+        db.collection("Users").whereEqualTo("email", userInfo.getEmail()).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                String username = document.get("username").toString();
+                                String email = userInfo.getEmail();
+                                String name = document.get("name").toString();
+                                String Phone = document.get("phoneNo").toString();
+                                User currentUser = new User(username, email, name, Phone);
+                                cbh.onCallback(currentUser);
+                            }
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Used to fill bookList with firestore items, will get the information from the current User
+     *Call back and use it to instantiate a new book object from the firesotre information and add
+     * it to the bookList (clears it in case we have new items and want to count them) and updates
+     * adapter
+     *
+     * @param bookUser
+     */
+    public void updateBookList(final User bookUser){
+        db.collection("Books").whereEqualTo("Owner", userInfo.getDisplayName()).orderBy("Title")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (value != null) {
+                            bookList.clear();
+                            for (QueryDocumentSnapshot doc : value) {
+                                Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
+                                String bookId = doc.getId();
+                                String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
+                                String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
+                                String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
+                                String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
+                                byte[] bookImage = null;
+                                if ((Blob) doc.get("Image") != null) {
+                                    Blob imageBlob = (Blob) doc.get("Image");
+                                    bookImage = Objects.requireNonNull(imageBlob).toBytes();
+                                }
+
+                                String currState = statesSpin.getSelectedItem().toString().toLowerCase();
+
+                                if (!currState.equals("owned")) {
+                                    if (currState.equals(bookStatus)) {
+                                        bookList.add(new Book(bookId,bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                                    }
+                                } else {
+                                    bookList.add(new Book(bookId,bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser));
+                                }
+                            }
+                            bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+                        }
+                    }
+                });
+    }
 
     /**
      * Used to function spinner, if the book is in a certain status it will group them and will
@@ -161,48 +256,6 @@ public class MyBooksFragment extends Fragment {
      *
      * @param state
      */
-    public void DisplayBooks(String state) {
-        state = state.toLowerCase();
-        switch (state) {
-            case "requested":
-                for (Book book : tempBookList) {
-                    if (book.getStatus() != state) {
-                        if (bookList.contains(book) == true) {
-                            bookAdapter.remove(book);
-                        }
-                    }
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
-            case "owned":
-                Log.d("sooraj", "owned is pressed");
-                for (Book book : tempBookList) {
-                    Log.d("sooraj", "booklist doesnt contain a book, add it");
-                    bookAdapter.add(book);
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
-            case "accepted":
-                for (Book book : tempBookList) {
-                    if (book.getStatus() != state) {
-                        if (bookList.contains(book) == true) {
-                            bookAdapter.remove(book);
-                        }
-                    }
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
 
-            case "borrowed":
-                for (Book book : tempBookList) {
-                    if (book.getStatus() != state) {
-                        if (bookList.contains(book) == true) {
-                            bookAdapter.remove(book);
-                        }
-                    }
-                }
-                bookAdapter.notifyDataSetChanged();
-                break;
-        }
-    }
+
 }

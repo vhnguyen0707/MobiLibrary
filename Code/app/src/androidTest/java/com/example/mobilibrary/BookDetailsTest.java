@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.robotium.solo.Solo;
 
@@ -44,7 +45,6 @@ public class BookDetailsTest {
         // establish an instrument
         solo = new Solo(InstrumentationRegistry.getInstrumentation(), rule.getActivity());
 
-        // go to MyBooks and switch to addBookFragment
         // go to MyBooks and switch to addBookFragment
         solo.enterText((EditText) solo.getView(R.id.email_editText), "nrhassan@ualberta.ca");
         solo.enterText((EditText) solo.getView(R.id.password_editText), "PassWord15");
@@ -100,10 +100,10 @@ public class BookDetailsTest {
         String status = ((TextView) solo.getView(R.id.view_status)).getText().toString();
 
         // validate displayed information
-        assertEquals("Song of the Lioness", bookDetails.title.getText().toString());
-        assertEquals("Tamora Pierce", bookDetails.author.getText().toString());
-        assertEquals("username", bookDetails.owner.getText().toString());
-        assertEquals("1234567890123", bookDetails.ISBN.getText().toString());
+        assertEquals("Song of the Lioness", ((TextView) solo.getView(R.id.view_title)).getText().toString());
+        assertEquals("Tamora Pierce",  ((TextView) solo.getView(R.id.view_author)).getText().toString());
+        assertEquals("username", ((TextView) solo.getView(R.id.view_owner)).getText().toString());
+        assertEquals("1234567890123", ((TextView) solo.getView(R.id.view_status)).getText().toString());
         assertNull(drawable);
     }
 

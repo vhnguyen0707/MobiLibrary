@@ -36,25 +36,25 @@
             android:inputType="text"
             android:textSize="20sp" />
 
-        <EditText
-            android:id="@+id/book_isbn"
-            android:layout_width="317dp"
-            android:layout_height="40dp"
-            android:layout_above="@+id/confirm_button"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginEnd="60dp"
-            android:layout_marginRight="60dp"
-            android:layout_marginBottom="74dp"
-            android:background="#B3A894"
-            android:digits="0123456789."
-            android:hint="12345678"
-            android:inputType="number"
-            android:maxLength="13"
-            android:textSize="20sp" />
+    <EditText
+        android:id="@+id/book_isbn"
+        android:layout_width="317dp"
+        android:layout_height="40dp"
+        android:layout_above="@+id/confirm_button"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginBottom="38dp"
+        android:background="#B3A894"
+        android:digits="0123456789."
+        android:hint="12345678"
+        android:inputType="number"
+        android:maxLength="13"
+        android:textSize="20sp" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/back_button"
         android:layout_width="51dp"
         android:layout_height="55dp"
@@ -92,22 +92,22 @@
         app:maxImageSize="45dp"
         app:srcCompat="@android:drawable/ic_menu_camera" />
 
-        <ImageView
-            android:id="@+id/book_image"
-            android:layout_width="wrap_content"
-            android:layout_height="222dp"
-            android:layout_above="@+id/textView4"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="114dp"
-            android:layout_marginLeft="114dp"
-            android:layout_marginTop="18dp"
-            android:layout_marginEnd="113dp"
-            android:layout_marginBottom="20dp"
-            android:background="#A18E6D"
-            app:srcCompat="@android:drawable/ic_menu_add" />
+    <ImageView
+        android:id="@+id/book_image"
+        android:layout_width="wrap_content"
+        android:layout_height="243dp"
+        android:layout_above="@+id/textView4"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="114dp"
+        android:layout_marginLeft="114dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="113dp"
+        android:layout_marginBottom="0dp"
+        android:background="#A18E6D"
+        app:srcCompat="@android:drawable/ic_menu_add" />
 
         <TextView
             android:id="@+id/textView4"
