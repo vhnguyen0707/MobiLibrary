@@ -60,14 +60,12 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
+        // get element from your dataset at this position
+        // replace the contents of the view with that element
         holder.title.setText(mTitles.get(position));
         holder.author.setText(mAuthors.get(position));
         holder.isbn.setText(mISBNS.get(position));
         holder.status.setText(mStatuses.get(position));
-
-        // ***include check later to only show available/requested books
 
         //click listener
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {

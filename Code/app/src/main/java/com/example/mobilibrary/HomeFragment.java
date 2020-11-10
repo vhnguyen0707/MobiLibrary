@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        //each time homepage is opened will show all books from collection
+        //each time homepage is opened will show all available/requested books from other users from collection
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("Books").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -68,15 +68,17 @@ public class HomeFragment extends Fragment {
                 owners.clear();
                 images.clear();
 
-                for (DocumentSnapshot snapshot : value) {
-
-                    titles.add(snapshot.getString("Title"));
-                    authors.add(snapshot.getString("Author"));
-                    isbns.add(snapshot.getString("ISBN"));
-                    statuses.add(snapshot.getString("Status"));
-                    //owners.add(snapshot.getString("Owner"));
-                    owners.add(String.valueOf(snapshot.get("Owner")));
-                    images.add(snapshot.getBlob("Image"));
+                for (DocumentSnapshot snapshot : value) { //only add available/requested books and books that do not belong to the user
+                    if ((snapshot.getString("Status").equals("available")) || (snapshot.getString("Status").equals("requested"))) {
+                        if (! snapshot.getString("Owner").equals(databaseHelper.getUser().getDisplayName())) {
+                            titles.add(snapshot.getString("Title"));
+                            authors.add(snapshot.getString("Author"));
+                            isbns.add(snapshot.getString("ISBN"));
+                            statuses.add(snapshot.getString("Status"));
+                            owners.add(String.valueOf(snapshot.get("Owner")));
+                            images.add(snapshot.getBlob("Image"));
+                        }
+                    }
                 }
                 mAdaptor = new BookListAdaptor(getContext(), titles, authors, isbns, statuses, owners, images);
                 booksRV.setAdapter(mAdaptor);
