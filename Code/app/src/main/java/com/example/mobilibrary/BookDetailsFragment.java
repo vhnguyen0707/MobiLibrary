@@ -233,6 +233,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                 viewBook.setStatus("requested");
                 requestButton.setText("Requested");
                 bookService.changeStatus(context, viewBook, "requested");
+                //later add: make sure button text stays "requested" when user who already requested clicks on it again
 
             }
         });
