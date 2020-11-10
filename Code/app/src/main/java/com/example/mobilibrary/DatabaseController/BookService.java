@@ -7,20 +7,29 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.mobilibrary.Book;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class interacts with the database to get books on the cloud
@@ -142,6 +151,7 @@ public class BookService {
      * @param editBook book object to edit
      */
     public void editBook(final Context context, Book editBook) {
+        System.out.println("IN EDITBOOK IN BOOKSERVICE,  get FirestoreId: " + editBook.getFirestoreID());
         if (editBook.getFirestoreID() == null)
             throw new IllegalArgumentException("This book is not in database");
 
@@ -168,5 +178,30 @@ public class BookService {
                         Toast.makeText(context, "Book not edited!" , Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    public void changeStatus(final Context context, final Book book, final String newStatus){
+        System.out.println("Book title clicked is: " + book.getTitle());
+        //Map<String, Object> data = new HashMap<>();
+        //data.put("Status", newStatus);
+
+        db.collection("Books").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                for (DocumentSnapshot snapshot : value) {
+                    if (book.getTitle().equals(snapshot.getString("Title"))) {
+                        System.out.println("found book");
+                        System.out.println("Document id: " + snapshot.getId());
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("Status", newStatus);
+                        db.collection("Books").document(snapshot.getId())
+                                .set(data, SetOptions.merge());
+                    }
+                }
+
+            }
+        });
+
     }
 }

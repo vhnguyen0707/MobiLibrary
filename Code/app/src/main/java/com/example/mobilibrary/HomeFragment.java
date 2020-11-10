@@ -69,6 +69,7 @@ public class HomeFragment extends Fragment {
                 images.clear();
 
                 for (DocumentSnapshot snapshot : value) {
+
                     titles.add(snapshot.getString("Title"));
                     authors.add(snapshot.getString("Author"));
                     isbns.add(snapshot.getString("ISBN"));
