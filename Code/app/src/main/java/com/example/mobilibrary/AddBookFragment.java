@@ -43,6 +43,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
@@ -68,6 +71,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
 
     private RequestQueue mRequestQueue;
     private FirebaseFirestore db;
+    private StorageReference storageRef;
     private BookService bookService;
     private Context context;
 
@@ -85,6 +89,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         cameraButton = findViewById(R.id.camera_button);
 
         mRequestQueue = Volley.newRequestQueue(this);
+        storageRef = FirebaseStorage.getInstance().getReference().child("images").child("bookImage.jpg");
 
         bookService = BookService.getInstance();
         context = getApplicationContext();
@@ -119,10 +124,9 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                     currentUser(new Callback() {
                         @Override
                         public void onCallback(User user) {
-                            User bookOwner = user;
                             String bookStatus = "available";
                             Uri bookImage = getImageUri();
-                            Book newBook = new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,bookOwner);
+                            Book newBook = new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,user);
                             bookService.addBook(context, newBook);
                             if (getImageUri() != null){
                                 bookService.uploadImage(newBook.getFirestoreID(), getImageUri(), new OnSuccessListener<Void>() {
@@ -167,8 +171,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             @Override
             public void onClick(View v) {
                 Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                int pic_id = 2;
-                startActivityForResult(camera_intent, pic_id);
+                int CAMERA_CODE = 1;
+                startActivityForResult(camera_intent, CAMERA_CODE);
             }
         });
     }
@@ -197,19 +201,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2) {
-            Uri imageUri = data.getData();
-            if(resultCode == Activity.RESULT_OK) {
-                try {
-                    // Setting image on image view using Bitmap
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    newImage.setImageBitmap(bitmap);
-                }
-
-                catch (IOException e) {
-                    // Log the exception
-                    e.printStackTrace();
-                }
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK && data.getData() != null) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                newImage.setImageBitmap(photo);
             }
         } else {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
