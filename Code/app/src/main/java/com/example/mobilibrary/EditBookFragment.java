@@ -174,7 +174,7 @@ public class EditBookFragment extends AppCompatActivity {
                                 bookService.uploadImage(bookTitle, imageUri, new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Picasso.with(context).load(imageUri).into(photo);
+                                        Picasso.get().load(imageUri).into(photo);
                                     }
                                 }, new OnFailureListener() {
                                     @Override

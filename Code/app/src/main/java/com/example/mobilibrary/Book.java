@@ -1,12 +1,8 @@
 package com.example.mobilibrary;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Parcelable;
-import android.widget.ImageView;
 
 import com.example.mobilibrary.DatabaseController.User;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.io.Serializable;
 

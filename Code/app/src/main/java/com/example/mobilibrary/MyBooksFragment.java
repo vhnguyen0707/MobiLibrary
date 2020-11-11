@@ -54,7 +54,6 @@ public class MyBooksFragment extends Fragment {
     private ArrayAdapter<Book> bookAdapter;
     private ArrayList<Book> bookList;
     private FloatingActionButton addButton;
-    private String bookId;
 
     private Spinner statesSpin;
     private static final String[] states = new String[]{"Owned", "Requested", "Accepted", "Borrowed"};
@@ -228,7 +227,7 @@ public class MyBooksFragment extends Fragment {
                             bookList.clear();
                             for (final QueryDocumentSnapshot doc : value) {
                                 Log.d(TAG, String.valueOf(doc.getData().get("Owner")));
-                                bookId = doc.getId();
+                                String bookId = doc.getId();
                                 String bookTitle = Objects.requireNonNull(doc.get("Title")).toString();
                                 String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
                                 String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
@@ -254,7 +253,7 @@ public class MyBooksFragment extends Fragment {
 
     public void addImage(final Book book) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference dateRef = storageRef.child(bookId);
+        StorageReference dateRef = storageRef.child(book.getFirestoreID());
         dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
         {
             @Override

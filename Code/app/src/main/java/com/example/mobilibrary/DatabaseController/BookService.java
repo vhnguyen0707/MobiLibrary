@@ -69,7 +69,6 @@ public class BookService {
          data.put("Author", newBook.getAuthor());
          data.put("Status", newBook.getStatus());
          data.put("Owner", newBook.getOwner().getUsername());
-         data.put("Image", newBook.getImage());
         db.collection("Books").add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
              @Override
              public void onSuccess(DocumentReference documentReference) {

@@ -2,6 +2,7 @@ package com.example.mobilibrary;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -33,6 +34,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mobilibrary.DatabaseController.BookService;
 import com.example.mobilibrary.DatabaseController.User;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,7 +47,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
@@ -54,9 +55,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
+
+import static android.provider.MediaStore.ACTION_IMAGE_CAPTURE;
 
 
 public class AddBookFragment extends AppCompatActivity implements Serializable {
@@ -89,7 +90,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         cameraButton = findViewById(R.id.camera_button);
 
         mRequestQueue = Volley.newRequestQueue(this);
-        storageRef = FirebaseStorage.getInstance().getReference().child("images").child("bookImage.jpg");
+        storageRef = FirebaseStorage.getInstance().getReference();
 
         bookService = BookService.getInstance();
         context = getApplicationContext();
@@ -125,14 +126,14 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                         @Override
                         public void onCallback(User user) {
                             String bookStatus = "available";
-                            Uri bookImage = getImageUri();
-                            Book newBook = new Book(bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,user);
+                            Uri bookImage = imageUri;
+                            String bookId = null;
+                            Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,bookImage,user);
                             bookService.addBook(context, newBook);
-                            if (getImageUri() != null){
-                                bookService.uploadImage(newBook.getFirestoreID(), getImageUri(), new OnSuccessListener<Void>() {
+                            if (imageUri != null){
+                                bookService.uploadImage(newBook.getFirestoreID(), bookImage, new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Picasso.with(context).load(getImageUri()).into(newImage);
                                     }
                                 }, new OnFailureListener() {
                                     @Override
@@ -170,9 +171,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         newImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Intent cameraIntent = new Intent();
+                cameraIntent.setAction(ACTION_IMAGE_CAPTURE);
                 int CAMERA_CODE = 1;
-                startActivityForResult(camera_intent, CAMERA_CODE);
+                startActivityForResult(cameraIntent, CAMERA_CODE);
             }
         });
     }
@@ -201,11 +203,9 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK && data.getData() != null) {
-                Bitmap photo = (Bitmap) data.getExtras().get("data");
-                newImage.setImageBitmap(photo);
-            }
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data !=null && data.getData() != null){
+                imageUri = data.getData();
+                Picasso.get().load(imageUri).into(newImage);
         } else {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (intentResult != null) { //scanner got a result
@@ -335,16 +335,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             inputsGood = false;
         }
         return inputsGood;
-    }
-
-    /**
-     * used to check if imageUri is null
-     *
-     * @return Uri
-     */
-
-    public Uri getImageUri() {
-        return imageUri;
     }
 
     /**
