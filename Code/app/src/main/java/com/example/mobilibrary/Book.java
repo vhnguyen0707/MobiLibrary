@@ -1,5 +1,6 @@
 package com.example.mobilibrary;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.example.mobilibrary.DatabaseController.User;
@@ -15,7 +16,8 @@ public class Book implements Serializable, Comparable<Book> {
     private String status;
     private User owner;
     // location variable?
-    private Uri image;
+    //private Uri image;
+    private transient Bitmap image;
     private int id;
 
     /**Constructor for a new book. Since the new book is not saved to firestore yet,
@@ -29,7 +31,7 @@ public class Book implements Serializable, Comparable<Book> {
      * @param user  The book's owner
      *
      */
-    public Book(String title, String ISBN, String author, String status, Uri image, User user){
+    public Book(String title, String ISBN, String author, String status, Bitmap image, User user){
         this.firestoreID = null;
         this.id = nextID;
         this.title = title;
@@ -41,7 +43,7 @@ public class Book implements Serializable, Comparable<Book> {
         nextID++;
     }
 
-    public Book(String firestoreID, String title, String ISBN, String author, String status, Uri image, User user){
+    public Book(String firestoreID, String title, String ISBN, String author, String status, Bitmap image, User user){
         this.firestoreID = firestoreID;
         this.title = title;
         this.ISBN = ISBN;
@@ -95,11 +97,11 @@ public class Book implements Serializable, Comparable<Book> {
         this.owner = owner;
     }
 
-    public Uri getImage() {
+    public Bitmap getImage() {
         return image;
     }
 
-    public void setImage(Uri image) {
+    public void setImage(Bitmap image) {
         this.image = image;
     }
 

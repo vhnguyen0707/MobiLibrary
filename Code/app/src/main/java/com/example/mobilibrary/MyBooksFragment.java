@@ -1,11 +1,14 @@
 package com.example.mobilibrary;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
 
-
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +23,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.mobilibrary.DatabaseController.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,9 +41,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StreamDownloadTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -143,11 +154,13 @@ public class MyBooksFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("IN ONACTIVITYRESULT");
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 Book new_book = (Book) Objects.requireNonNull(data.getExtras()).getSerializable("new book");
                 bookAdapter.add(new_book);
                 bookAdapter.notifyDataSetChanged();
+                System.out.println("Book adaptor added newBook");
             }
         }
 
@@ -219,6 +232,7 @@ public class MyBooksFragment extends Fragment {
      * @param bookUser
      */
     public void updateBookList(final User bookUser) {
+        System.out.println("IN UPDATE BOOKLIST");
         db.collection("Books").whereEqualTo("Owner", bookUser.getUsername()).orderBy("Title")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -232,9 +246,13 @@ public class MyBooksFragment extends Fragment {
                                 String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
                                 String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
                                 String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
-                                Uri bookImage = null;
+
+                                Bitmap bookImage = null;
+                                //HERE SOMEHOW GETBOOKIMAGE BITMAP*******
+
                                 Book currentBook = new Book(bookId, bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser);
-                                addImage(currentBook);
+                                setBitMap(currentBook);
+
                                 String currState = statesSpin.getSelectedItem().toString().toLowerCase();
                                 if (!currState.equals("owned")) {
                                     if (currState.equals(bookStatus)) {
@@ -245,13 +263,13 @@ public class MyBooksFragment extends Fragment {
                                 }
                                 bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                             }
-                            bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
+                            //bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                         }
                     }
                 });
     }
 
-    public void addImage(final Book book) {
+    /*public void addImage(final Book book) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference dateRef = storageRef.child(book.getFirestoreID());
         dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
@@ -262,5 +280,50 @@ public class MyBooksFragment extends Fragment {
                 book.setImage(downloadUrl);
             }
         });
+    }*/
+
+    public void setBitMap(final Book book) {
+        //Bitmap bitMap = null;
+        System.out.println("IN SETBITMAP");
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference("books/" + book.getFirestoreID()+ ".jpg");
+        StreamDownloadTask stream = storageRef.getStream();
+        System.out.println("After storageref");
+
+
+        //THIS IS WHERE PROBLEM IS ********
+        final long ONE_MEGABYTE = 1024 * 1024;
+        storageRef.getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        book.setImage(bm);
+                        System.out.println("BOOKIMAGE SET");
+                    }
+
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
+
+
+
+
+        /*dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri downloadUrl)
+            {
+                try {
+                    System.out.println("IN TRY");
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), downloadUrl);
+                    book.setImage(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });*/
     }
 }

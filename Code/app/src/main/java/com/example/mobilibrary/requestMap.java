@@ -88,5 +88,3 @@ public class requestMap extends FragmentActivity implements OnMapReadyCallback{
         map = googleMap;
     }
 }
-
-

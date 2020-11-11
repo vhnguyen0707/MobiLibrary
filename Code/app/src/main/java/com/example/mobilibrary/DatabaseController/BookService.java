@@ -2,6 +2,7 @@ package com.example.mobilibrary.DatabaseController;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -10,15 +11,18 @@ import androidx.annotation.NonNull;
 
 import com.example.mobilibrary.Book;
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,8 +96,8 @@ public class BookService {
      * @param failureListener A FailureListener. Called when the task failed
      */
 
-    public void uploadImage(String id, Uri imageUri, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-        StorageReference fileRef = storageReference.child(id);
+    public void uploadImage(String id, Bitmap imageBitmap, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
+        /*StorageReference fileRef = storageReference.child(id);
         fileRef.putFile(imageUri)
                 .continueWith(new Continuation<UploadTask.TaskSnapshot, Void>() {
                     @Override
@@ -103,7 +107,47 @@ public class BookService {
                     }
                 })
                 .addOnSuccessListener(successListener)
-                .addOnFailureListener(failureListener);
+                .addOnFailureListener(failureListener);*/
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        final StorageReference ref = storageReference.child("books/" + id + ".jpg");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+        byte[] data = baos.toByteArray();
+
+        final UploadTask uploadTask = ref.putBytes(data);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                //progressDialog.dismiss();
+                //Toast.makeText(this, "Uploaded", Toast.LENGTH_SHORT).show();
+
+                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return ref.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downUri = task.getResult();
+                            Log.d("Final URL", "onComplete: Url: " + downUri.toString());
+                            //Toast.makeText(getApplicationContext(), "Successfully uploaded image", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //Toast.makeText(getApplicationContext(), "Failed uploading" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
