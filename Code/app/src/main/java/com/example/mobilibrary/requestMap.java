@@ -34,7 +34,7 @@ public class requestMap extends FragmentActivity implements OnMapReadyCallback{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        /*mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
         AutocompleteSupportFragment searchBar = (AutocompleteSupportFragment)
@@ -68,7 +68,7 @@ public class requestMap extends FragmentActivity implements OnMapReadyCallback{
 
             });
 
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);*/
     }
 
     @Override

@@ -66,6 +66,7 @@ public class EditBookFragment extends AppCompatActivity {
     private EditText ISBN;
     private ImageView photo;
     private Uri imageUri;
+    private Bitmap imageBitMap;
     private FloatingActionButton editImageButton;
     private FloatingActionButton deleteImageButton;
 
@@ -119,10 +120,11 @@ public class EditBookFragment extends AppCompatActivity {
         author.setText(book.getAuthor());
         ISBN.setText(String.valueOf(book.getISBN()));
         
-        Bitmap bitmap = null;
+        //Bitmap bitmap = null;
+        System.out.println("BOOK.GETIMAGE: " + book.getImage());
         if(book.getImage() != null){
-            convertImage(book.getImage());
-            photo.setImageBitmap(bitmap);
+            //convertImage(book.getImage());
+            photo.setImageBitmap(book.getImage());
         }
 
         /**
@@ -161,7 +163,7 @@ public class EditBookFragment extends AppCompatActivity {
 
                             // if a book has a photo pass along the photo's bitmap
                             if (getImageUri() != null) {
-                                book.setImage(imageUri);
+                                book.setImage(imageBitMap);
                             } else {
                                 book.setImage(null);    // book has no photo so image bitmap is set to null
                             }
@@ -170,8 +172,8 @@ public class EditBookFragment extends AppCompatActivity {
                             bookService.editBook(context, book);
 
                             // upload any changed images in firestore
-                            if (imageUri != null) {
-                                bookService.uploadImage(bookTitle, imageUri, new OnSuccessListener<Void>() {
+                            if (imageBitMap != null) {
+                                bookService.uploadImage(bookTitle, imageBitMap, new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Picasso.get().load(imageUri).into(photo);
@@ -316,9 +318,10 @@ public class EditBookFragment extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            imageUri = data.getData();
+            //imageUri = data.getData();
             Bitmap book_photo = (Bitmap) data.getExtras().get("data");
-            photo.setImageBitmap(book_photo);
+            imageBitMap = book_photo;
+            photo.setImageBitmap(imageBitMap);
         } else {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 

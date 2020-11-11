@@ -65,6 +65,7 @@ public class BookDetailsFragment extends AppCompatActivity {
     private ImageView photo;
     private ListView reqList;
     private Uri editUri;
+    private Bitmap editBitMap = null;
     private ArrayAdapter<String> reqAdapter;
     private ArrayList<String> reqDataList;
 
@@ -124,9 +125,13 @@ public class BookDetailsFragment extends AppCompatActivity {
         owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
         status.setText(viewBook.getStatus());
+        photo.setImageBitmap(viewBook.getImage());
         Bitmap bitmap = null;
+        System.out.println("CLICKED BOOK GET TITLE: " + viewBook.getTitle());
+        System.out.println("CLICKED BOOK GET IMAGE: " + viewBook.getImage());
         if(viewBook.getImage() != null){
-            convertImage(viewBook.getImage());
+            //convertImage(viewBook.getImage());
+            bitmap = viewBook.getImage();
             photo.setImageBitmap(bitmap);
         }
 
@@ -146,8 +151,8 @@ public class BookDetailsFragment extends AppCompatActivity {
                     viewBook.setISBN(ISBN.getText().toString().replaceAll(" ", ""));
 
                     // if a book has a photo pass along the photo's bitmap
-                    if (getEditUri() != null) {
-                        viewBook.setImage(editUri);
+                    if (viewBook.getImage() != null) {
+                        viewBook.setImage(editBitMap);
                     } else {
                         viewBook.setImage(null);    // book has no photo so image bitmap is set to null
                     }
@@ -280,7 +285,8 @@ public class BookDetailsFragment extends AppCompatActivity {
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
                 Bitmap bitmap; // used for null case
                 if (editedBook.getImage() != null) {
-                    bitmap = convertImage(editedBook.getImage());
+                    //bitmap = convertImage(editedBook.getImage());
+                    bitmap = editedBook.getImage();
                     photo.setImageBitmap(bitmap);
                 }
             }
