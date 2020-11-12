@@ -104,7 +104,8 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
                     }
                     public void initIntent(User user){
                         //get the book details of currently clicked item
-                        Book newBook = new Book(mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), mId.get(position), user);
+                        //Book newBook = new Book(mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), mId.get(position), user);
+                        Book newBook = new Book(mId.get(position), mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), user);
                         Intent viewBook = new Intent(mContext, BookDetailsFragment.class);
                         viewBook.putExtra("view book", newBook);
                         mContext .startActivity(viewBook);
