@@ -4,12 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -156,7 +151,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                     //If photo changed, pass along to firebase
                     if (photo != null) {
                         System.out.println("Uploading book, id: " + editBitMap.toString());
-                        bookService.uploadImage(editBitMap.toString(), editBitMap, new OnSuccessListener<Void>() {
+                        bookService.uploadImage(viewBook.getImageId(), editBitMap, new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                             }
@@ -252,25 +247,6 @@ public class BookDetailsFragment extends AppCompatActivity {
     }
 
     /**
-     * Determines if the book's photograph has a null bitmap
-     * @return boolean true if the book's photograph has a null bitmap, false otherwise
-     */
-
-    private void convertImage(String imageId) {
-        final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        editBitMap = bitmap;
-                        photo.setImageBitmap(bitmap);
-                    }
-                });
-    }
-
-    /**
      * Logic for returning from EditBookFragment activity, if requestCode is 2 and resultCode is RESULT_OK
      * then edit the corresponding fields to match the passed book
      * @param requestCode 2 if book is returned from the edit activity
@@ -319,6 +295,30 @@ public class BookDetailsFragment extends AppCompatActivity {
                                 User currentUser = new User(username, email, name, Phone);
                                 cbh.onCallback(currentUser);
                             }
+                        }
+                    }
+                });
+    }
+
+    /**
+     *
+     * @param imageId
+     */
+
+    private void convertImage(String imageId) {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        if(bitmap != null) {
+                            editBitMap = bitmap;
+                            photo.setImageBitmap(bitmap);
+                        } else {
+                            editBitMap = null;
+                            photo.setImageBitmap(null);
                         }
                     }
                 });

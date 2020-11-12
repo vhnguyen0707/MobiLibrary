@@ -101,7 +101,7 @@ public class BookService {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         final StorageReference ref = storageReference.child("books/" + id + ".jpg");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
         final UploadTask uploadTask = ref.putBytes(data);
@@ -177,7 +177,7 @@ public class BookService {
         data.put("Author", editBook.getAuthor());
         data.put("Image", editBook.getImageId());
         data.put("Title", editBook.getTitle());
-        data.put("Image", editBook.getImageId());
+        data.put("imageID", editBook.getImageId());
         // edit document
         db.collection("Books").document(editBook.getFirestoreID()).update(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

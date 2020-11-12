@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,6 +65,8 @@ public class MyBooksFragment extends Fragment {
     private static final String[] states = new String[]{"Owned", "Requested", "Accepted", "Borrowed"};
     private FirebaseFirestore db;
     private FirebaseUser userInfo;
+
+    private String bookImage;
 
     public MyBooksFragment() {
         // Required empty public constructor
@@ -240,11 +243,10 @@ public class MyBooksFragment extends Fragment {
                                 String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
                                 String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
                                 String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
-                                String bookImage =  Objects.requireNonNull(doc.get("imageID").toString());
-
+                                if(doc.get("imageID") != null) {
+                                   bookImage = Objects.requireNonNull(doc.get("imageID")).toString();
+                                }
                                 Book currentBook = new Book(bookId, bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser);
-                                //setBitMap(currentBook);
-
                                 String currState = statesSpin.getSelectedItem().toString().toLowerCase();
                                 if (!currState.equals("owned")) {
                                     if (currState.equals(bookStatus)) {
@@ -255,7 +257,6 @@ public class MyBooksFragment extends Fragment {
                                 }
                                 bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                             }
-                            //bookAdapter.notifyDataSetChanged(); // Notifying the adapter to render any new data fetched from the cloud
                         }
                     }
                 });
