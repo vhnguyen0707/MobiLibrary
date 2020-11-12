@@ -101,7 +101,9 @@ public class BookService {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         final StorageReference ref = storageReference.child("books/" + id + ".jpg");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        if(imageBitmap != null) {
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        }
         byte[] data = baos.toByteArray();
 
         final UploadTask uploadTask = ref.putBytes(data);

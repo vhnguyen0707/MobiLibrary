@@ -119,12 +119,13 @@ public class BookDetailsFragment extends AppCompatActivity {
         owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
         status.setText(viewBook.getStatus());
-        //photo.setImageBitmap(viewBook.getImage());
         Bitmap bitmap = null;
         System.out.println("CLICKED BOOK GET TITLE: " + viewBook.getTitle());
         System.out.println("CLICKED BOOK GET IMAGE: " + viewBook.getImageId());
         if(viewBook.getImageId() != null){
             convertImage(viewBook.getImageId());
+        } else {
+            photo.setImageBitmap(null);
         }
 
         /**
@@ -150,7 +151,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                     }
                     //If photo changed, pass along to firebase
                     if (photo != null) {
-                        System.out.println("Uploading book, id: " + editBitMap.toString());
+                        //System.out.println("Uploading book, id: " + editBitMap.toString());
                         bookService.uploadImage(viewBook.getImageId(), editBitMap, new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {

@@ -173,7 +173,7 @@ public class EditBookFragment extends AppCompatActivity {
                             bookService.editBook(context, book);
 
                             // upload any changed images in firestore or if deleted, delete it from firestore
-                            if (imageBitMap != null) {
+                            if (imageBitMap != oldBitmap && imageBitMap != null) {
                                 bookService.uploadImage(imageBitMap.toString(), imageBitMap, new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -185,25 +185,29 @@ public class EditBookFragment extends AppCompatActivity {
                                         Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                                StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                                storageReference.child("books/" + oldBitmap.toString() + ".jpg").delete()
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                String TAG = "editBookFragment";
-                                                Log.d(TAG, "onSuccess: deleted file");
-                                            }
-                                        });
-                            } else{
-                                StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                                storageReference.child("books/" + oldBitmap.toString() + ".jpg").delete()
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                String TAG = "editBookFragment";
-                                                Log.d(TAG, "onSuccess: deleted file");
-                                            }
-                                        });
+                                if(oldBitmap != null) {
+                                    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                                    storageReference.child("books/" + oldBitmap.toString() + ".jpg").delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    String TAG = "editBookFragment";
+                                                    Log.d(TAG, "onSuccess: deleted file");
+                                                }
+                                            });
+                                }
+                            } else if (imageBitMap == null){
+                                if(oldBitmap != null) {
+                                    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                                    storageReference.child("books/" + oldBitmap.toString() + ".jpg").delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    String TAG = "editBookFragment";
+                                                    Log.d(TAG, "onSuccess: deleted file");
+                                                }
+                                            });
+                                }
                             }
 
                             // pass edited book back to bookDetailsFragment
@@ -235,9 +239,9 @@ public class EditBookFragment extends AppCompatActivity {
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                photo.setImageBitmap(null);
                 imageBitMap = null;
                 book.setImageId(null);
+                photo.setImageBitmap(null);
             }
         });
 
