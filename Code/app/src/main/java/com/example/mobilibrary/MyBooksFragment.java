@@ -23,31 +23,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.example.mobilibrary.DatabaseController.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StreamDownloadTask;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -189,7 +183,7 @@ public class MyBooksFragment extends Fragment {
                         currentBook.setTitle(edited_book.getTitle());
                         currentBook.setAuthor(edited_book.getAuthor());
                         currentBook.setISBN(edited_book.getISBN());
-                        currentBook.setImage(edited_book.getImage());
+                        currentBook.setImageId(edited_book.getImageId());
                     }
                 }
                 bookAdapter.notifyDataSetChanged();
@@ -246,12 +240,10 @@ public class MyBooksFragment extends Fragment {
                                 String bookAuthor = Objects.requireNonNull(doc.get("Author")).toString();
                                 String bookISBN = Objects.requireNonNull(doc.get("ISBN")).toString();
                                 String bookStatus = Objects.requireNonNull(doc.get("Status")).toString();
-
-                                Bitmap bookImage = null;
-                                //HERE SOMEHOW GETBOOKIMAGE BITMAP*******
+                                String bookImage =  Objects.requireNonNull(doc.get("imageID").toString());
 
                                 Book currentBook = new Book(bookId, bookTitle, bookISBN, bookAuthor, bookStatus, bookImage, bookUser);
-                                setBitMap(currentBook);
+                                //setBitMap(currentBook);
 
                                 String currState = statesSpin.getSelectedItem().toString().toLowerCase();
                                 if (!currState.equals("owned")) {
@@ -282,7 +274,7 @@ public class MyBooksFragment extends Fragment {
         });
     }*/
 
-    public void setBitMap(final Book book) {
+    /*public void setBitMap(final Book book) {
         //Bitmap bitMap = null;
         System.out.println("IN SETBITMAP");
         StorageReference storageRef = FirebaseStorage.getInstance().getReference("books/" + book.getFirestoreID()+ ".jpg");
@@ -306,7 +298,7 @@ public class MyBooksFragment extends Fragment {
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
             }
-        });
+        }); */
 
 
 
@@ -325,5 +317,4 @@ public class MyBooksFragment extends Fragment {
 
             }
         });*/
-    }
 }

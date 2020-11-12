@@ -63,7 +63,7 @@ public class BookService {
      * @param newBook new Book object
      */
 
-    public void addBook(final Context context, final Book newBook){
+    public void addBook(final Context context, Book newBook){
         // Checks if the book is already added to database
         if (newBook.getFirestoreID()!= null)
             throw new IllegalArgumentException("This book is already added to the database");
@@ -73,7 +73,8 @@ public class BookService {
          data.put("Author", newBook.getAuthor());
          data.put("Status", newBook.getStatus());
          data.put("Owner", newBook.getOwner().getUsername());
-        db.collection("Books").add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+         data.put("imageID", newBook.getImageId());
+         db.collection("Books").add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
              @Override
              public void onSuccess(DocumentReference documentReference) {
                  newBook.setFirestoreID(documentReference.getId());
@@ -89,29 +90,16 @@ public class BookService {
     }
 
     /**
-     * This method checks if the image successfully uploaded to FirebaseStorage
-     * @param id id of the book
-     * @param imageUri The URI of the image to save
-     * @param successListener A SuccessListener of type Void. Called if the tasks succeeded
-     * @param failureListener A FailureListener. Called when the task failed
+     *
+     * @param id
+     * @param imageBitmap
+     * @param successListener
+     * @param failureListener
      */
 
     public void uploadImage(String id, Bitmap imageBitmap, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
-        /*StorageReference fileRef = storageReference.child(id);
-        fileRef.putFile(imageUri)
-                .continueWith(new Continuation<UploadTask.TaskSnapshot, Void>() {
-                    @Override
-                    public Void then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        task.getResult();
-                        return null;
-                    }
-                })
-                .addOnSuccessListener(successListener)
-                .addOnFailureListener(failureListener);*/
-
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         final StorageReference ref = storageReference.child("books/" + id + ".jpg");
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
         byte[] data = baos.toByteArray();
@@ -120,9 +108,6 @@ public class BookService {
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                //progressDialog.dismiss();
-                //Toast.makeText(this, "Uploaded", Toast.LENGTH_SHORT).show();
-
                 uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
                     public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -137,7 +122,6 @@ public class BookService {
                         if (task.isSuccessful()) {
                             Uri downUri = task.getResult();
                             Log.d("Final URL", "onComplete: Url: " + downUri.toString());
-                            //Toast.makeText(getApplicationContext(), "Successfully uploaded image", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -145,10 +129,9 @@ public class BookService {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                //Toast.makeText(getApplicationContext(), "Failed uploading" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d("Final URL", "could no upload image");
             }
         });
-
     }
 
     /**
@@ -192,9 +175,9 @@ public class BookService {
         Map<String, Object> data = new HashMap<>();
         data.put("ISBN", editBook.getISBN());
         data.put("Author", editBook.getAuthor());
-        data.put("Image", editBook.getImage());
+        data.put("Image", editBook.getImageId());
         data.put("Title", editBook.getTitle());
-        data.put("Image", editBook.getImage());
+        data.put("Image", editBook.getImageId());
         // edit document
         db.collection("Books").document(editBook.getFirestoreID()).update(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

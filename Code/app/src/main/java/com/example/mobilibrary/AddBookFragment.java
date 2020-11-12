@@ -68,7 +68,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     private EditText newAuthor;
     private EditText newIsbn;
     private ImageView newImage;
-    private Uri imageUri = null;
     private Bitmap imageBitMap = null;
     private Button confirmButton;
     private FloatingActionButton backButton;
@@ -89,7 +88,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         newAuthor = findViewById(R.id.book_author);
         newIsbn = findViewById(R.id.book_isbn);
         newImage = findViewById(R.id.book_image);
-        confirmButton = findViewById(R.id.confirm_button);
+        confirmButton = findViewById(R.id.confirm_book);
         backButton = findViewById(R.id.back_button);
         cameraButton = findViewById(R.id.camera_button);
 
@@ -130,18 +129,15 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                         @Override
                         public void onCallback(User user) {
                             String bookStatus = "available";
-                            //Uri bookImage = imageUri;
-                            //System.out.println("ADDING BOOK, GET IMAGE: " + bookImage);
-
-
                             String bookId = null;
-                            Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,imageBitMap,user);
+                            String bookBitmap = imageBitMap.toString();
+                            Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,bookBitmap,user);
                             System.out.println("new book was created");
                             bookService.addBook(context, newBook); //add book to firestore
                             System.out.println("After book service adding book");
                             if (imageBitMap != null){ //upload to firestore storage
                                 System.out.println("Uploading book, id: " + imageBitMap.toString());
-                                bookService.uploadImage(imageBitMap.toString(), imageBitMap, new OnSuccessListener<Void>() {
+                                bookService.uploadImage(bookBitmap, imageBitMap, new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                     }
@@ -217,15 +213,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
         System.out.println("Data: " + data);
         System.out.println("get data: " + data.getData());
         if (requestCode == 1 && resultCode == Activity.RESULT_OK){
-        //if (requestCode == 1 && resultCode == Activity.RESULT_OK && data !=null && data.getData() != null){
-                imageUri = data.getData();
                 System.out.println("TOOK PHOTO I THINK");
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imageBitMap = photo;
-                //store photo in firebase storage
-                //uploadImage(photo);
                 newImage.setImageBitmap(imageBitMap);
-                //Picasso.get().load(imageUri).into(newImage);
         } else {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
             if (intentResult != null) { //scanner got a result
@@ -256,55 +247,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 }
             }
         }
-    }
-
-
-    private void uploadImage(Bitmap bitmap) {
-        System.out.println("IN UPLOAD IMAGE");
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        final StorageReference ref = storageReference.child("books/" + bitmap.toString() + ".jpg");
-        //change bitmap to uri
-        /*ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), bitmap, "Title", null);
-        Uri uri = Uri.parse(path);*/
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-        byte[] data = baos.toByteArray();
-
-        final UploadTask uploadTask = ref.putBytes(data);
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                //progressDialog.dismiss();
-                //Toast.makeText(this, "Uploaded", Toast.LENGTH_SHORT).show();
-
-                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-                        return ref.getDownloadUrl();
-                    }
-                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            Uri downUri = task.getResult();
-                            Log.d("Final URL", "onComplete: Url: " + downUri.toString());
-                            Toast.makeText(getApplicationContext(), "Successfully uploaded image", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "Failed uploading" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     /**

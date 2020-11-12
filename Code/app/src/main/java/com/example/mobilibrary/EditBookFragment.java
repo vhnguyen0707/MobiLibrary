@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,6 +46,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.squareup.picasso.Picasso;
@@ -65,8 +68,8 @@ public class EditBookFragment extends AppCompatActivity {
     private EditText author;
     private EditText ISBN;
     private ImageView photo;
-    private Uri imageUri;
-    private Bitmap imageBitMap;
+    private Bitmap imageBitMap = null;
+    private Bitmap oldBitmap;
     private FloatingActionButton editImageButton;
     private FloatingActionButton deleteImageButton;
 
@@ -121,10 +124,9 @@ public class EditBookFragment extends AppCompatActivity {
         ISBN.setText(String.valueOf(book.getISBN()));
         
         //Bitmap bitmap = null;
-        System.out.println("BOOK.GETIMAGE: " + book.getImage());
-        if(book.getImage() != null){
-            //convertImage(book.getImage());
-            photo.setImageBitmap(book.getImage());
+        System.out.println("BOOK.GETIMAGE: " + book.getImageId());
+        if(book.getImageId() != null){
+            convertImage(book.getImageId());
         }
 
         /**
@@ -162,21 +164,21 @@ public class EditBookFragment extends AppCompatActivity {
                             byte[] emptyArray = new byte[0];
 
                             // if a book has a photo pass along the photo's bitmap
-                            if (getImageUri() != null) {
-                                book.setImage(imageBitMap);
+                            if (imageBitMap != null) {
+                                book.setImageId(imageBitMap.toString());
                             } else {
-                                book.setImage(null);    // book has no photo so image bitmap is set to null
+                                book.setImageId(null);    // book has no photo so image bitmap is set to null
                             }
 
                             // edit book in firestore
                             bookService.editBook(context, book);
 
-                            // upload any changed images in firestore
+                            // upload any changed images in firestore or if deleted, delete it from firestore
                             if (imageBitMap != null) {
-                                bookService.uploadImage(bookTitle, imageBitMap, new OnSuccessListener<Void>() {
+                                bookService.uploadImage(imageBitMap.toString(), imageBitMap, new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Picasso.get().load(imageUri).into(photo);
+                                        Picasso.get().load(imageBitMap.toString()).into(photo);
                                     }
                                 }, new OnFailureListener() {
                                     @Override
@@ -184,6 +186,17 @@ public class EditBookFragment extends AppCompatActivity {
                                         Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
+                            } else {
+                                StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                                storageReference.child("books/" + oldBitmap.toString() + ".jpg").delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                String TAG = "editBookFragment";
+                                                Log.d(TAG, "onSuccess: deleted file");
+                                            }
+                                        });
+
                             }
 
                             // pass edited book back to bookDetailsFragment
@@ -215,8 +228,10 @@ public class EditBookFragment extends AppCompatActivity {
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                oldBitmap = imageBitMap;
                 photo.setImageBitmap(null);
-                imageUri = null;
+                imageBitMap = null;
+                book.setImageId(null);
             }
         });
 
@@ -234,27 +249,18 @@ public class EditBookFragment extends AppCompatActivity {
         });
     }
 
-    private Uri getImageUri() {
-        return imageUri;
-    }
-
-    private Bitmap convertImage(Uri image) {
-        Bitmap bitmap = null;
-        try {
-            // Setting image on image view using Bitmap
-            bitmap = MediaStore
-                    .Images
-                    .Media
-                    .getBitmap(
-                            getContentResolver(),
-                            imageUri);
-        }
-
-        catch (IOException e) {
-            // Log the exception
-            e.printStackTrace();
-        }
-        return bitmap;
+    private void convertImage(String imageId) {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        imageBitMap = bitmap;
+                        photo.setImageBitmap(bitmap);
+                    }
+                });
     }
 
     /**
@@ -318,7 +324,6 @@ public class EditBookFragment extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            //imageUri = data.getData();
             Bitmap book_photo = (Bitmap) data.getExtras().get("data");
             imageBitMap = book_photo;
             photo.setImageBitmap(imageBitMap);
