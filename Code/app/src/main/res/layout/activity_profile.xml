@@ -22,14 +22,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="75dp"
-            android:layout_marginTop="130dp"
+            android:layout_marginTop="125dp"
             android:text="Username"
             android:textSize="25dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/user_text_view"
+            android:id="@+id/username_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="75dp"
@@ -46,11 +47,12 @@
             android:layout_marginTop="30dp"
             android:text="Email"
             android:textSize="25dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/user_text_view" />
+            app:layout_constraintTop_toBottomOf="@+id/username_text_view" />
 
         <EditText
-            android:id="@+id/edit_email"
+            android:id="@+id/edit_new_email"
             android:layout_width="260dp"
             android:layout_height="40dp"
             android:layout_marginStart="75dp"
@@ -81,6 +83,7 @@
             android:layout_marginTop="30dp"
             android:text="Phone"
             android:textSize="25dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/email_text_view" />
 
@@ -178,7 +181,7 @@
 
     <ImageView
         android:id="@+id/avatarImageView"
-        android:layout_width="412dp"
+        android:layout_width="0dp"
         android:layout_height="190dp"
         android:layout_marginTop="70dp"
         android:src="@drawable/pfp"
