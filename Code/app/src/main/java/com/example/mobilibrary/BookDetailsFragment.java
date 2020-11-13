@@ -66,6 +66,7 @@ public class BookDetailsFragment extends AppCompatActivity {
     private FirebaseFirestore db;
     private BookService bookService;
     private Context context;
+    private Button requestButton;
 
     /**
      * Creates the activity for viewing books and the requests on them, and the necessary logic to do so
@@ -93,19 +94,14 @@ public class BookDetailsFragment extends AppCompatActivity {
         isbnTitle = findViewById(R.id.view_isbn_title);
         statusTitle = findViewById(R.id.view_status_title);
 
-        // set firebase variables
+        requestButton = findViewById(R.id.request_button);
+
+        //set all status changing buttons to be invisible
+        requestButton.setVisibility(View.GONE);
+
+        // set up firestore instance
         bookService = BookService.getInstance();
         context = getApplicationContext();
-
-        // hide request list at open of activity
-        requestAssets = new TextView[]{title, author, owner, status, ownerTitle,ISBN, isbnTitle, statusTitle };
-        reqDataList = new ArrayList<>();
-        for (String user: req_users){
-            reqDataList.add(user + "has requested your book");
-        }
-        reqAdapter =  new ArrayAdapter<String>(this,R.layout.req_custom_list, R.id.textView, reqDataList);
-        reqList.setAdapter(reqAdapter);
-        reqList.setVisibility(View.GONE);
 
         // check that a book was passed to this activity, otherwise end the activity
         if (getIntent() == null) {
@@ -126,6 +122,34 @@ public class BookDetailsFragment extends AppCompatActivity {
             convertImage(viewBook.getImageId());
         } else {
             photo.setImageBitmap(null);
+        }
+
+        //get current user name and book owners name, check if they match
+        String userName = getUsername();
+        String bookOwner = viewBook.getOwner().getUsername();
+        if (userName.equals(bookOwner)) { //user is looking at their own book (only happens when on myBooks page), can edit or delete, view requests, etc
+            // hide request list at open of activity
+            requestAssets = new TextView[]{title, author, owner, status, ownerTitle,ISBN, isbnTitle, statusTitle };
+            reqDataList = new ArrayList<>();
+            for (String user: req_users){
+                reqDataList.add(user + "has requested your book");
+            }
+            reqAdapter =  new ArrayAdapter<String>(this,R.layout.req_custom_list, R.id.textView, reqDataList);
+            reqList.setAdapter(reqAdapter);
+            reqList.setVisibility(View.GONE);
+
+
+        } else{ //user is looking at another user's book (from homepage), hide the edit, delete, two tabs buttons. Depending on the status of the book will show diff buttons (request, borrow, etc)
+            editButton.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.GONE);
+            detailsBtn.setVisibility(View.GONE);
+            requestsBtn.setVisibility(View.GONE);
+
+            //get book status
+            //if book is available/requested, show request button
+            requestButton.setVisibility(View.VISIBLE);
+
+
         }
 
         /**
@@ -210,9 +234,26 @@ public class BookDetailsFragment extends AppCompatActivity {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                System.out.println("VIEWED BOOK FIRESTOREID: " + viewBook.getFirestoreID());
                 Intent editIntent = new Intent(BookDetailsFragment.this, EditBookFragment.class);
                 editIntent.putExtra("edit", viewBook);
                 startActivityForResult(editIntent, 2);
+            }
+        });
+
+        /**
+         * If Request Button is pressed, change Book status to request, and change the button
+         */
+        requestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //change book status to requested
+                //System.out.println("VIEWED BOOK FIRESTOREID: " + viewBook.getFirestoreID());
+                viewBook.setStatus("requested");
+                requestButton.setText("Requested");
+                bookService.changeStatus(context, viewBook, "requested");
+                //later add: make sure button text stays "requested" when user who already requested clicks on it again
+
             }
         });
 
@@ -245,6 +286,13 @@ public class BookDetailsFragment extends AppCompatActivity {
                 reqList.setVisibility(View.GONE);
             }
         });
+    }
+
+    //get current username
+    private String getUsername(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userName = user.getDisplayName();
+        return userName;
     }
 
     /**
