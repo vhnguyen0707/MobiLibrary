@@ -44,7 +44,8 @@ public class HomeFragment extends Fragment {
     private List<String> isbns = new ArrayList<>();
     private List<String> statuses = new ArrayList<>();
     private List<String> owners = new ArrayList<>();
-    private List<Blob> images = new ArrayList<>();
+    private List<String> images = new ArrayList<>();
+    private List<String> ids = new ArrayList<>();
 
     public HomeFragment() {
         // Required empty public constructor
@@ -67,6 +68,7 @@ public class HomeFragment extends Fragment {
                 statuses.clear();
                 owners.clear();
                 images.clear();
+                ids.clear();
 
                 for (DocumentSnapshot snapshot : value) { //only add available/requested books and books that do not belong to the user
                     if ((snapshot.getString("Status").equals("available")) || (snapshot.getString("Status").equals("requested"))) {
@@ -76,11 +78,12 @@ public class HomeFragment extends Fragment {
                             isbns.add(snapshot.getString("ISBN"));
                             statuses.add(snapshot.getString("Status"));
                             owners.add(String.valueOf(snapshot.get("Owner")));
-                            images.add(snapshot.getBlob("Image"));
+                            images.add(snapshot.getString("Image"));
+                            ids.add(snapshot.getString("imageID"));
                         }
                     }
                 }
-                mAdaptor = new BookListAdaptor(getContext(), titles, authors, isbns, statuses, owners, images);
+                mAdaptor = new BookListAdaptor(getContext(), titles, authors, isbns, statuses, owners, images, ids);
                 booksRV.setAdapter(mAdaptor);
             }
         });

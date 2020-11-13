@@ -32,16 +32,18 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
     private List<String> mISBNS;
     private List<String> mStatuses;
     private List<String> mOwners;
-    private List<Blob> mImages;
+    private List<String> mImages;
+    private List<String> mId;
     private Context mContext;
 
-    public BookListAdaptor(Context context, List<String> titles, List<String> authors, List<String> isbns, List<String> statuses, List<String> owners, List<Blob> images) {
+    public BookListAdaptor(Context context, List<String> titles, List<String> authors, List<String> isbns, List<String> statuses, List<String> owners, List<String> images, List<String> ids) {
         mTitles = titles;
         mAuthors = authors;
         mISBNS = isbns;
         mStatuses = statuses;
         mOwners = owners;
         mImages = images;
+        mId = ids;
         mContext = context;
 
 
@@ -75,10 +77,10 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
             public void onClick(View view) {
 
                 //get image of book clicked
-                byte[] bookImage = null;
+                /*byte[] bookImage = null;
                 if (mImages.get(position) != null) {
                     bookImage = mImages.get(position).toBytes();
-                }
+                }*/
 
                 //Get the User object from currently clicked book by going into firestore
                 final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -107,7 +109,8 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
                     }
                     public void initIntent(User user){
                         //get the book details of currently clicked item
-                        Book newBook = new Book(mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), finalBookImage, user);
+                        //Book newBook = new Book(mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), mId.get(position), user);
+                        Book newBook = new Book(mId.get(position), mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), user);
                         Intent viewBook = new Intent(mContext, BookDetailsFragment.class);
                         viewBook.putExtra("view book", newBook);
                         mContext .startActivity(viewBook);
