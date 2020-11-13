@@ -136,21 +136,26 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                             }
                             Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,bookBitmap,user);
                             System.out.println("new book was created");
-                            bookService.addBook(context, newBook); //add book to firestore
                             System.out.println("After book service adding book");
-                            if (imageBitMap != null){ //upload to firestore storage
-                                System.out.println("Uploading book, id: " + imageBitMap.toString());
-                                bookService.uploadImage(bookBitmap, imageBitMap, new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
+                            bookService.addBook(context, newBook, new IdCallBack() {
+                                @Override
+                                public void IdCallback(String id) {
+                                    if (imageBitMap != null){ //upload to firestore storage
+                                        System.out.println("Uploading book, id: " + imageBitMap.toString());
+                                        bookService.uploadImage(id, imageBitMap, new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                            }
+                                        }, new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(AddBookFragment.this, "Failed to add image.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
-                                }, new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(AddBookFragment.this, "Failed to add image.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
+
+                                }
+                            }); //add book to firestore
                             Intent returnIntent = new Intent();
                             returnIntent.putExtra("new book", newBook);
                             setResult(RESULT_OK, returnIntent);
@@ -212,9 +217,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("GOT CAMERA PHOTO");
-        System.out.println("Data: " + data);
-        System.out.println("get data: " + data.getData());
         if (requestCode == 1 && resultCode == Activity.RESULT_OK){
                 System.out.println("TOOK PHOTO I THINK");
                 Bitmap photo = (Bitmap) data.getExtras().get("data");

@@ -115,11 +115,10 @@ public class BookDetailsFragment extends AppCompatActivity {
         owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
         status.setText(viewBook.getStatus());
-        Bitmap bitmap = null;
         System.out.println("CLICKED BOOK GET TITLE: " + viewBook.getTitle());
         System.out.println("CLICKED BOOK GET IMAGE: " + viewBook.getImageId());
         if(viewBook.getImageId() != null){
-            convertImage(viewBook.getImageId());
+            convertImage(viewBook.getFirestoreID());
         } else {
             photo.setImageBitmap(null);
         }
@@ -174,9 +173,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                         viewBook.setImageId(null);    // book has no photo so image bitmap is set to null
                     }
                     //If photo changed, pass along to firebase
-                    if (photo != null) {
+                    if (editBitMap != null) {
                         //System.out.println("Uploading book, id: " + editBitMap.toString());
-                        bookService.uploadImage(viewBook.getImageId(), editBitMap, new OnSuccessListener<Void>() {
+                        bookService.uploadImage(viewBook.getFirestoreID(), editBitMap, new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                             }
@@ -209,7 +208,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                     @Override
                     public void onCallback(User user) {
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                        storageReference.child("books/" + viewBook.getImageId() + ".jpg").delete()
+                        storageReference.child("books/" + viewBook.getFirestoreID() + ".jpg").delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -314,7 +313,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                 // owner.setText(editedBook.getOwner().getUsername());
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
                 if (editedBook.getImageId() != null) {
-                    convertImage(editedBook.getImageId());
+                    convertImage(editedBook.getFirestoreID());
+                } else{
+                    photo.setImageBitmap(null);
                 }
             }
         }

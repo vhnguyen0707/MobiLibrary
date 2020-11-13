@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.mobilibrary.Book;
+import com.example.mobilibrary.IdCallBack;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -70,7 +71,7 @@ public class BookService {
      * @param newBook new Book object
      */
 
-    public void addBook(final Context context, Book newBook){
+    public void addBook(final Context context, Book newBook, final IdCallBack icb){
         // Checks if the book is already added to database
         if (newBook.getFirestoreID()!= null)
             throw new IllegalArgumentException("This book is already added to the database");
@@ -85,7 +86,9 @@ public class BookService {
              @Override
              public void onSuccess(DocumentReference documentReference) {
                  newBook.setFirestoreID(documentReference.getId());
+                 String id = documentReference.getId();
                  Toast.makeText(context, "Successfully added book!", Toast.LENGTH_SHORT).show();
+                 icb.IdCallback(id);
              }
          }).addOnFailureListener(new OnFailureListener() {
              @Override

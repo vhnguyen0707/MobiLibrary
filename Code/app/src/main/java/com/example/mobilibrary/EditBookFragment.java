@@ -90,7 +90,6 @@ public class EditBookFragment extends AppCompatActivity {
         Button confirmButton = findViewById(R.id.confirm_button);
         FloatingActionButton backButton = findViewById(R.id.back_to_view_button);
         FloatingActionButton scanButton = findViewById(R.id.edit_scan_button);
-        confirmButton = findViewById(R.id.confirm_button);
         photo = findViewById(R.id.image);
         FloatingActionButton editImageButton = findViewById(R.id.edit_image_button);
         FloatingActionButton deleteImageButton = findViewById(R.id.delete_image_button);
@@ -118,7 +117,7 @@ public class EditBookFragment extends AppCompatActivity {
         //Bitmap bitmap = null;
         System.out.println("BOOK.GETIMAGE: " + book.getImageId());
         if(book.getImageId() != null){
-            convertImage(book.getImageId());
+            convertImage(book.getFirestoreID());
         } else {
             imageBitMap = null;
             oldBitmap = null;
@@ -169,9 +168,10 @@ public class EditBookFragment extends AppCompatActivity {
                             bookService.editBook(context, book);
 
                             // upload any changed images in firestore or if deleted, delete it from firestore
-                            if ((imageBitMap != oldBitmap) && (imageBitMap != null)) {
+                            deleteImage(book);
+                            if (imageBitMap != null) {
                                 book.setImageId(imageBitMap.toString());
-                                bookService.uploadImage(bookImage, imageBitMap, new OnSuccessListener<Void>() {
+                                bookService.uploadImage(book.getFirestoreID(), imageBitMap, new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(EditBookFragment.this, " edited image", Toast.LENGTH_SHORT).show();
@@ -182,31 +182,7 @@ public class EditBookFragment extends AppCompatActivity {
                                         Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                                if(oldBitmap != null) {
-                                    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                                    storageReference.child("books/" + oldBookImage + ".jpg").delete()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    String TAG = "editBookFragment";
-                                                    Log.d(TAG, "onSuccess: deleted file");
-                                                }
-                                            });
-                                }
-                            } else if (imageBitMap == null){
-                                if(oldBitmap != null) {
-                                    StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                                    storageReference.child("books/" + oldBitmap.toString() + ".jpg").delete()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    String TAG = "editBookFragment";
-                                                    Log.d(TAG, "onSuccess: deleted file");
-                                                }
-                                            });
-                                }
                             }
-
                             // pass edited book back to bookDetailsFragment
                             Intent editIntent = new Intent();
                             editIntent.putExtra("edited", book);    // mark book as edited in app
@@ -256,6 +232,18 @@ public class EditBookFragment extends AppCompatActivity {
         });
     }
 
+    private void deleteImage(Book book) {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        String TAG = "editBookFragment";
+                        Log.d(TAG, "onSuccess: deleted file");
+                    }
+                });
+    }
+
     private void convertImage(String imageId) {
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -279,9 +267,12 @@ public class EditBookFragment extends AppCompatActivity {
 
     private String convertBitmap(Bitmap bitmap){
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
-        String bitmapString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        String bitmapString = null;
+        if(bitmap != null){
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream .toByteArray();
+            bitmapString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        }
         return bitmapString;
     }
 
