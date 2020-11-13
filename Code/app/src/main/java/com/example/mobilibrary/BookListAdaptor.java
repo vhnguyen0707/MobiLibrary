@@ -2,6 +2,7 @@ package com.example.mobilibrary;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.w3c.dom.Text;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyViewHolder> {
     private List<String> mTitles;
@@ -83,7 +85,11 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
                 //Get the User object from currently clicked book by going into firestore
                 final FirebaseFirestore db = FirebaseFirestore.getInstance();
                 DocumentReference docRef = db.collection("Users").document(mOwners.get(position));
-                //String finalBookImage = bookImage.toString();
+                String finalBookImage = null;
+                /*if(bookImage != null){
+                    Base64.encodeToString(bookImage, Base64.DEFAULT);
+                }*/
+                
                 docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -91,10 +97,10 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
                         System.out.println("Document snapshot data: " + document.getData());
                         System.out.println("Document snapshot data email: " + document.get("email"));
 
-                        String username = document.get("username").toString();
-                        String email = document.get("email").toString();
-                        String name = document.get("name").toString();
-                        String phoneNo = document.get("phoneNo").toString();
+                        String username = Objects.requireNonNull(document.get("username")).toString();
+                        String email = Objects.requireNonNull(document.get("email")).toString();
+                        String name = Objects.requireNonNull(document.get("name")).toString();
+                        String phoneNo = Objects.requireNonNull(document.get("phoneNo")).toString();
 
                         User user = new User(username, email, name, phoneNo);
 
@@ -105,7 +111,9 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
                     public void initIntent(User user){
                         //get the book details of currently clicked item
                         //Book newBook = new Book(mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), mId.get(position), user);
-                        Book newBook = new Book(mId.get(position), mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), user);
+                        System.out.println("About to initialize new intent, id: " + mId.get(position));
+                        Book newBook = new Book(mId.get(position), mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mId.get(position), user);
+                        System.out.println("id: " + newBook.getImageId());
                         Intent viewBook = new Intent(mContext, BookDetailsFragment.class);
                         viewBook.putExtra("view book", newBook);
                         mContext .startActivity(viewBook);
