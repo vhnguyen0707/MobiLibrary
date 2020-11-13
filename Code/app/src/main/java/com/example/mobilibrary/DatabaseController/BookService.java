@@ -109,14 +109,14 @@ public class BookService {
 
     public void uploadImage(String id, Bitmap imageBitmap, OnSuccessListener<Void> successListener, OnFailureListener failureListener) {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        final StorageReference ref = storageReference.child("books/" + id + ".jpg");
+        StorageReference ref = storageReference.child("books/" + id + ".jpg");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         if(imageBitmap != null) {
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         }
         byte[] data = baos.toByteArray();
 
-        final UploadTask uploadTask = ref.putBytes(data);
+        UploadTask uploadTask = ref.putBytes(data);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

@@ -151,6 +151,15 @@ public class EditBookFragment extends AppCompatActivity {
                             // edit book in firestore
                             bookService.editBook(context, book);
 
+                            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                            storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            String TAG = "editBookFragment";
+                                            Log.d(TAG, "onSuccess: deleted file");
+                                        }
+                                    });
                             if(!(nullPhoto())) {
                                 book.setImageId(imageBitMap.toString());
                                 bookService.uploadImage(book.getFirestoreID(), imageBitMap,
@@ -167,15 +176,6 @@ public class EditBookFragment extends AppCompatActivity {
                                 });
                             } else {
                                 book.setImageId(null);
-                                StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                                storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                String TAG = "editBookFragment";
-                                                Log.d(TAG, "onSuccess: deleted file");
-                                            }
-                                        });
                             }
                             // pass edited book back to bookDetailsFragment
                             Intent editIntent = new Intent();

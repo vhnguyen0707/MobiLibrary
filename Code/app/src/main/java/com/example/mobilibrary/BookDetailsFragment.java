@@ -305,10 +305,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                 Book editedBook = (Book) data.getSerializableExtra("edited");
                 title.setText(editedBook.getTitle());
                 author.setText(editedBook.getAuthor());
-                // owner.setText(editedBook.getOwner().getUsername());
+                owner.setText(editedBook.getOwner().getUsername());
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
                 convertImage(editedBook.getFirestoreID());
-                photo.setImageBitmap(null);
             }
         }
     }
