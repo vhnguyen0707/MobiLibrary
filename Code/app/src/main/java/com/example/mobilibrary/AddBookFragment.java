@@ -130,7 +130,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                         public void onCallback(User user) {
                             String bookStatus = "available";
                             String bookId = null;
-                            String bookBitmap = imageBitMap.toString();
+                            String bookBitmap = null;
+                            if(imageBitMap != null){
+                                bookBitmap = imageBitMap.toString();
+                            }
                             Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,bookBitmap,user);
                             System.out.println("new book was created");
                             bookService.addBook(context, newBook); //add book to firestore

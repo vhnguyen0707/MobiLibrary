@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
 
                 for (DocumentSnapshot snapshot : value) { //only add available/requested books and books that do not belong to the user
                     if ((snapshot.getString("Status").equals("available")) || (snapshot.getString("Status").equals("requested"))) {
-                        if (! snapshot.getString("Owner").equals(databaseHelper.getUser().getDisplayName())) {
+                        if (! snapshot.get("Owner").equals(databaseHelper.getUser().getDisplayName())) {
                             titles.add(snapshot.getString("Title"));
                             authors.add(snapshot.getString("Author"));
                             isbns.add(snapshot.getString("ISBN"));
