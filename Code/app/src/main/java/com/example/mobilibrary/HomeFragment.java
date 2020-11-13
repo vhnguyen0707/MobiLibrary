@@ -45,10 +45,7 @@ public class HomeFragment extends Fragment {
     private List<String> statuses = new ArrayList<>();
     private List<String> owners = new ArrayList<>();
     private List<String> images = new ArrayList<>();
-<<<<<<< HEAD
-=======
     private List<String> ids = new ArrayList<>();
->>>>>>> 7b8116668e0e14ee2fe3a7e18013ab0eece74ea9
 
     public HomeFragment() {
         // Required empty public constructor
@@ -81,12 +78,7 @@ public class HomeFragment extends Fragment {
                             isbns.add(snapshot.getString("ISBN"));
                             statuses.add(snapshot.getString("Status"));
                             owners.add(String.valueOf(snapshot.get("Owner")));
-<<<<<<< HEAD
-                            images.add(snapshot.getString("imageId"));
-=======
-                            images.add(snapshot.getString("Image"));
                             ids.add(snapshot.getString("imageID"));
->>>>>>> 7b8116668e0e14ee2fe3a7e18013ab0eece74ea9
                         }
                     }
                 }

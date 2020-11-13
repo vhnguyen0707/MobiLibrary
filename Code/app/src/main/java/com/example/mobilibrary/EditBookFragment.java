@@ -55,8 +55,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-
 /**
  * This class takes in a book and edits it Title, Author, ISBN and photograph. The first three
  * can be done manually or via scanning the book's ISBN
@@ -67,7 +65,6 @@ public class EditBookFragment extends AppCompatActivity {
     private EditText ISBN;
     private ImageView photo;
     private Bitmap imageBitMap;
-    private Bitmap oldBitmap;
 
     private RequestQueue mRequestQueue;
     private FirebaseFirestore db;
@@ -116,12 +113,7 @@ public class EditBookFragment extends AppCompatActivity {
 
         //Bitmap bitmap = null;
         System.out.println("BOOK.GETIMAGE: " + book.getImageId());
-        if(book.getImageId() != null){
-            convertImage(book.getFirestoreID());
-        } else {
-            imageBitMap = null;
-            oldBitmap = null;
-        }
+        convertImage(book.getFirestoreID());
 
         /**
          * If Back Button is pressed, return to BookDetailsFragment without changing anything about the book
@@ -156,22 +148,13 @@ public class EditBookFragment extends AppCompatActivity {
                             book.setAuthor(bookAuthor);
                             book.setISBN(stringISBN);
 
-                            String bookImage = convertBitmap(imageBitMap);
-                            String oldBookImage = convertBitmap(oldBitmap);
-
-                            if(!(nullPhoto())) {
-                                book.setImageId(imageBitMap.toString());
-                            } else {
-                                book.setImageId(null);
-                            }
                             // edit book in firestore
                             bookService.editBook(context, book);
 
-                            // upload any changed images in firestore or if deleted, delete it from firestore
-                            deleteImage(book);
-                            if (imageBitMap != null) {
+                            if(!(nullPhoto())) {
                                 book.setImageId(imageBitMap.toString());
-                                bookService.uploadImage(book.getFirestoreID(), imageBitMap, new OnSuccessListener<Void>() {
+                                bookService.uploadImage(book.getFirestoreID(), imageBitMap,
+                                        new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(EditBookFragment.this, " edited image", Toast.LENGTH_SHORT).show();
@@ -182,6 +165,17 @@ public class EditBookFragment extends AppCompatActivity {
                                         Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show();
                                     }
                                 });
+                            } else {
+                                book.setImageId(null);
+                                StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                                storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                String TAG = "editBookFragment";
+                                                Log.d(TAG, "onSuccess: deleted file");
+                                            }
+                                        });
                             }
                             // pass edited book back to bookDetailsFragment
                             Intent editIntent = new Intent();
@@ -232,18 +226,6 @@ public class EditBookFragment extends AppCompatActivity {
         });
     }
 
-    private void deleteImage(Book book) {
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        String TAG = "editBookFragment";
-                        Log.d(TAG, "onSuccess: deleted file");
-                    }
-                });
-    }
-
     private void convertImage(String imageId) {
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -252,28 +234,16 @@ public class EditBookFragment extends AppCompatActivity {
                     @Override
                     public void onSuccess(byte[] bytes) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        if(bitmap != null) {
-                            imageBitMap = bitmap;
-                            oldBitmap = bitmap;
-                            photo.setImageBitmap(bitmap);
-                        } else {
-                            imageBitMap = null;
-                            oldBitmap = null;
-                            photo.setImageBitmap(null);
-                        };
+                        imageBitMap = bitmap;
+                        photo.setImageBitmap(bitmap);
                     }
-                });
-    }
-
-    private String convertBitmap(Bitmap bitmap){
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        String bitmapString = null;
-        if(bitmap != null){
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream .toByteArray();
-            bitmapString = Base64.encodeToString(byteArray, Base64.DEFAULT);
-        }
-        return bitmapString;
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                imageBitMap = null;
+                photo.setImageBitmap(null);
+            }
+        });
     }
 
     /**

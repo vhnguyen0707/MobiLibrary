@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -117,11 +119,7 @@ public class BookDetailsFragment extends AppCompatActivity {
         status.setText(viewBook.getStatus());
         System.out.println("CLICKED BOOK GET TITLE: " + viewBook.getTitle());
         System.out.println("CLICKED BOOK GET IMAGE: " + viewBook.getImageId());
-        if(viewBook.getImageId() != null){
-            convertImage(viewBook.getFirestoreID());
-        } else {
-            photo.setImageBitmap(null);
-        }
+        convertImage(viewBook.getFirestoreID());
 
         //get current user name and book owners name, check if they match
         String userName = getUsername();
@@ -166,14 +164,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                     viewBook.setAuthor(author.getText().toString());
                     viewBook.setISBN(ISBN.getText().toString().replaceAll(" ", ""));
 
-                    // if a book has a photo pass along the photo's bitmap
-                    if (editBitMap != null) {
-                        viewBook.setImageId(editBitMap.toString());
-                    } else {
-                        viewBook.setImageId(null);    // book has no photo so image bitmap is set to null
-                    }
                     //If photo changed, pass along to firebase
-                    if (editBitMap != null) {
+                    if (!(nullPhoto())) {
+                        viewBook.setImageId(editBitMap.toString());
                         //System.out.println("Uploading book, id: " + editBitMap.toString());
                         bookService.uploadImage(viewBook.getFirestoreID(), editBitMap, new OnSuccessListener<Void>() {
                             @Override
@@ -185,6 +178,8 @@ public class BookDetailsFragment extends AppCompatActivity {
                                 Toast.makeText(BookDetailsFragment.this, "Failed to add image.", Toast.LENGTH_SHORT).show();
                             }
                         });
+                    } else {
+                        viewBook.setImageId(null);    // book has no photo so image bitmap is set to null
                     }
 
                     // return the book with its changed fields
@@ -312,11 +307,8 @@ public class BookDetailsFragment extends AppCompatActivity {
                 author.setText(editedBook.getAuthor());
                 // owner.setText(editedBook.getOwner().getUsername());
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
-                if (editedBook.getImageId() != null) {
-                    convertImage(editedBook.getFirestoreID());
-                } else{
-                    photo.setImageBitmap(null);
-                }
+                convertImage(editedBook.getFirestoreID());
+                photo.setImageBitmap(null);
             }
         }
     }
@@ -363,14 +355,30 @@ public class BookDetailsFragment extends AppCompatActivity {
                     @Override
                     public void onSuccess(byte[] bytes) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        if(bitmap != null) {
-                            editBitMap = bitmap;
-                            photo.setImageBitmap(bitmap);
-                        } else {
-                            editBitMap = null;
-                            photo.setImageBitmap(null);
-                        }
+                        editBitMap = bitmap;
+                        photo.setImageBitmap(bitmap);
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                editBitMap = null;
+                photo.setImageBitmap(null);
+            }
+        });
+    }
+
+    /**
+     * Determines if the book's photograph has a null bitmap
+     * @return boolean true if the book's photograph has a null bitmap, false otherwise
+     */
+    private boolean nullPhoto () {
+        Drawable drawable = photo.getDrawable();    // get image
+        BitmapDrawable bitmapDrawable;
+        if (!(drawable instanceof BitmapDrawable)) {
+            bitmapDrawable = null;  // image has no bitmap
+        } else {
+            bitmapDrawable = (BitmapDrawable) photo.getDrawable();  // get image bitmap
+        }
+        return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
     }
 }
