@@ -188,7 +188,6 @@ public class BookService {
         Map<String, Object> data = new HashMap<>();
         data.put("ISBN", editBook.getISBN());
         data.put("Author", editBook.getAuthor());
-        data.put("Image", editBook.getImageId());
         data.put("Title", editBook.getTitle());
         data.put("imageID", editBook.getImageId());
         // edit document

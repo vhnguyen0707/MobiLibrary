@@ -290,6 +290,25 @@ public class BookDetailsFragment extends AppCompatActivity {
     }
 
     /**
+     *
+     * @param imageId
+     */
+
+    private void convertImage(String imageId) {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    editBitMap = bitmap;
+                    photo.setImageBitmap(bitmap);
+                }).addOnFailureListener(e -> {
+                    editBitMap = null;
+                    photo.setImageBitmap(null);
+                 });
+    }
+
+    /**
      * Logic for returning from EditBookFragment activity, if requestCode is 2 and resultCode is RESULT_OK
      * then edit the corresponding fields to match the passed book
      * @param requestCode 2 if book is returned from the edit activity
@@ -339,31 +358,6 @@ public class BookDetailsFragment extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    /**
-     *
-     * @param imageId
-     */
-
-    private void convertImage(String imageId) {
-        final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        editBitMap = bitmap;
-                        photo.setImageBitmap(bitmap);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                editBitMap = null;
-                photo.setImageBitmap(null);
-            }
-        });
     }
 
     /**

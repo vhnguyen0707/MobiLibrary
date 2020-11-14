@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -131,7 +132,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                             String bookStatus = "available";
                             String bookId = null;
                             String bookBitmap = null;
-                            if(imageBitMap != null){
+                            if(!(nullPhoto())){
                                 bookBitmap = imageBitMap.toString();
                             }
                             Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,bookBitmap,user);
@@ -380,6 +381,21 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                         }
                     }
                 });
+    }
+
+    /**
+     * Determines if the book's photograph has a null bitmap
+     * @return boolean true if the book's photograph has a null bitmap, false otherwise
+     */
+    private boolean nullPhoto () {
+        Drawable drawable = newImage.getDrawable();    // get image
+        BitmapDrawable bitmapDrawable;
+        if (!(drawable instanceof BitmapDrawable)) {
+            bitmapDrawable = null;  // image has no bitmap
+        } else {
+            bitmapDrawable = (BitmapDrawable) newImage.getDrawable();  // get image bitmap
+        }
+        return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
     }
 }
 

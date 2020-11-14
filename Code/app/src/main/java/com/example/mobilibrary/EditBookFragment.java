@@ -151,29 +151,12 @@ public class EditBookFragment extends AppCompatActivity {
                             // edit book in firestore
                             bookService.editBook(context, book);
 
-                            StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                            storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            String TAG = "editBookFragment";
-                                            Log.d(TAG, "onSuccess: deleted file");
-                                        }
-                                    });
+                            deleteImageRef(book);
                             if(!(nullPhoto())) {
                                 book.setImageId(imageBitMap.toString());
                                 bookService.uploadImage(book.getFirestoreID(), imageBitMap,
-                                        new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(EditBookFragment.this, " edited image", Toast.LENGTH_SHORT).show();
-                                    }
-                                }, new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                        aVoid -> Toast.makeText(EditBookFragment.this, " edited image", Toast.LENGTH_SHORT).show(),
+                                        e -> Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show());
                             } else {
                                 book.setImageId(null);
                             }
@@ -216,34 +199,37 @@ public class EditBookFragment extends AppCompatActivity {
          * When the Edit Image Button is pressed a new activity intent opens to take a picture to
          * attach to the book
          */
-        editImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                int pic_id = 2;
-                startActivityForResult(camera_intent, pic_id);
-            }
+        editImageButton.setOnClickListener(view -> {
+            Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            int pic_id = 2;
+            startActivityForResult(camera_intent, pic_id);
         });
+    }
+
+    private void deleteImageRef(Book book) {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        String TAG = "editBookFragment";
+                        Log.d(TAG, "onSuccess: deleted file");
+                    }
+                });
     }
 
     private void convertImage(String imageId) {
         final long ONE_MEGABYTE = 1024 * 1024;
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        imageBitMap = bitmap;
-                        photo.setImageBitmap(bitmap);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                imageBitMap = null;
-                photo.setImageBitmap(null);
-            }
-        });
+                .addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    imageBitMap = bitmap;
+                    photo.setImageBitmap(bitmap);
+                }).addOnFailureListener(e -> {
+                    imageBitMap = null;
+                    photo.setImageBitmap(null);
+                });
     }
 
     /**
