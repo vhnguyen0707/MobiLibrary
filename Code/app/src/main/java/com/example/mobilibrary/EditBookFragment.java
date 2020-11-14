@@ -93,19 +93,20 @@ public class EditBookFragment extends AppCompatActivity {
         FloatingActionButton editImageButton = findViewById(R.id.edit_image_button);
         FloatingActionButton deleteImageButton = findViewById(R.id.delete_image_button);
 
+        // set up firestore instance
+        bookService = BookService.getInstance();
+        context = getApplicationContext();
+        
         // set up permissions for scanning intent
         mRequestQueue = Volley.newRequestQueue(this);
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
                 PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
 
-        // set up firestore instance
-        bookService = BookService.getInstance();
-        context = getApplicationContext();
-
         // check that a book was passed to this activity, otherwise end the activity
         if (getIntent() == null) {
             finish();
         }
+        
         final Book book = (Book) getIntent().getSerializableExtra("edit");
 
         // fill fields with correct information from the passed book
