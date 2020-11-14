@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -133,7 +134,10 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                             String bookId = null;
                             String bookBitmap = null;
                             if(!(nullPhoto())){
-                                bookBitmap = imageBitMap.toString();
+                                ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+                                imageBitMap.compress(Bitmap.CompressFormat.PNG,100, baos);
+                                byte [] b=baos.toByteArray();
+                                bookBitmap = Base64.encodeToString(b, Base64.DEFAULT);
                             }
                             Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,bookBitmap,user);
                             System.out.println("new book was created");

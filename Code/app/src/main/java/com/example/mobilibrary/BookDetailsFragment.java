@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -165,7 +166,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                     viewBook.setISBN(ISBN.getText().toString().replaceAll(" ", ""));
 
                     //If photo changed, pass along to firebase
-                    if (!(nullPhoto())) {
+                    /*if (!(nullPhoto())) {
                         viewBook.setImageId(editBitMap.toString());
                         //System.out.println("Uploading book, id: " + editBitMap.toString());
                         bookService.uploadImage(viewBook.getFirestoreID(), editBitMap, new OnSuccessListener<Void>() {
@@ -180,7 +181,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                         });
                     } else {
                         viewBook.setImageId(null);    // book has no photo so image bitmap is set to null
-                    }
+                    } */
 
                     // return the book with its changed fields
                     Intent editedIntent = new Intent();
@@ -326,7 +327,15 @@ public class BookDetailsFragment extends AppCompatActivity {
                 author.setText(editedBook.getAuthor());
                 owner.setText(editedBook.getOwner().getUsername());
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
-                convertImage(editedBook.getFirestoreID());
+                if(editedBook.getImageId() != null){
+                    byte [] encodeByte= Base64.decode(editedBook.getImageId(),Base64.DEFAULT);
+                    Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                    editBitMap = bitmap;
+                    photo.setImageBitmap(bitmap);
+                } else {
+                    editBitMap = null;
+                    photo.setImageBitmap(null);
+                }
             }
         }
     }

@@ -55,6 +55,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * This class takes in a book and edits it Title, Author, ISBN and photograph. The first three
  * can be done manually or via scanning the book's ISBN
@@ -153,7 +155,7 @@ public class EditBookFragment extends AppCompatActivity {
 
                             deleteImageRef(book);
                             if(!(nullPhoto())) {
-                                book.setImageId(imageBitMap.toString());
+                                book.setImageId(convertBitmap());
                                 bookService.uploadImage(book.getFirestoreID(), imageBitMap,
                                         aVoid -> Toast.makeText(EditBookFragment.this, " edited image", Toast.LENGTH_SHORT).show(),
                                         e -> Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show());
@@ -204,6 +206,14 @@ public class EditBookFragment extends AppCompatActivity {
             int pic_id = 2;
             startActivityForResult(camera_intent, pic_id);
         });
+    }
+
+    private String convertBitmap() {
+        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+        imageBitMap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp = Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
     }
 
     private void deleteImageRef(Book book) {
