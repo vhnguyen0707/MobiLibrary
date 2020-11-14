@@ -187,6 +187,30 @@
         android:text="Request" />
 
     <Button
+        android:id="@+id/return_button"
+        android:layout_width="131dp"
+        android:layout_height="59dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="217dp"
+        android:layout_marginTop="520dp"
+        android:backgroundTint="#FD94B9"
+        android:text="Return" />
+
+    <Button
+        android:id="@+id/receive_button"
+        android:layout_width="131dp"
+        android:layout_height="59dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="217dp"
+        android:layout_marginTop="520dp"
+        android:backgroundTint="#FD94B9"
+        android:text="Receive" />
+
+    <Button
         android:id="@+id/reqBtn"
         android:layout_width="109dp"
         android:layout_height="wrap_content"
