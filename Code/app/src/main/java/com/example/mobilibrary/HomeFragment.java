@@ -78,7 +78,6 @@ public class HomeFragment extends Fragment {
                             isbns.add(snapshot.getString("ISBN"));
                             statuses.add(snapshot.getString("Status"));
                             owners.add(String.valueOf(snapshot.get("Owner")));
-                            images.add(snapshot.getString("Image"));
                             ids.add(snapshot.getString("imageID"));
                         }
                     }

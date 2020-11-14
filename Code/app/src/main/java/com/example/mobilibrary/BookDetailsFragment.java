@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -151,14 +154,9 @@ public class BookDetailsFragment extends AppCompatActivity {
         owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
         status.setText(viewBook.getStatus());
-        Bitmap bitmap = null;
         System.out.println("CLICKED BOOK GET TITLE: " + viewBook.getTitle());
         System.out.println("CLICKED BOOK GET IMAGE: " + viewBook.getImageId());
-        if(viewBook.getImageId() != null){
-            convertImage(viewBook.getImageId());
-        } else {
-            photo.setImageBitmap(null);
-        }
+        convertImage(viewBook.getFirestoreID());
 
         //get current user name and book owners name, check if they match
         String userName = getUsername();
@@ -217,16 +215,11 @@ public class BookDetailsFragment extends AppCompatActivity {
                     viewBook.setAuthor(author.getText().toString());
                     viewBook.setISBN(ISBN.getText().toString().replaceAll(" ", ""));
 
-                    // if a book has a photo pass along the photo's bitmap
-                    if (editBitMap != null) {
-                        viewBook.setImageId(editBitMap.toString());
-                    } else {
-                        viewBook.setImageId(null);    // book has no photo so image bitmap is set to null
-                    }
                     //If photo changed, pass along to firebase
-                    if (photo != null) {
+                    /*if (!(nullPhoto())) {
+                        viewBook.setImageId(editBitMap.toString());
                         //System.out.println("Uploading book, id: " + editBitMap.toString());
-                        bookService.uploadImage(viewBook.getImageId(), editBitMap, new OnSuccessListener<Void>() {
+                        bookService.uploadImage(viewBook.getFirestoreID(), editBitMap, new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
                             }
@@ -236,7 +229,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                                 Toast.makeText(BookDetailsFragment.this, "Failed to add image.", Toast.LENGTH_SHORT).show();
                             }
                         });
-                    }
+                    } else {
+                        viewBook.setImageId(null);    // book has no photo so image bitmap is set to null
+                    } */
 
                     // return the book with its changed fields
                     Intent editedIntent = new Intent();
@@ -259,7 +254,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                     @Override
                     public void onCallback(User user) {
                         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-                        storageReference.child("books/" + viewBook.getImageId() + ".jpg").delete()
+                        storageReference.child("books/" + viewBook.getFirestoreID() + ".jpg").delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -409,6 +404,25 @@ public class BookDetailsFragment extends AppCompatActivity {
 
 
     /**
+     *
+     * @param imageId
+     */
+
+    private void convertImage(String imageId) {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    editBitMap = bitmap;
+                    photo.setImageBitmap(bitmap);
+                }).addOnFailureListener(e -> {
+                    editBitMap = null;
+                    photo.setImageBitmap(null);
+                 });
+    }
+
+    /**
      * Logic for returning from EditBookFragment activity, if requestCode is 2 and resultCode is RESULT_OK
      * then edit the corresponding fields to match the passed book. Otherwise, logic for checking that the
      * information for the book scanned matches the information of the book being viewed.
@@ -425,10 +439,16 @@ public class BookDetailsFragment extends AppCompatActivity {
                 Book editedBook = (Book) data.getSerializableExtra("edited");
                 title.setText(editedBook.getTitle());
                 author.setText(editedBook.getAuthor());
-                // owner.setText(editedBook.getOwner().getUsername());
+                owner.setText(editedBook.getOwner().getUsername());
                 ISBN.setText(String.valueOf(editedBook.getISBN()));
-                if (editedBook.getImageId() != null) {
-                    convertImage(editedBook.getImageId());
+                if(editedBook.getImageId() != null){
+                    byte [] encodeByte= Base64.decode(editedBook.getImageId(),Base64.DEFAULT);
+                    Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                    editBitMap = bitmap;
+                    photo.setImageBitmap(bitmap);
+                } else {
+                    editBitMap = null;
+                    photo.setImageBitmap(null);
                 }
             }
         } else {
@@ -571,26 +591,17 @@ public class BookDetailsFragment extends AppCompatActivity {
     }
 
     /**
-     *
-     * @param imageId
+     * Determines if the book's photograph has a null bitmap
+     * @return boolean true if the book's photograph has a null bitmap, false otherwise
      */
-
-    private void convertImage(String imageId) {
-        final long ONE_MEGABYTE = 1024 * 1024;
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        if(bitmap != null) {
-                            editBitMap = bitmap;
-                            photo.setImageBitmap(bitmap);
-                        } else {
-                            editBitMap = null;
-                            photo.setImageBitmap(null);
-                        }
-                    }
-                });
+    private boolean nullPhoto () {
+        Drawable drawable = photo.getDrawable();    // get image
+        BitmapDrawable bitmapDrawable;
+        if (!(drawable instanceof BitmapDrawable)) {
+            bitmapDrawable = null;  // image has no bitmap
+        } else {
+            bitmapDrawable = (BitmapDrawable) photo.getDrawable();  // get image bitmap
+        }
+        return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
     }
 }

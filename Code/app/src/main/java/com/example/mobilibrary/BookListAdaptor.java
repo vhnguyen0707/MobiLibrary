@@ -77,10 +77,11 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
             public void onClick(View view) {
 
                 //get image of book clicked
-                /*byte[] bookImage = null;
+                byte[] bookImage = null;
                 if (mImages.get(position) != null) {
-                    bookImage = mImages.get(position).toBytes();
-                }*/
+                    String bookImageString = mImages.get(position);
+                    bookImage = Base64.decode(bookImageString,0);
+                }
 
                 //Get the User object from currently clicked book by going into firestore
                 final FirebaseFirestore db = FirebaseFirestore.getInstance();

@@ -25,7 +25,7 @@
         android:layout_marginBottom="1dp"
         android:background="#A18E6D"
         android:visibility="visible"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        tools:srcCompat="@drawable/ic_books" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/back_to_books_button"
