@@ -32,18 +32,18 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
     private List<String> mISBNS;
     private List<String> mStatuses;
     private List<String> mOwners;
-    private List<String> mImages;
-    private List<String> mId;
+    private List<String> mImageIDs;
+    private List<String> mFirestoreIDs;
     private Context mContext;
 
-    public BookListAdaptor(Context context, List<String> titles, List<String> authors, List<String> isbns, List<String> statuses, List<String> owners, List<String> images, List<String> ids) {
+    public BookListAdaptor(Context context, List<String> titles, List<String> authors, List<String> isbns, List<String> statuses, List<String> owners, List<String> imageIDs, List<String> firestoreIDs) {
         mTitles = titles;
         mAuthors = authors;
         mISBNS = isbns;
         mStatuses = statuses;
         mOwners = owners;
-        mImages = images;
-        mId = ids;
+        mImageIDs = imageIDs;
+        mFirestoreIDs = firestoreIDs;
         mContext = context;
 
 
@@ -78,8 +78,8 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
 
                 //get image of book clicked
                 byte[] bookImage = null;
-                if (mImages.get(position) != null) {
-                    String bookImageString = mImages.get(position);
+                if (mImageIDs.get(position) != null) {
+                    String bookImageString = mImageIDs.get(position);
                     bookImage = Base64.decode(bookImageString,0);
                 }
 
@@ -111,7 +111,7 @@ public class BookListAdaptor extends RecyclerView.Adapter<BookListAdaptor.MyView
                     public void initIntent(User user){
                         //get the book details of currently clicked item
                         //Book newBook = new Book(mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), mId.get(position), user);
-                        Book newBook = new Book(mId.get(position), mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImages.get(position), user);
+                        Book newBook = new Book(mFirestoreIDs.get(position), mTitles.get(position), mISBNS.get(position), mAuthors.get(position), mStatuses.get(position), mImageIDs.get(position), user);
                         Intent viewBook = new Intent(mContext, BookDetailsFragment.class);
                         viewBook.putExtra("view book", newBook);
                         mContext .startActivity(viewBook);
