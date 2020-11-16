@@ -25,7 +25,7 @@
         android:layout_marginBottom="1dp"
         android:background="#A18E6D"
         android:visibility="visible"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        tools:srcCompat="@drawable/ic_books" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/back_to_books_button"
@@ -185,6 +185,30 @@
         android:layout_marginTop="520dp"
         android:backgroundTint="#ECBE84"
         android:text="Request" />
+
+    <Button
+        android:id="@+id/return_button"
+        android:layout_width="131dp"
+        android:layout_height="59dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="217dp"
+        android:layout_marginTop="520dp"
+        android:backgroundTint="#FD94B9"
+        android:text="Return" />
+
+    <Button
+        android:id="@+id/receive_button"
+        android:layout_width="131dp"
+        android:layout_height="59dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="217dp"
+        android:layout_marginTop="520dp"
+        android:backgroundTint="#FD94B9"
+        android:text="Receive" />
 
     <Button
         android:id="@+id/reqBtn"

@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -130,24 +132,35 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                         public void onCallback(User user) {
                             String bookStatus = "available";
                             String bookId = null;
-                            String bookBitmap = imageBitMap.toString();
+                            String bookBitmap = null;
+                            if(!(nullPhoto())){
+                                ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+                                imageBitMap.compress(Bitmap.CompressFormat.PNG,100, baos);
+                                byte [] b=baos.toByteArray();
+                                bookBitmap = Base64.encodeToString(b, Base64.DEFAULT);
+                            }
                             Book newBook = new Book(bookId,bookTitle,bookISBN,bookAuthor,bookStatus,bookBitmap,user);
                             System.out.println("new book was created");
-                            bookService.addBook(context, newBook); //add book to firestore
                             System.out.println("After book service adding book");
-                            if (imageBitMap != null){ //upload to firestore storage
-                                System.out.println("Uploading book, id: " + imageBitMap.toString());
-                                bookService.uploadImage(bookBitmap, imageBitMap, new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
+                            bookService.addBook(context, newBook, new IdCallBack() {
+                                @Override
+                                public void IdCallback(String id) {
+                                    if (imageBitMap != null){ //upload to firestore storage
+                                        System.out.println("Uploading book, id: " + imageBitMap.toString());
+                                        bookService.uploadImage(id, imageBitMap, new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                            }
+                                        }, new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(AddBookFragment.this, "Failed to add image.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
-                                }, new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(AddBookFragment.this, "Failed to add image.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
+
+                                }
+                            }); //add book to firestore
                             Intent returnIntent = new Intent();
                             returnIntent.putExtra("new book", newBook);
                             setResult(RESULT_OK, returnIntent);
@@ -209,9 +222,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("GOT CAMERA PHOTO");
-        System.out.println("Data: " + data);
-        System.out.println("get data: " + data.getData());
         if (requestCode == 1 && resultCode == Activity.RESULT_OK){
                 System.out.println("TOOK PHOTO I THINK");
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
@@ -375,6 +385,21 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                         }
                     }
                 });
+    }
+
+    /**
+     * Determines if the book's photograph has a null bitmap
+     * @return boolean true if the book's photograph has a null bitmap, false otherwise
+     */
+    private boolean nullPhoto () {
+        Drawable drawable = newImage.getDrawable();    // get image
+        BitmapDrawable bitmapDrawable;
+        if (!(drawable instanceof BitmapDrawable)) {
+            bitmapDrawable = null;  // image has no bitmap
+        } else {
+            bitmapDrawable = (BitmapDrawable) newImage.getDrawable();  // get image bitmap
+        }
+        return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
     }
 }
 
