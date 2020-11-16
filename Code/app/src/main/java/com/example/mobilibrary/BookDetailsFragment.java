@@ -155,7 +155,6 @@ public class BookDetailsFragment extends AppCompatActivity {
         ISBN.setText(viewBook.getISBN());
         status.setText(viewBook.getStatus());
         System.out.println("CLICKED BOOK GET TITLE: " + viewBook.getTitle());
-        System.out.println("CLICKED BOOK GET IMAGE: " + viewBook.getImageId());
         convertImage(viewBook.getFirestoreID());
 
         //get current user name and book owners name, check if they match
@@ -173,7 +172,7 @@ public class BookDetailsFragment extends AppCompatActivity {
             reqList.setVisibility(View.GONE);
 
             // get book status
-            if (viewBook.getStatus() == "borrowed" || (viewBook.getStatus() == "returned")) {
+            if (viewBook.getStatus().equals("borrowed") || (viewBook.getStatus().equals("returned"))) {
                 // if book is borrowed, show receive button
                 receiveButton.setVisibility(View.VISIBLE);
 
@@ -189,13 +188,15 @@ public class BookDetailsFragment extends AppCompatActivity {
             requestsBtn.setVisibility(View.GONE);
 
             //get book status
-            if (viewBook.getStatus() == "borrowed"){
+            if (viewBook.getStatus().equals("available") || (viewBook.getStatus().equals("requested"))) {
+                //if book is available or has requests (and also make sure user hasn't requested it before) display request button
+                System.out.println("should be showing request button");
+                requestButton.setVisibility(View.VISIBLE);
+            }
+            else if (viewBook.getStatus().equals("borrowed")){
                 // if book is borrowed, show return button
                 returnButton.setVisibility(View.VISIBLE);
 
-            } else if ((viewBook.getStatus() == "available") || (viewBook.getStatus() == "requested")){
-                //if book is available/requested, show request button
-                requestButton.setVisibility(View.VISIBLE);
             }
 
         }

@@ -129,6 +129,7 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
      */
     private void setProfilePage() {
         // Set TextViews
+        System.out.println("In Set Profile Page");
         usernameText.setText(profileUser.getUsername());
         emailText.setText(profileUser.getEmail());
         phoneText.setText(profileUser.getPhoneNo());
