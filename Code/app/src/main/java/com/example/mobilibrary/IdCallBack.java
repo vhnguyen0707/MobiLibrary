@@ -1,5 +1,5 @@
 package com.example.mobilibrary;
 
-public interface IdCallBack {
+public interface  IdCallBack {
         void IdCallback(String id);
     }
