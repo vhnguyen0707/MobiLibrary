@@ -1,5 +1,7 @@
 package com.example.mobilibrary;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.mobilibrary.Activity.ProfileActivity;
 import com.example.mobilibrary.DatabaseController.DatabaseHelper;
+import com.example.mobilibrary.DatabaseController.User;
 import com.example.mobilibrary.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.Blob;
@@ -58,7 +61,6 @@ public class HomeFragment extends Fragment {
 
         //each time homepage is opened will show all available/requested books from other users from collection
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         db.collection("Books").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
