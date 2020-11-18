@@ -214,8 +214,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
             public void afterTextChanged(Editable s) {
                 if(newIsbn.getText().toString().length() == 13) {
                     Toast.makeText(AddBookFragment.this, "ISBN searched", Toast.LENGTH_SHORT).show();
-                    Uri.Builder bookInfo = getBookInfo(newIsbn.getText().toString());
-                    parseJson(bookInfo.toString());
+                    String bookInfo = getBookInfo(newIsbn.getText().toString().trim());
+                    parseJson(bookInfo);
                 }
             }
         });
@@ -409,11 +409,21 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 });
     }
 
-    private Uri.Builder getBookInfo(String isbn){
-        String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
-        Uri uri = Uri.parse(url + isbn);
-        Uri.Builder builder = uri.buildUpon();  // build url with ISBN
-        return builder;
+    private String getBookInfo(String isbn){
+        //Check if connected to internet
+        boolean isConnected = isNetworkAvailable();
+        Uri.Builder builder = null;
+        if (!isConnected) {
+            System.out.println("Check Internet Connection");
+            Toast.makeText(getApplicationContext(), "Please check Internet connection",
+                    Toast.LENGTH_LONG).show(); //Popup message for user
+        } else {
+            String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
+            Uri uri = Uri.parse(url + isbn);
+            builder = uri.buildUpon();  // build url with ISBN
+        }
+        String bookInfo = builder.toString();
+        return bookInfo;
     }
 }
 
