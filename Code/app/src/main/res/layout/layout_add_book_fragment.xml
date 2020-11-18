@@ -45,7 +45,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerHorizontal="true"
         android:layout_marginEnd="58dp"
-        android:layout_marginRight="58dp"
+        android:layout_marginRight="0dp"
         android:layout_marginBottom="25dp"
         android:background="#B3A894"
         android:digits="0123456789."
@@ -145,23 +145,23 @@
             android:textSize="30sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/book_isbn"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="33dp"
-            android:layout_marginLeft="33dp"
-            android:layout_marginEnd="242dp"
-            android:layout_marginRight="242dp"
-            android:layout_marginBottom="0dp"
-            android:text="ISBN"
-            android:textSize="30sp"
-            android:textStyle="bold" />
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/book_isbn"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="33dp"
+        android:layout_marginLeft="33dp"
+        android:layout_marginEnd="242dp"
+        android:layout_marginRight="242dp"
+        android:layout_marginBottom="0dp"
+        android:text="ISBN"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
         <Button
             android:id="@+id/confirm_book"
@@ -183,6 +183,7 @@
             android:text="confirm"
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
+
 </RelativeLayout>
 
 

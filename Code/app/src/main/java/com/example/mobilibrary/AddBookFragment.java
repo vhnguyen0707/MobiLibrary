@@ -15,6 +15,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -196,6 +198,27 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 startActivityForResult(cameraIntent, CAMERA_CODE);
             }
         });
+
+        newIsbn.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(newIsbn.getText().toString().length() == 13) {
+                    Toast.makeText(AddBookFragment.this, "ISBN searched", Toast.LENGTH_SHORT).show();
+                    Uri.Builder bookInfo = getBookInfo(newIsbn.getText().toString());
+                    parseJson(bookInfo.toString());
+                }
+            }
+        });
     }
 
     /**
@@ -267,7 +290,6 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
      * @param key
      */
     private void parseJson(String key) {
-
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, key.toString(),
                 null,
                 new Response.Listener<JSONObject>() {
@@ -387,19 +409,11 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                 });
     }
 
-    /**
-     * Determines if the book's photograph has a null bitmap
-     * @return boolean true if the book's photograph has a null bitmap, false otherwise
-     */
-    private boolean nullPhoto () {
-        Drawable drawable = newImage.getDrawable();    // get image
-        BitmapDrawable bitmapDrawable;
-        if (!(drawable instanceof BitmapDrawable)) {
-            bitmapDrawable = null;  // image has no bitmap
-        } else {
-            bitmapDrawable = (BitmapDrawable) newImage.getDrawable();  // get image bitmap
-        }
-        return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
+    private Uri.Builder getBookInfo(String isbn){
+        String url = "https://www.googleapis.com/books/v1/volumes?q=isbn:"; //base url
+        Uri uri = Uri.parse(url + isbn);
+        Uri.Builder builder = uri.buildUpon();  // build url with ISBN
+        return builder;
     }
 }
 
