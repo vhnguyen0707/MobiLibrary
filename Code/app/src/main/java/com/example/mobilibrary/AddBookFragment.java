@@ -133,7 +133,7 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                             String bookStatus = "available";
                             String bookId = null;
                             String bookBitmap = null;
-                            if(!(nullPhoto())){
+                            if(imageBitMap != null){
                                 ByteArrayOutputStream baos=new  ByteArrayOutputStream();
                                 imageBitMap.compress(Bitmap.CompressFormat.PNG,100, baos);
                                 byte [] b=baos.toByteArray();
