@@ -348,7 +348,7 @@ public class BookDetailsFragment extends AppCompatActivity {
         requestsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+//set adapter for requestlistview
 
                 for (TextView asset : requestAssets) {
                     asset.setVisibility(View.GONE);

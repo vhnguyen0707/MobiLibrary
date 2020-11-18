@@ -157,7 +157,7 @@ public class DatabaseHelper {
                                     });
 
                         } else {
-                            Toast.makeText(context, "Account already exists!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Failed with: "+ task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
