@@ -6,17 +6,19 @@ public class ModelNotification {
     String user;
     String notification;
     String type;
+    String bookFSID;
 
     //empty constructor is required for firebase
     public ModelNotification() {
 
     }
 
-    public ModelNotification(String otherUser, String user, String notification, String type) {
+    public ModelNotification(String otherUser, String user, String notification, String type, String bookFSID) {
         this.otherUser = otherUser;
         this.user = user;
         this.notification = notification;
         this.type = type;
+        this.bookFSID = bookFSID;
 
     }
 
@@ -50,5 +52,13 @@ public class ModelNotification {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getBookFSID() {
+        return bookFSID;
+    }
+
+    public void setBookFSID(String bookFSID) {
+        this.bookFSID = bookFSID;
     }
 }

@@ -62,9 +62,13 @@ public class AdapterNotification extends RecyclerView.Adapter<RecyclerView.ViewH
             view = LayoutInflater.from(context).inflate(R.layout.notifications_rows, parent, false);
             return new typeFour(view);
         }
-        else  {
+        if (viewType == 5){
             view = LayoutInflater.from(context).inflate(R.layout.notifications_rows, parent, false);
             return new typeFive(view);
+        }
+        else {
+            view = LayoutInflater.from(context).inflate(R.layout.notifications_rows, parent, false);
+            return new typeOne(view);
         }
 
     }
@@ -82,7 +86,7 @@ public class AdapterNotification extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void onClick(View v) {
                     System.out.println("Notification type 1 Clicked");
                     //Lead to the book details (of your own book)
-                    //notificationsList.get(position).get
+                    notificationsList.get(position).getBookFSID();
                 }
             });
         }

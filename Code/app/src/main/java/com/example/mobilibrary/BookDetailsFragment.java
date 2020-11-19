@@ -310,6 +310,8 @@ public class BookDetailsFragment extends AppCompatActivity {
                         finish();
                     }
                 });
+
+                //also have to delete all requests from firebase that came with this book, and their notifications
             }
         });
 
@@ -394,7 +396,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                 });
 
                 //create notification
-                addToNotifications(viewBook.getOwner().getUsername(), getUsername(), "Has requested to borrow your book.", "1");
+                addToNotifications(viewBook.getOwner().getUsername(), getUsername(), "Has requested to borrow your book.", "1", viewBook.getFirestoreID());
 
             }
         });
@@ -663,15 +665,15 @@ public class BookDetailsFragment extends AppCompatActivity {
         return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
     }
 
-    private void addToNotifications(String otherUser, String user, String notification, String type){
+    private void addToNotifications(String otherUser, String user, String notification, String type, String fireStoreID){
 
         HashMap<Object, String> hashMap = new HashMap<>();
         hashMap.put("otherUser", otherUser);
         hashMap.put("user", user);
         hashMap.put("notification", notification);
         hashMap.put("type", type);
+        hashMap.put("bookFSID", fireStoreID);
 
-        System.out.println("Other user: " + otherUser);
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Users").document(otherUser).collection("Notifications").add(hashMap);

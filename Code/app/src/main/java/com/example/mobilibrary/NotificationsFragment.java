@@ -66,17 +66,22 @@ public class NotificationsFragment extends Fragment {
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                         notificationsList.clear();
                         for (final QueryDocumentSnapshot doc : value) {
+
                             String otherUser = Objects.requireNonNull(doc.get("otherUser")).toString();
                             String user = Objects.requireNonNull(doc.get("user")).toString();
                             String notification = Objects.requireNonNull(doc.get("notification")).toString();
-                            String type = Objects.requireNonNull(doc.get("type")).toString();
+                            String type = Objects.requireNonNull(doc.get("type").toString());
+                            String bookFSID = Objects.requireNonNull(doc.get("bookFSID").toString());
 
-                            ModelNotification model = new ModelNotification(otherUser, user, notification, type);
+                            ModelNotification model = new ModelNotification(otherUser, user, notification, type, bookFSID);
+
                             //add to list
                             notificationsList.add(model);
+
                         }
                         //adaptor
                         Collections.reverse(notificationsList); //Latest notification on top
+
                         adapterNotification = new AdapterNotification(getContext(), notificationsList);
                         //set to recycler view
                         notificationsRv.setAdapter(adapterNotification);
