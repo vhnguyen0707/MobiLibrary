@@ -199,7 +199,8 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(newIsbn.getText().toString().length() == 13) {
+                if((newAuthor.getText().toString() == "" || newTitle.getText().toString() == "")
+                    && (newIsbn.getText().toString().length() == 13)){
                     Toast.makeText(AddBookFragment.this, "ISBN searched", Toast.LENGTH_SHORT).show();
                     String bookInfo = getBookInfo(newIsbn.getText().toString().trim());
                     parseJson(bookInfo);
@@ -299,8 +300,13 @@ public class AddBookFragment extends AppCompatActivity implements Serializable {
                                 JSONArray authors = volumeInfo.getJSONArray("authors");
                                 if (authors.length() == 1) {
                                     author = authors.getString(0);
-                                } else { //if there are multiple authors
-                                    author = authors.getString(0) + "," + authors.getString(1);
+                                } else { //if there are multiple author
+                                    int i = 0;
+                                    while(i < authors.length()){
+                                        author = author + authors.getString(i) + ", ";
+                                        i++;
+                                    }
+                                    author = author.substring(0, author.length() - 2);
                                 }
                                 System.out.println("author: " + author);
                                 newAuthor.setText(author);
