@@ -2,6 +2,7 @@ package com.example.mobilibrary;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,6 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.mobilibrary.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Notifications fragment that is navigated to using the navigation bar. Shows the user's notifications they will receive when interacting
@@ -23,6 +35,8 @@ import com.example.mobilibrary.R;
 public class NotificationsFragment extends Fragment {
 
     RecyclerView notificationsRv;
+    private ArrayList<ModelNotification> notificationsList;
+    private AdapterNotification adapterNotification;
 
     public NotificationsFragment() {
         // Required empty public constructor
@@ -37,6 +51,43 @@ public class NotificationsFragment extends Fragment {
         //init recycleview
         notificationsRv = v.findViewById(R.id.notificationsRV);
 
+        getAllNotifications();
+
         return v;
+    }
+
+    private void getAllNotifications() {
+
+        notificationsList = new ArrayList<>();
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(getUsername()).collection("Notifications")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        notificationsList.clear();
+                        for (final QueryDocumentSnapshot doc : value) {
+                            String otherUser = Objects.requireNonNull(doc.get("otherUser")).toString();
+                            String user = Objects.requireNonNull(doc.get("user")).toString();
+                            String notification = Objects.requireNonNull(doc.get("notification")).toString();
+                            String type = Objects.requireNonNull(doc.get("type")).toString();
+
+                            ModelNotification model = new ModelNotification(otherUser, user, notification, type);
+                            //add to list
+                            notificationsList.add(model);
+                        }
+                        //adaptor
+                        Collections.reverse(notificationsList); //Latest notification on top
+                        adapterNotification = new AdapterNotification(getContext(), notificationsList);
+                        //set to recycler view
+                        notificationsRv.setAdapter(adapterNotification);
+
+                    }
+                });
+    }
+
+    private String getUsername(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userName = user.getDisplayName();
+        return userName;
     }
 }

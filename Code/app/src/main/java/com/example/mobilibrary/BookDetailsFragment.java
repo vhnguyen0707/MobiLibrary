@@ -64,6 +64,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class takes in a book and displays its details (Title, Author, Owner, ISBN and Status),
@@ -377,6 +378,7 @@ public class BookDetailsFragment extends AppCompatActivity {
                 requestButton.setVisibility(View.GONE);
                 requested.setVisibility(View.VISIBLE);
                 requested.setPressed(true);
+
                 //create new request and store in firestore
                 aRequest request = new aRequest(getUsername(), viewBook.getFirestoreID());
                 System.out.println("Created new request: " + request);
@@ -390,6 +392,9 @@ public class BookDetailsFragment extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Unable to request book!", Toast.LENGTH_LONG).show();
                     }
                 });
+
+                //create notification
+                addToNotifications(viewBook.getOwner().getUsername(), getUsername(), "Has requested to borrow your book.", "1");
 
             }
         });
@@ -656,5 +661,20 @@ public class BookDetailsFragment extends AppCompatActivity {
             bitmapDrawable = (BitmapDrawable) photo.getDrawable();  // get image bitmap
         }
         return drawable == null || bitmapDrawable.getBitmap() == null;  // determine if bitmap is null
+    }
+
+    private void addToNotifications(String otherUser, String user, String notification, String type){
+
+        HashMap<Object, String> hashMap = new HashMap<>();
+        hashMap.put("otherUser", otherUser);
+        hashMap.put("user", user);
+        hashMap.put("notification", notification);
+        hashMap.put("type", type);
+
+        System.out.println("Other user: " + otherUser);
+
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(otherUser).collection("Notifications").add(hashMap);
+
     }
 }
