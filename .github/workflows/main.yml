@@ -24,9 +24,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Set Up JDK
-        run: actions/setup-java@v1 
         
       - name: Run Tests
         run: ./gradlew test
