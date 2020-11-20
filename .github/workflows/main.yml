@@ -30,3 +30,6 @@ jobs:
         
       - name: Build the app
         run: ./Code/gradlew build
+      
+      - name: Run tests
+        run: ./Code/gradlew test
