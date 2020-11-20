@@ -22,13 +22,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,6 +36,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mobilibrary.DatabaseController.BookService;
+import com.example.mobilibrary.DatabaseController.RequestService;
 import com.example.mobilibrary.DatabaseController.User;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,7 +47,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -58,6 +62,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * This class takes in a book and displays its details (Title, Author, Owner, ISBN and Status),
@@ -88,6 +93,7 @@ public class BookDetailsFragment extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private BookService bookService;
+    private RequestService requestService;
     private Context context;
     private RequestQueue mRequestQueue;
 
@@ -191,7 +197,9 @@ public class BookDetailsFragment extends AppCompatActivity {
             if (viewBook.getStatus().equals("available") || (viewBook.getStatus().equals("requested"))) {
                 //if book is available or has requests (and also make sure user hasn't requested it before) display request button
                 System.out.println("should be showing request button");
-                requestButton.setVisibility(View.VISIBLE);
+                if (!viewBook.getOwner().getPhoneNo().equals("other")) {
+                    requestButton.setVisibility(View.VISIBLE);
+                }
             }
             else if (viewBook.getStatus().equals("borrowed")){
                 // if book is borrowed, show return button
@@ -334,9 +342,48 @@ public class BookDetailsFragment extends AppCompatActivity {
             public void onClick(View v) {
                 //change book status to requested
                 //System.out.println("VIEWED BOOK FIRESTOREID: " + viewBook.getFirestoreID());
-                viewBook.setStatus("requested");
-                requestButton.setText("Requested");
-                bookService.changeStatus(context, viewBook, "requested");
+                String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                db = FirebaseFirestore.getInstance();
+                db.collection("Requests").whereEqualTo("requester", username)
+                        .whereEqualTo("bookID", viewBook.getFirestoreID()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Boolean requestExist = false;
+                            for (QueryDocumentSnapshot document : task.getResult()){
+                                requestExist = true;
+                        }
+                            if (requestExist) {
+                                Toast.makeText(getApplicationContext(), "You have already requested this book", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                viewBook.setStatus("requested");
+                                requestButton.setText("Requested");
+                                bookService.changeStatus(context, viewBook, "requested");
+
+                                com.example.mobilibrary.DatabaseController.Request request = new com.example.mobilibrary.DatabaseController.Request(username, viewBook.getFirestoreID());
+                                Log.d("SOORAJ", viewBook.getFirestoreID());
+                                requestService = requestService.getInstance();
+                                requestService.createRequest(request).addOnCompleteListener(task2 -> {
+                                    if(task2.isSuccessful()){
+                                        Log.d("SOORAJ", "ADDED NEW REQUEST");
+                                    }
+                                    else {
+                                        Log.d("SOORAJ", "FAILED");
+                                    }
+                                });
+                            }
+                    }else {
+                            Log.d("SOORAJ", "error");
+
+                            }
+
+
+                    }
+                });
+
+
+
                 //later add: make sure button text stays "requested" when user who already requested clicks on it again
 
             }
