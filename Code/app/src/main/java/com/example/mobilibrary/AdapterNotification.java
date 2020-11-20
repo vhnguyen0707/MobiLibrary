@@ -1,8 +1,10 @@
 package com.example.mobilibrary;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorSpace;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mobilibrary.DatabaseController.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.oned.ITFReader;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 /* TYPES OF NOTIFICATIONS
@@ -85,8 +94,54 @@ public class AdapterNotification extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     System.out.println("Notification type 1 Clicked");
+                    System.out.println("Book Firestore ID: " + notificationsList.get(position).getBookFSID());
+
                     //Lead to the book details (of your own book)
-                    notificationsList.get(position).getBookFSID();
+                    String fsID = notificationsList.get(position).getBookFSID();
+
+                    //get User object of user of the clicked book
+                    String bookOwner = notificationsList.get(position).getOtherUser();
+                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    DocumentReference docRef = db.collection("Users").document(bookOwner);
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            DocumentSnapshot document = task.getResult();
+                            String username = Objects.requireNonNull(document.get("username")).toString();
+                            String email = Objects.requireNonNull(document.get("email")).toString();
+                            String name = Objects.requireNonNull(document.get("name")).toString();
+                            String phoneNo = Objects.requireNonNull(document.get("phoneNo")).toString();
+
+                            User user = new User(username, email, name, phoneNo);
+
+                            initIntent(user);
+                        }
+                        public void initIntent(User user){
+                            //get the book details of currently clicked item
+                            final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            DocumentReference docRef = db.collection("Books").document(fsID);
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    DocumentSnapshot document = task.getResult();
+                                    String title = Objects.requireNonNull(document.get("Title")).toString();
+                                    String isbn = Objects.requireNonNull(document.get("ISBN")).toString();
+                                    String author = Objects.requireNonNull(document.get("Author")).toString();
+                                    String status = Objects.requireNonNull(document.get("Status")).toString();
+                                    String image = Objects.requireNonNull(document.get("imageID")).toString();
+
+                                    Book clickedBook = new Book(fsID, title, isbn, author, status, image, user);
+                                    Intent viewBook = new Intent(context, BookDetailsFragment.class);
+                                    viewBook.putExtra("view book", clickedBook);
+                                    context.startActivity(viewBook);
+
+                                }
+                            });
+
+                        }
+
+                    });
+
                 }
             });
         }
