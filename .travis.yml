@@ -42,6 +42,7 @@ android:
 before_install:
   - yes | sdkmanager "platforms;android-$ANDROID_EMU_API_LEVEL"
   - yes | sdkmanager "platforms;android-$ANDROID_API_LEVEL"
+  - echo $(ant -version)
 
 before_script:
 
