@@ -170,7 +170,7 @@ public class BookDetailsFragment extends AppCompatActivity {
         owner.setText(viewBook.getOwner().getUsername());
         ISBN.setText(viewBook.getISBN());
         status.setText(viewBook.getStatus());
-        System.out.println("CLICKED BOOK GET TITLE: " + viewBook.getTitle());
+
         convertImage(viewBook.getFirestoreID());
 
         //get current user name and book owners name, check if they match
@@ -312,6 +312,22 @@ public class BookDetailsFragment extends AppCompatActivity {
                 });
 
                 //also have to delete all requests from firebase that came with this book, and their notifications
+                //delete all requests for the book on firestore
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("Requests").whereEqualTo("bookID", viewBook.getFirestoreID())
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    document.getReference().delete();
+                                }
+                            }
+                        });
+
+                //delete notifications for everyone who has requested that book
+                //*this is done in the notifictions fragment (going to check if book still exists before displaying notification)
+
             }
         });
 

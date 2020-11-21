@@ -128,7 +128,15 @@ public class AdapterNotification extends RecyclerView.Adapter<RecyclerView.ViewH
                                     String isbn = Objects.requireNonNull(document.get("ISBN")).toString();
                                     String author = Objects.requireNonNull(document.get("Author")).toString();
                                     String status = Objects.requireNonNull(document.get("Status")).toString();
-                                    String image = Objects.requireNonNull(document.get("imageID")).toString();
+                                    //String image = Objects.requireNonNull(document.get("imageID")).toString();
+                                    String image;
+                                    try {
+                                        image = Objects.requireNonNull(document.get("imageID")).toString();
+                                    }
+                                    catch(Exception e) {
+                                        image = "";
+                                    }
+
 
                                     Book clickedBook = new Book(fsID, title, isbn, author, status, image, user);
                                     Intent viewBook = new Intent(context, BookDetailsFragment.class);
