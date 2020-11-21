@@ -32,4 +32,4 @@ jobs:
         run: ./Code/gradlew build
       
       - name: Run tests
-        run: ./Code/app/src/androidTest/java/com/example/mobilibrary/BookDetailsTest.java
+        run: sudo ./Code/app/src/androidTest/java/com/example/mobilibrary/BookDetailsTest.java
