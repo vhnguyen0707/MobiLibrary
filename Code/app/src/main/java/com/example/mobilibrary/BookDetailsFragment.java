@@ -425,7 +425,7 @@ public class BookDetailsFragment extends AppCompatActivity {
 
                 //create notification
                 addToNotifications(viewBook.getOwner().getUsername(), getUsername(), "Has requested to borrow your book.", "1", viewBook.getFirestoreID());
-=======
+
                 //System.out.println("VIEWED BOOK FIRESTOREID: " + viewBook.getFirestoreID());
                 /*String username = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
                 db = FirebaseFirestore.getInstance();
