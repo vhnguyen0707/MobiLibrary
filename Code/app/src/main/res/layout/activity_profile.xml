@@ -22,14 +22,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="75dp"
-            android:layout_marginTop="130dp"
+            android:layout_marginTop="125dp"
             android:text="Username"
             android:textSize="25dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/user_text_view"
+            android:id="@+id/username_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="75dp"
@@ -46,11 +47,12 @@
             android:layout_marginTop="30dp"
             android:text="Email"
             android:textSize="25dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/user_text_view" />
+            app:layout_constraintTop_toBottomOf="@+id/username_text_view" />
 
         <EditText
-            android:id="@+id/edit_email"
+            android:id="@+id/edit_new_email"
             android:layout_width="260dp"
             android:layout_height="40dp"
             android:layout_marginStart="75dp"
@@ -81,6 +83,7 @@
             android:layout_marginTop="30dp"
             android:text="Phone"
             android:textSize="25dp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/email_text_view" />
 
@@ -109,7 +112,7 @@
             app:layout_constraintTop_toBottomOf="@+id/phone_label" />
 
         <Button
-            android:id="@+id/confirm_button"
+            android:id="@+id/confirm_book"
             android:layout_width="120dp"
             android:layout_height="35dp"
             android:layout_marginStart="55dp"
@@ -136,7 +139,8 @@
             app:layout_constraintEnd_toStartOf="@id/confirm_button"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_phone" />
+            app:layout_constraintTop_toBottomOf="@+id/edit_phone"
+            tools:ignore="NotSibling" />
 
         <Button
             android:id="@+id/sign_out_button"
@@ -178,7 +182,7 @@
 
     <ImageView
         android:id="@+id/avatarImageView"
-        android:layout_width="412dp"
+        android:layout_width="0dp"
         android:layout_height="190dp"
         android:layout_marginTop="70dp"
         android:src="@drawable/pfp"

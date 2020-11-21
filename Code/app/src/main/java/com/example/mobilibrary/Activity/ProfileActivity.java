@@ -38,7 +38,6 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
     private Button signOutButton;
     private User profileUser;
     private User currentUser;
-    private String profileUsername;
     private Context context;
     private DatabaseHelper databaseHelper;
     final List<View> toggleViews = new ArrayList<View>();
@@ -50,12 +49,12 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
 
         // Set variables
         editButton = findViewById(R.id.edit_button);
-        usernameText = findViewById(R.id.user_text_view);
+        usernameText = findViewById(R.id.username_text_view);
         emailText = findViewById(R.id.email_text_view);
         phoneText = findViewById(R.id.phone_text_view);
-        editEmail = findViewById(R.id.edit_email);
+        editEmail = findViewById(R.id.edit_new_email);
         editPhone = findViewById(R.id.edit_phone);
-        confirmButton = findViewById(R.id.confirm_button);
+        confirmButton = findViewById(R.id.confirm_book);
         cancelButton = findViewById(R.id.cancel_button);
         signOutButton = findViewById(R.id.sign_out_button);
         context = getApplicationContext();
@@ -89,12 +88,14 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
      */
     private void getProfileInfo() {
         Intent intent = getIntent();
-        profileUsername = (String) intent.getSerializableExtra("profile");
+        String profileUsername = (String) intent.getSerializableExtra("profile");
         databaseHelper = new DatabaseHelper(this);
         databaseHelper.getUserProfile(profileUsername, new Callback() {
             @Override
             public void onCallback(User user) {
                 profileUser = user;
+                toggleViews.add(editButton);
+                toggleViews.add(signOutButton);
                 checkIfOwnProfile();
             }
         });
@@ -105,18 +106,21 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
      */
     private void checkIfOwnProfile() {
         String myUsername = databaseHelper.getUser().getDisplayName();
-        Log.d("loggedInUsername", myUsername);
-        if (myUsername.equals(profileUser.getUsername())) {
-            currentUser = profileUser;
-            setProfilePage();
+        if (myUsername != null ) {
+            if (myUsername.equals(profileUser.getUsername())) {
+                currentUser = profileUser;
+                setProfilePage();
+            } else {
+                databaseHelper.getUserProfile(myUsername, new Callback() {
+                    @Override
+                    public void onCallback(User user) {
+                        currentUser = user;
+                        setProfilePage();
+                    }
+                });
+            }
         } else {
-            databaseHelper.getUserProfile(myUsername, new Callback() {
-                @Override
-                public void onCallback(User user) {
-                    currentUser = user;
-                    setProfilePage();
-                }
-            });
+            Log.d("USERNAME", "Username not found!");
         }
     }
 
@@ -125,6 +129,7 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
      */
     private void setProfilePage() {
         // Set TextViews
+        System.out.println("In Set Profile Page");
         usernameText.setText(profileUser.getUsername());
         emailText.setText(profileUser.getEmail());
         phoneText.setText(profileUser.getPhoneNo());
@@ -224,8 +229,6 @@ public class ProfileActivity extends AppCompatActivity implements reAuthFragment
 
     @Override
     public void onOkPressed() {
-        toggleViews.add(editButton);
-        toggleViews.add(signOutButton);
         toggleVisibility(toggleViews);
         editEmail.setText(profileUser.getEmail());
         editPhone.setText(profileUser.getPhoneNo());

@@ -1,7 +1,6 @@
 package com.example.mobilibrary;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +14,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,9 +46,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,13 +66,7 @@ public class EditBookFragment extends AppCompatActivity {
     private EditText author;
     private EditText ISBN;
     private ImageView photo;
-    private Uri imageUri;
-    private FloatingActionButton editImageButton;
-    private FloatingActionButton deleteImageButton;
-
-    private FloatingActionButton backButton;
-    private FloatingActionButton scanButton;
-    private Button confirmButton;
+    private Bitmap imageBitMap;
 
     private RequestQueue mRequestQueue;
     private FirebaseFirestore db;
@@ -90,41 +86,37 @@ public class EditBookFragment extends AppCompatActivity {
         title = findViewById(R.id.edit_title);
         author = findViewById(R.id.edit_author);
         ISBN = findViewById(R.id.edit_isbn);
-        confirmButton = findViewById(R.id.confirm_button);
-        backButton = findViewById(R.id.back_to_view_button);
-        scanButton = findViewById(R.id.edit_scan_button);
-        confirmButton = findViewById(R.id.confirm_button);
+        Button confirmButton = findViewById(R.id.confirm_button);
+        FloatingActionButton backButton = findViewById(R.id.back_to_view_button);
+        FloatingActionButton scanButton = findViewById(R.id.edit_scan_button);
         photo = findViewById(R.id.image);
-        editImageButton = findViewById(R.id.edit_image_button);
-        deleteImageButton = findViewById(R.id.delete_image_button);
+        FloatingActionButton editImageButton = findViewById(R.id.edit_image_button);
+        FloatingActionButton deleteImageButton = findViewById(R.id.delete_image_button);
 
+        // set up firestore instance
+        bookService = BookService.getInstance();
+        context = getApplicationContext();
+        
         // set up permissions for scanning intent
         mRequestQueue = Volley.newRequestQueue(this);
         ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA},
                 PackageManager.PERMISSION_GRANTED); //Request permission to use Camera
-        
-        // set up firestore instance
-        bookService = BookService.getInstance();
-        context = getApplicationContext();
 
         // check that a book was passed to this activity, otherwise end the activity
         if (getIntent() == null) {
             finish();
         }
+        
         final Book book = (Book) getIntent().getSerializableExtra("edit");
 
         // fill fields with correct information from the passed book
         title.setText(book.getTitle());
         author.setText(book.getAuthor());
         ISBN.setText(String.valueOf(book.getISBN()));
-        Bitmap bitmap;
-        if (book.getImage() != null) {
-            bitmap = BitmapFactory.decodeByteArray(book.getImage(), 0,
-                    book.getImage().length);
-        } else {
-            bitmap = null;
-        }
-        photo.setImageBitmap(bitmap);
+
+        //Bitmap bitmap = null;
+        System.out.println("BOOK.GETIMAGE: " + book.getImageId());
+        convertImage(book.getFirestoreID());
 
         /**
          * If Back Button is pressed, return to BookDetailsFragment without changing anything about the book
@@ -158,37 +150,19 @@ public class EditBookFragment extends AppCompatActivity {
                             book.setTitle(bookTitle);
                             book.setAuthor(bookAuthor);
                             book.setISBN(stringISBN);
-                            byte[] emptyArray = new byte[0];
-
-                            // if a book has a photo pass along the photo's bitmap
-                            if (!nullPhoto()) {
-                                Bitmap bitmap = ((BitmapDrawable)photo.getDrawable()).getBitmap();
-                                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                                byte[] editImage = outStream.toByteArray();
-                                book.setImage(editImage);
-                            }else {
-                                book.setImage(emptyArray);    // book has no photo so image bitmap is set to null
-                            }
 
                             // edit book in firestore
                             bookService.editBook(context, book);
 
-                            // upload any changed images in firestore
-                            if (imageUri != null) {
-                                bookService.uploadImage(bookTitle, imageUri, new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Picasso.with(context).load(imageUri).into(photo);
-                                    }
-                                }, new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                            deleteImageRef(book);
+                            if(!(nullPhoto())) {
+                                book.setImageId(convertBitmap());
+                                bookService.uploadImage(book.getFirestoreID(), imageBitMap,
+                                        aVoid -> Toast.makeText(EditBookFragment.this, " edited image", Toast.LENGTH_SHORT).show(),
+                                        e -> Toast.makeText(EditBookFragment.this, "Failed to edit image", Toast.LENGTH_SHORT).show());
+                            } else {
+                                book.setImageId(null);
                             }
-
                             // pass edited book back to bookDetailsFragment
                             Intent editIntent = new Intent();
                             editIntent.putExtra("edited", book);    // mark book as edited in app
@@ -218,8 +192,9 @@ public class EditBookFragment extends AppCompatActivity {
         deleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                imageBitMap = null;
+                book.setImageId(null);
                 photo.setImageBitmap(null);
-                imageUri = null;
             }
         });
 
@@ -227,14 +202,45 @@ public class EditBookFragment extends AppCompatActivity {
          * When the Edit Image Button is pressed a new activity intent opens to take a picture to
          * attach to the book
          */
-        editImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                int pic_id = 2;
-                startActivityForResult(camera_intent, pic_id);
-            }
+        editImageButton.setOnClickListener(view -> {
+            Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            int pic_id = 2;
+            startActivityForResult(camera_intent, pic_id);
         });
+    }
+
+    private String convertBitmap() {
+        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+        imageBitMap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp = Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
+    }
+
+    private void deleteImageRef(Book book) {
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference.child("books/" + book.getFirestoreID() + ".jpg").delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        String TAG = "editBookFragment";
+                        Log.d(TAG, "onSuccess: deleted file");
+                    }
+                });
+    }
+
+    private void convertImage(String imageId) {
+        final long ONE_MEGABYTE = 1024 * 1024;
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        storageRef.child("books/" + imageId + ".jpg").getBytes(ONE_MEGABYTE)
+                .addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    imageBitMap = bitmap;
+                    photo.setImageBitmap(bitmap);
+                }).addOnFailureListener(e -> {
+                    imageBitMap = null;
+                    photo.setImageBitmap(null);
+                });
     }
 
     /**
@@ -298,9 +304,9 @@ public class EditBookFragment extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            imageUri = data.getData();
             Bitmap book_photo = (Bitmap) data.getExtras().get("data");
-            photo.setImageBitmap(book_photo);
+            imageBitMap = book_photo;
+            photo.setImageBitmap(imageBitMap);
         } else {
             IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
@@ -433,4 +439,3 @@ public class EditBookFragment extends AppCompatActivity {
                 });
     }
 }
-
