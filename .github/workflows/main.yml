@@ -30,6 +30,3 @@ jobs:
         
       - name: Build the app
         run: ./Code/gradlew build
-      
-      - name: Run tests
-        run: sudo ./Code/app/src/androidTest/java/com/example/mobilibrary/BookDetailsTest.java
