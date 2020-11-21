@@ -1,6 +1,7 @@
 package com.example.mobilibrary.DatabaseController;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,7 +52,6 @@ public class RequestService {
         Map<String, Object> data = new HashMap<>();
         data.put("requester", request.getRequester());
         data.put("bookID", request.getBookID());
-        System.out.println("before return statement");
         return db.collection("Requests").add(data);
 
     }
